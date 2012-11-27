@@ -73,7 +73,12 @@ pipeline <- function(
     }
     medianBreakpointAccuracies <- compareRecombinations(mgRecombinations, jiangRecombinations) # to include slide 9 plot, slide 12 plot, median accuracies, Venn
   } else {
-    mgRecombinations <- recombinationPoints(vcfSegregating, gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
+    if(!file.exists(paste(cross, "mgRecombinations.rda", sep="."))) {
+      mgRecombinations <- recombinationPoints(vcfSegregating, gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
+      save(mgRecombinations, file=paste(cross, "mgRecombinations.rda", sep="."))
+    } else {
+      load(paste(cross, "mgRecombinations.rda", sep="."))
+    }
   }
   recombinationRates <- analyseRecombinations(mgRecombinations, plotFilestem=cross) # to include slide 13 plot, breakdown of CO and GC by progeny, chromosome and by cross, CO and GC rates
   if(shouldCompareWithJiang) {
