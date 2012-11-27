@@ -59,15 +59,15 @@ pipeline <- function(
     jiangUniqueSamples <- uniqueSamples(jiangVcf, discordanceThresholdJiang, plotFilestem="JiangEtAl", GTsToIntMapping = c("7"=1, "G"=2, "."=0)) # should output heatmap of discordances
     genotypeConcordanceRaw <- compareCalls(vcfVariantQCplus, jiangVcf, plotFilestem="raw")
     genotypeConcordance <- compareCalls(vcfSegregating, jiangVcf) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
-    if(!file.exists("~/mgRecombinations.rda")) {
+    if(!file.exists(paste(cross, "mgRecombinations.rda", sep="."))) {
       mgRecombinations <- recombinationPoints(vcfSegregating, gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
-      save(mgRecombinations, file="~/mgRecombinations.rda")
+      save(mgRecombinations, file=paste(cross, "mgRecombinations.rda", sep="."))
     } else {
-      load("~/mgRecombinations.rda")
+      load(paste(cross, "mgRecombinations.rda", sep="."))
     }
     if(!file.exists("~/jiangRecombinations.rda")) {
       jiangRecombinations <- recombinationPoints(jiangVcf, gffGRL, GTsToIntMapping = c("7"=1, "G"=2, "."=0))
-      save(jiangRecombinations, file="~/jiangRecombinations.rda")
+      save(jiangRecombinations, file="jiangRecombinations.rda")
     } else {
       load("~/jiangRecombinations.rda")
     }
