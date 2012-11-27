@@ -13,6 +13,7 @@
 #pipeline_3d7xHb3 <- pipeline("3d7xHb3", discordanceThresholdMg=5000)
 #pipeline_Hb3xDd2 <- pipeline("Hb3xDd2")
 #v3UG_7g8xGb4 <- pipeline("v3UG_7g8xGb4", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj3-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", samplesToRemove = c("ERR045643", "ERR045644", "ERR045645", "ERR045646", "ERR045647", "ERR045625"), overwriteExisting=TRUE, discordanceThresholdMg=28000, plotFilestem="v3UG_7g8xGb4")
+#v3UG_7g8xGb4 <- pipeline("v3UG_7g8xGb4", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj3-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", samplesToRemove = c("ERR045643", "ERR045644", "ERR045645", "ERR045646", "ERR045647", "ERR045625"), discordanceThresholdMg=28000, plotFilestem="v3UG_7g8xGb4")
 
 pipeline <- function(
   cross                       = "7g8xGb4",
@@ -46,11 +47,14 @@ pipeline <- function(
 #  )
 #  vcfVariantQCplus <- qcPlusVCF(vcfVariant, qcFailedSamples=qcFailedSamples)
   vcfVariantQCplus <- vcfVariant
+  rm(vcfVariant)
+  gc()
   if(is.null(plotFilestem)) {
     samplesToUse <- uniqueSamples(vcfVariantQCplus, discordanceThreshold=discordanceThresholdMg) # should output heatmap of discordances
   } else {
     samplesToUse <- uniqueSamples(vcfVariantQCplus, discordanceThreshold=discordanceThresholdMg, plotFilestem=plotFilestem) # should output heatmap of discordances
   }
+  gc()
   vcfListSegregating <- segregatingSitesList(vcfList, samplesToUse=samplesToUse, pdfFilestem=plotFilestem) #allPaintingSeries, also will probably extend to remove short haplotypes with recombination points in many samples
   vcfSegregating <- combineVcfListIntoVcf(vcfListSegregating)
 #  uniqueSamples(vcfSegregating, discordanceThreshold=discordanceThresholdSeg, plotFilestem=paste(meta(exptData(vcf)[["header"]])["DataSetName", "Value"], "segregating", sep="."))
