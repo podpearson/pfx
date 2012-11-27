@@ -30,7 +30,7 @@ pipeline <- function(
   discordanceThresholdMg      = 10000,
   discordanceThresholdSeg     = 100,
   discordanceThresholdJiang   = 100,
-  shouldCompareWithJiang      = grepl("7g8xGb4", vcfFilename),
+  shouldCompareWithJiang      = grepl("7g8xGb4", cross),
   overwriteExisting           = NULL
 ) {
   if(is.null(overwriteExisting)) {

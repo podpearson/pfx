@@ -127,6 +127,8 @@ segregatingSites <- function(
     if(verbose) {
       cat("done\n")
     }
+  } else {
+    segregating <- TRUE
   }
   SingleSNPHaplotypeFilter <- grepl("SingleSNPHaplotype", filt(vcf))
   rowsToUse <- (!GTsIntToKeep[, 1]==0 | !GTsIntToKeep[, 2]==0) & (!monomorphicRows) & missingGenotypesPerVariant <= 1 & !HeterozygousFilter & inVarMask & !MendelianErrorFilter & segregating & !SingleSNPHaplotypeFilter
