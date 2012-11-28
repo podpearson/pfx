@@ -16,7 +16,7 @@ createSingleChromosomeVariantSitesRdaFile <- function(
 #  filtersToRemove             = c("NoAlternative"),
   filtersToRemove             = NULL,
   samplesToRemove             = NULL,
-  outputRdaFilename           = sub("\\.vcf[\\.gz]?$", paste("\\.variantSites\\.", chromosome,"\\.rda", sep=""), vcfFilename),
+  outputRdaFilename           = sub("\\.vcf[\\.gz]*$", paste("\\.variantSites\\.", chromosome,"\\.rda", sep=""), vcfFilename),
   overwriteExisting           = !(file.exists(outputRdaFilename)),
   saveAsRobjectFile           = TRUE
 ) {
