@@ -20,11 +20,11 @@ loadJiangGenotypesAsVcf <- function(
   jiangGenotypes <- subset(jiangGenotypes, substr(Marker, 1, 2)=="Pf")
   jiangGenotypes[["pos"]] <- as.integer(sub("\\.", "", jiangGenotypes[["Position..Kb."]]))
   row.names(jiangGenotypes) <- paste("MAL", jiangGenotypes[["Chr"]], ":", jiangGenotypes[["pos"]], sep="")
-#  GT = cbind(
-#    matrix("7", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "7G8")),
-#    matrix("G", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "GB4")),
-#    as.matrix(jiangGenotypes[, 6:37])
-#  )
+  GT = cbind(
+    matrix("7", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "7G8")),
+    matrix("G", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "GB4")),
+    as.matrix(jiangGenotypes[, 6:37])
+  )
 #  GT <- matrix(
 #    as.integer(as.factor(GT))-1,
 #    ncol=ncol(GT),
@@ -63,7 +63,8 @@ loadJiangGenotypesAsVcf <- function(
           FILTER = DataFrame(Descrption=character()),
 #          FILTER = DataFrame(Descrption="PASS", row.names="PASS"),
           FORMAT = rbind(
-            DataFrame(Number = "1", Type="String", Description="Genotype (7 means matches 7G8, G means matches GB4)", row.names="GT")
+            DataFrame(Number = "1", Type="String", Description="Genotype (7 means matches 7G8, G means matches GB4)", row.names="GT"),
+            DataFrame(Number = "1", Type="String", Description="Genotype (7 means matches 7G8, G means matches GB4)", row.names="GT2")
           ),
           INFO = rbind(
             DataFrame(Number = "1", Type = "Float", Description="Marker.Distance..Kb.", row.names="Marker.Distance..Kb."),
@@ -78,7 +79,8 @@ loadJiangGenotypesAsVcf <- function(
     ),
     fixed    = DataFrame(
       REF = DNAStringSet(rep("A", dim(jiangGenotypes)[1])),
-      ALT = DNAStringSetList(rep("C", dim(jiangGenotypes)[1])),
+      ALT = DNAStringSetList("C"),
+#      ALT = DNAStringSetList(rep("C", dim(jiangGenotypes)[1])),
       QUAL = rep(0.0, dim(jiangGenotypes)[1]),
       FILTER = rep("PASS", dim(jiangGenotypes)[1])
     ),
@@ -86,17 +88,25 @@ loadJiangGenotypesAsVcf <- function(
       jiangGenotypes[, c(4:5, 38:41)]
     ),
     geno     = SimpleList(
-#      GT = GT
-      GT = cbind(
-        matrix("7", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "7G8")),
-        matrix("G", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "GB4")),
-        as.matrix(jiangGenotypes[, 6:37])
-      )
+      GT = GT,
+      DUMMY = matrix(sapply(as.vector(GT), function(x) list(c(x, x))), ncol=ncol(GT), dimnames=dimnames(GT))
+#      GT = cbind(
+#        matrix("7", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "7G8")),
+#        matrix("G", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "GB4")),
+#        as.matrix(jiangGenotypes[, 6:37])
+#      ),
+#      GT2 = cbind(
+#        matrix("7", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "7G8")),
+#        matrix("G", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "GB4")),
+#        as.matrix(jiangGenotypes[, 6:37])
+#      )
     )
   )
-  genome(jiangVcf) <- "Pf"
+#  genome(jiangVcf) <- "Pf"
+  jiangVcf <- jiangVcf[order(rowData(jiangVcf))]
   if(shouldSaveVcfFile) {
     writeVcf(jiangVcf, jiangVcfFilename, index=TRUE)
+    writeVcf(jiangVcf, jiangVcfFilename)
   }
   if(shouldSaveRdaFile) {
     save(jiangVcf, file=jiangRdaFilename)
