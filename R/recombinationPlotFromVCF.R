@@ -7,7 +7,7 @@
 ###############################################################################
 
 # pdf("MAL4_7g8xGb4_release0.1.pdf", width=14, height=4)
-# recombinationPlotFromVCF(filtersToRemove             = c("Heterozygous", "Missingness"))
+# recombinationPlotFromVCF()
 # dev.off()
 
 recombinationPlotFromVCF <- function(
@@ -16,7 +16,7 @@ recombinationPlotFromVCF <- function(
   parentalIDs                 = NULL, # this default will use IDs of first two samples in VCF. This can be over-ridden by supplying IDs, e.g. recombinationPlotFromVCF(parentalIDs=c("ERR027099", "ERR027100"))
   shouldRemoveInvariant       = TRUE,
   removeMissingInParents      = c("either", "both", "ignore"),
-  shouldRemoveMendelianErrors = FALSE,
+  shouldRemoveMendelianErrors = TRUE,
   regionsMask                 = varRegions_v2(), # will remove any variants in these regions. Set to NULL if you don't want to mask any variants out in this way
   filtersToRemove             = c("Heterozygous", "Missingness"),     # set to NULL if you want to keep all variants
   samplesToRemove             = NULL,

@@ -24,7 +24,8 @@ createSingleChromosomeVariantSitesRdaFile <- function(
     stop("Input and output filename are the same")
   }
   if(overwriteExisting) {
-    rng <- GRanges(seqnames=chromosome, ranges=IRanges(1, 3.3e+6)) # slightly more than largest Pf chromosome - not very elegant but there you go
+#    rng <- GRanges(seqnames=chromosome, ranges=IRanges(1, 3.3e+6)) # slightly more than largest Pf chromosome - not very elegant but there you go
+    rng <- GRanges(seqnames=chromosome, ranges=IRanges(1, .Machine$integer.max)) # decided there should be no reason to make the above Pf specific, so went for a maximum very large chromosome
     param <- ScanVcfParam(which=rng, geno=c("GT", "AD"))
     if(!file.exists(paste(vcfFilename, "tbi", sep="."))) {
       indexTabix(vcfFilename, "vcf4")

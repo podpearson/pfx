@@ -8,8 +8,12 @@
 
 
 loadJiangGenotypesAsVcf <- function(
-  jiangGenotypesFilename      = "/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.txt"
-#  jiangGenotypesFilename      = "/data/ib/users/rpearson/malariagen/PfCrossesPaper/externalData/gb-2011-12-4-r33-s3.txt"
+  jiangGenotypesFilename      = "/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.txt",
+#  jiangGenotypesFilename      = "/data/ib/users/rpearson/malariagen/PfCrossesPaper/externalData/gb-2011-12-4-r33-s3.txt",
+  jiangVcfFilename            = "/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.vcf",
+  jiangRdaFilename            = "/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.vcf.rda",
+  shouldSaveVcfFile           = FALSE,
+  shouldSaveRdaFile           = FALSE
 ) {
   jiangGenotypes <- read.table(jiangGenotypesFilename, skip=1, header=TRUE, sep="\t", as.is=TRUE, nrows=3452)
   jiangGenotypes <- subset(jiangGenotypes, Marker!="centromere")
@@ -53,6 +57,12 @@ loadJiangGenotypesAsVcf <- function(
       )
     )
   )
+  if(shouldSaveVcfFile) {
+    writeVcf(jiangVcf, jiangVcfFilename, index=TRUE)
+  }
+  if(shouldSaveRdaFile) {
+    save(jiangVcf, file=jiangRdaFilename)
+  }
   return(jiangVcf)
 }
 
