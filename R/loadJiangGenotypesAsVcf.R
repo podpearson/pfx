@@ -12,7 +12,7 @@ loadJiangGenotypesAsVcf <- function(
 #  jiangGenotypesFilename      = "/data/ib/users/rpearson/malariagen/PfCrossesPaper/externalData/gb-2011-12-4-r33-s3.txt",
   jiangVcfFilename            = "/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.vcf",
   jiangRdaFilename            = "/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.vcf.rda",
-  shouldSaveVcfFile           = FALSE,
+  shouldSaveVcfFile           = FALSE, # Note that due to a bug in VariantAnnotation::.makeVcfGeno this currently doesn't work with release version, but does work with latest R-devel
   shouldSaveRdaFile           = FALSE
 ) {
   jiangGenotypes <- read.table(jiangGenotypesFilename, skip=1, header=TRUE, sep="\t", as.is=TRUE, nrows=3452)
@@ -60,8 +60,8 @@ loadJiangGenotypesAsVcf <- function(
             DataFrame(Value = "_7G8", row.names="PARENT"),
             DataFrame(Value = "GB4", row.names="PARENT.1")
           ),
-#          FILTER = DataFrame(Descrption=character()),
-          FILTER = DataFrame(Descrption="PASS", row.names="PASS"),
+          FILTER = DataFrame(Descrption=character()),
+#          FILTER = DataFrame(Descrption="PASS", row.names="PASS"),
           FORMAT = rbind(
             DataFrame(Number = "1", Type="String", Description="Genotype (7 means matches 7G8, G means matches GB4)", row.names="GT")
           ),

@@ -12,6 +12,9 @@
 # pdf("MAL4_7g8xGb4_Jiang.pdf", width=14, height=4)
 # recombinationPlotFromVCF("/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.vcf.gz")
 # dev.off()
+ pdf("MAL4_7g8xGb4_Zam.pdf", width=14, height=4)
+ recombinationPlotFromVCF("/data/galton/users/rpearson/zam/delivery/plasmodium/7g8_gb4_wk_flow_I_combined_BC_calls_at_all_k.decomp.vcf", "MAL4")
+ dev.off()
 
 recombinationPlotFromVCF <- function(
   vcfFilename                 = "/data/galton/users/rpearson/crossesTesting/release/7g8xGb4-qcPlusSamples-0.1.vcf.gz",
