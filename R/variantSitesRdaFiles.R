@@ -40,7 +40,7 @@ createSingleChromosomeVariantSitesRdaFile <- function(
       sapply(
         filtersToRemove,
         function(filterToRemove) {
-          vcf <- vcf[!grepl(filterToRemove, filt(vcf))]
+          vcf <<- vcf[!grepl(filterToRemove, filt(vcf))]
         }
       )
     }

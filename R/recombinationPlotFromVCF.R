@@ -6,6 +6,9 @@
 #
 ###############################################################################
 
+# pdf("MAL4_7g8xGb4_release0.1.pdf", width=14, height=4)
+# recombinationPlotFromVCF(filtersToRemove             = c("Heterozygous", "Missingness"))
+# dev.off()
 
 recombinationPlotFromVCF <- function(
   vcfFilename                 = "/data/galton/users/rpearson/crossesTesting/release/7g8xGb4-qcPlusSamples-0.1.vcf.gz",
@@ -14,14 +17,14 @@ recombinationPlotFromVCF <- function(
   shouldRemoveInvariant       = TRUE,
   removeMissingInParents      = c("either", "both", "ignore"),
   shouldRemoveMendelianErrors = FALSE,
-  filtersToRemove             = NULL,
+  filtersToRemove             = c("Heterozygous", "Missingness"),     # set to NULL if you want to keep all variants
   samplesToRemove             = NULL,
   verbose                     = TRUE,
   ...
 ) {
   require(VariantAnnotation)
   if(verbose) {
-    cat("recombinationPlotFromVCF: reading data from ", vcfFilename, "\n")
+    cat("recombinationPlotFromVCF: reading data from ", vcfFilename, "\n", sep="")
   }
   GTsInt <- genotypeCallsFromGTas012(
     createSingleChromosomeVariantSitesRdaFile(
