@@ -20,6 +20,16 @@ loadJiangGenotypesAsVcf <- function(
   jiangGenotypes <- subset(jiangGenotypes, substr(Marker, 1, 2)=="Pf")
   jiangGenotypes[["pos"]] <- as.integer(sub("\\.", "", jiangGenotypes[["Position..Kb."]]))
   row.names(jiangGenotypes) <- paste("MAL", jiangGenotypes[["Chr"]], ":", jiangGenotypes[["pos"]], sep="")
+#  GT = cbind(
+#    matrix("7", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "7G8")),
+#    matrix("G", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "GB4")),
+#    as.matrix(jiangGenotypes[, 6:37])
+#  )
+#  GT <- matrix(
+#    as.integer(as.factor(GT))-1,
+#    ncol=ncol(GT),
+#    dimnames=dimnames(GT)
+#  )
   jiangVcf <- VCF(
     rowData  = GRanges(
       seqnames = paste("MAL", jiangGenotypes[["Chr"]], sep=""),
@@ -28,6 +38,7 @@ loadJiangGenotypesAsVcf <- function(
         width = 1,
         names  = row.names(jiangGenotypes)
       )
+#      paramRangeID = factor(rep(NA, dim(jiangGenotypes)[1]))
     ),
     colData  = BiocGenerics::rbind(
       DataFrame(
@@ -39,7 +50,32 @@ loadJiangGenotypesAsVcf <- function(
         row.names = dimnames(jiangGenotypes)[[2]][6:37]
       )
     ),
-#    exptData = exptData(vcfList[[1]]),
+    exptData = SimpleList(
+      header = VCFHeader(
+        samples = c("_7G8", "GB4", dimnames(jiangGenotypes)[[2]][6:37]),
+        header  = DataFrameList(
+          META = rbind(
+            DataFrame(Value = "VCFv4.0", row.names="fileformat"),
+            DataFrame(Value = "JiangEtAl", row.names="ProjectName"),
+            DataFrame(Value = "_7G8", row.names="PARENT"),
+            DataFrame(Value = "GB4", row.names="PARENT.1")
+          ),
+#          FILTER = DataFrame(Descrption=character()),
+          FILTER = DataFrame(Descrption="PASS", row.names="PASS"),
+          FORMAT = rbind(
+            DataFrame(Number = "1", Type="String", Description="Genotype (7 means matches 7G8, G means matches GB4)", row.names="GT")
+          ),
+          INFO = rbind(
+            DataFrame(Number = "1", Type = "Float", Description="Marker.Distance..Kb.", row.names="Marker.Distance..Kb."),
+            DataFrame(Number = "1", Type = "Integer", Description="Crossovers", row.names="Crossovers"),
+            DataFrame(Number = ".", Type = "Float", Description="Flanking.Size..Kb.", row.names="Flanking.Size..Kb."),
+            DataFrame(Number = ".", Type = "String", Description="Valedated.Genotype", row.names="Valedated.Genotype"),
+            DataFrame(Number = ".", Type = "String", Description="Forward.Primer", row.names="Forward.Primer"),
+            DataFrame(Number = ".", Type = "String", Description="Reverse.Primer", row.names="Reverse.Primer")
+          )
+        )
+      )
+    ),
     fixed    = DataFrame(
       REF = DNAStringSet(rep("A", dim(jiangGenotypes)[1])),
       ALT = DNAStringSetList(rep("C", dim(jiangGenotypes)[1])),
@@ -50,6 +86,7 @@ loadJiangGenotypesAsVcf <- function(
       jiangGenotypes[, c(4:5, 38:41)]
     ),
     geno     = SimpleList(
+#      GT = GT
       GT = cbind(
         matrix("7", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "7G8")),
         matrix("G", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "GB4")),
@@ -57,6 +94,7 @@ loadJiangGenotypesAsVcf <- function(
       )
     )
   )
+  genome(jiangVcf) <- "Pf"
   if(shouldSaveVcfFile) {
     writeVcf(jiangVcf, jiangVcfFilename, index=TRUE)
   }
