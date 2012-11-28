@@ -16,8 +16,13 @@ recombinationPlotFromVCF <- function(
   shouldRemoveMendelianErrors = FALSE,
   filtersToRemove             = NULL,
   samplesToRemove             = NULL,
+  verbose                     = TRUE,
   ...
 ) {
+  require(VariantAnnotation)
+  if(verbose) {
+    cat("recombinationPlotFromVCF: reading data from ", vcfFilename, "\n")
+  }
   GTsInt <- genotypeCallsFromGTas012(
     createSingleChromosomeVariantSitesRdaFile(
       vcfFilename                 = vcfFilename,
@@ -33,12 +38,18 @@ recombinationPlotFromVCF <- function(
     parentalIDs <- dimnames(GTsInt)[[2]][1:2]
   }
   if(!identical(parentalIDs, dimnames(GTsInt)[[2]][1:2])) {
+    if(verbose) {
+      cat("recombinationPlotFromVCF: putting parents first\n")
+    }
     GTsInt <- cbind(
       GTsInt[, parentalIDs],
       GTsInt[, -which(dimnames(GTsInt)[[2]] %in% parentalIDs)]
     )
   }
   if(removeMissingInParents[1] == "either") {
+    if(verbose) {
+      cat("recombinationPlotFromVCF: removing unwanted variants\n")
+    }
     if(shouldRemoveMendelianErrors) {
       rowsToUse <- (!GTsInt[, 1]==0 & !GTsInt[, 2]==0) & !(GTsInt[, 1] == GTsInt[, 2])
     } else {
@@ -47,6 +58,9 @@ recombinationPlotFromVCF <- function(
     GTsInt <- GTsInt[rowsToUse, ]
   }
   if(removeMissingInParents[1] == "both") {
+    if(verbose) {
+      cat("recombinationPlotFromVCF: removing unwanted variants\n")
+    }
     if(shouldRemoveMendelianErrors) {
       rowsToUse <- (!GTsInt[, 1]==0 | !GTsInt[, 2]==0) & !(GTsInt[, 1] == GTsInt[, 2])
     } else {
@@ -55,6 +69,9 @@ recombinationPlotFromVCF <- function(
     GTsInt <- GTsInt[rowsToUse, ]
   }
 
+  if(verbose) {
+    cat("recombinationPlotFromVCF: creating plot\n")
+  }
   recombinationPlot(
     convertGTsIntToParentBasedGTs(
       GTsInt
