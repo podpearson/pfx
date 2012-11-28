@@ -17,6 +17,7 @@ recombinationPlotFromVCF <- function(
   shouldRemoveInvariant       = TRUE,
   removeMissingInParents      = c("either", "both", "ignore"),
   shouldRemoveMendelianErrors = FALSE,
+  regionsMask                 = varRegions_v2(), # will remove any variants in these regions. Set to NULL if you don't want to mask any variants out in this way
   filtersToRemove             = c("Heterozygous", "Missingness"),     # set to NULL if you want to keep all variants
   samplesToRemove             = NULL,
   verbose                     = TRUE,
@@ -31,6 +32,7 @@ recombinationPlotFromVCF <- function(
       vcfFilename                 = vcfFilename,
       chromosome                  = chromosome,
       shouldRemoveInvariant       = shouldRemoveInvariant,
+      regionsMask                 = regionsMask,
       filtersToRemove             = filtersToRemove,
       samplesToRemove             = samplesToRemove,
       overwriteExisting           = TRUE,

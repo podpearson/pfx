@@ -11,6 +11,8 @@ createSingleChromosomeVariantSitesRdaFile <- function(
   vcfFilename                 = file.path("/data/galton/users/rpearson", "crossesTesting", "release", "7g8xGb4-qcPlusSamples-0.1.vcf.gz"),
   chromosome                  = "MAL1",
   shouldRemoveInvariant       = TRUE,
+#  regionsMask                 = varRegions_v2(), # will remove any variants in these regions. Set to NULL if you don't want to mask any variants out in this way
+  regionsMask                 = NULL,
 #  filtersToRemove             = c("NoAlternative"),
   filtersToRemove             = NULL,
   samplesToRemove             = NULL,
@@ -43,6 +45,9 @@ createSingleChromosomeVariantSitesRdaFile <- function(
           vcf <<- vcf[!grepl(filterToRemove, filt(vcf))]
         }
       )
+    }
+    if(!is.null(regionsMask)) {
+      vcf <- vcf[is.na(GenomicRanges::match(rowData(vcf), regionsMask))]
     }
     if(saveAsRobjectFile) {
       save(vcf, file=outputRdaFilename)
