@@ -9,9 +9,25 @@
 
 genotypeCallsFromGTas012 <- function(
   vcf,
-  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0, "2"=0, "3"=0) # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
+  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0, "2"=0, "3"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
+  replaceRownamesWithChromPos = TRUE
 ) {
   GTs <- geno(vcf)[["GT"]]
-  GTsInt <- matrix(GTsToIntMapping[GTs], nrow=nrow(GTs), dimnames=dimnames(GTs))
+  if(replaceRownamesWithChromPos) {
+    GTsInt <- matrix(
+      GTsToIntMapping[GTs],
+      nrow=nrow(GTs),
+      dimnames=list(
+        paste(as.character(seqnames(vcf)), start(rowData(vcf))[1:10], sep=":"),
+        dimnames(GTs)[[2]]
+      )
+    )
+  } else {
+    GTsInt <- matrix(
+      GTsToIntMapping[GTs],
+      nrow=nrow(GTs),
+      dimnames=dimnames(GTs)
+    )
+  }
   return(GTsInt)
 }
