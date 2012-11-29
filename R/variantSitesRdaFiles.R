@@ -13,6 +13,7 @@ createSingleChromosomeVariantSitesRdaFile <- function(
   shouldRemoveInvariant       = TRUE,
 #  regionsMask                 = varRegions_v2(), # will remove any variants in these regions. Set to NULL if you don't want to mask any variants out in this way
   regionsMask                 = NULL,
+  keepPASSvariantsOnly        = FALSE,
 #  filtersToRemove             = c("NoAlternative"),
   filtersToRemove             = NULL,
   samplesToRemove             = NULL,
@@ -41,13 +42,17 @@ createSingleChromosomeVariantSitesRdaFile <- function(
       invariantSNPs <- apply(geno(vcf)[["GT"]], 1, function(x) length(table(x[!(x %in% possibleMissingValues)], useNA="no"))==1)
       vcf <- vcf[!invariantSNPs]
     }
-    if(!is.null(filtersToRemove)) {
-      sapply(
-        filtersToRemove,
-        function(filterToRemove) {
-          vcf <<- vcf[!grepl(filterToRemove, filt(vcf))]
-        }
-      )
+    if(keepPASSvariantsOnly) {
+      vcf <- vcf[filt(vcf)=="PASS"]
+    } else {
+      if(!is.null(filtersToRemove)) {
+        sapply(
+          filtersToRemove,
+          function(filterToRemove) {
+            vcf <<- vcf[!grepl(filterToRemove, filt(vcf))]
+          }
+        )
+      }
     }
     if(!is.null(regionsMask)) {
       vcf <- vcf[is.na(GenomicRanges::match(rowData(vcf), regionsMask))]

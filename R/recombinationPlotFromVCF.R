@@ -13,7 +13,7 @@
 # recombinationPlotFromVCF("/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.vcf.gz", "MAL4", GTsToIntMapping=c("7"=1, "G"=2))
 # dev.off()
 # pdf("MAL4_7g8xGb4_Zam.pdf", width=14, height=4)
-# recombinationPlotFromVCF("/data/galton/users/rpearson/zam/delivery/plasmodium/7g8_gb4_wk_flow_I_combined_BC_calls_at_all_k.decomp.vcf.gz", "MAL4", GTsToIntMapping=c("0/0"=1, "1/1"=2))
+# recombinationPlotFromVCF("/data/galton/users/rpearson/zam/delivery/plasmodium/7g8_gb4_wk_flow_I_combined_BC_calls_at_all_k.decomp.vcf.gz", "MAL4", GTsToIntMapping=c("0/0"=1, "1/1"=2), keepPASSvariantsOnly=TRUE)
 # dev.off()
 
 recombinationPlotFromVCF <- function(
@@ -24,7 +24,8 @@ recombinationPlotFromVCF <- function(
   removeMissingInParents      = c("either", "both", "ignore"),
   shouldRemoveMendelianErrors = TRUE,
   regionsMask                 = varRegions_v2(), # will remove any variants in these regions. Set to NULL if you don't want to mask any variants out in this way
-  filtersToRemove             = c("Heterozygous", "Missingness"),     # set to NULL if you want to keep all variants
+  keepPASSvariantsOnly        = FALSE,
+  filtersToRemove             = c("Heterozygous", "Missingness"),     # set to NULL if you want to keep all variants. Also, this is overridden if keepPASSvariantsOnly==TRUE
   samplesToRemove             = NULL,
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0, "2"=0, "3"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
   verbose                     = TRUE,
