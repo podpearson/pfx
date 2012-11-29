@@ -18,7 +18,7 @@ genotypeCallsFromGTas012 <- function(
       GTsToIntMapping[GTs],
       nrow=nrow(GTs),
       dimnames=list(
-        paste(as.character(seqnames(vcf)), start(rowData(vcf))[1:10], sep=":"),
+        paste(as.character(seqnames(vcf)), start(rowData(vcf)), sep=":"),
         dimnames(GTs)[[2]]
       )
     )
