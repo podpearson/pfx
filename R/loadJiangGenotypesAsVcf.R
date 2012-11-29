@@ -64,7 +64,7 @@ loadJiangGenotypesAsVcf <- function(
 #          FILTER = DataFrame(Descrption="PASS", row.names="PASS"),
           FORMAT = rbind(
             DataFrame(Number = "1", Type="String", Description="Genotype (7 means matches 7G8, G means matches GB4)", row.names="GT"),
-            DataFrame(Number = "1", Type="String", Description="Genotype (7 means matches 7G8, G means matches GB4)", row.names="GT2")
+            DataFrame(Number = "2", Type="String", Description="Genotype (7 means matches 7G8, G means matches GB4)", row.names="AD")
           ),
           INFO = rbind(
             DataFrame(Number = "1", Type = "Float", Description="Marker.Distance..Kb.", row.names="Marker.Distance..Kb."),
@@ -89,7 +89,7 @@ loadJiangGenotypesAsVcf <- function(
     ),
     geno     = SimpleList(
       GT = GT,
-      DUMMY = matrix(sapply(as.vector(GT), function(x) list(c(x, x))), ncol=ncol(GT), dimnames=dimnames(GT))
+      AD = matrix(sapply(as.vector(GT), function(x) list(c(x, x))), ncol=ncol(GT), dimnames=dimnames(GT))
 #      GT = cbind(
 #        matrix("7", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "7G8")),
 #        matrix("G", nrow=dim(jiangGenotypes)[1], ncol=1, dimnames=list(dimnames(jiangGenotypes)[[1]], "GB4")),
