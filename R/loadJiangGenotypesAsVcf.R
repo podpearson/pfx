@@ -12,7 +12,7 @@ loadJiangGenotypesAsVcf <- function(
 #  jiangGenotypesFilename      = "/data/ib/users/rpearson/malariagen/PfCrossesPaper/externalData/gb-2011-12-4-r33-s3.txt",
   jiangVcfFilename            = "/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.vcf",
   jiangRdaFilename            = "/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.vcf.rda",
-  shouldSaveVcfFile           = FALSE, # Note that due to a bug in VariantAnnotation::.makeVcfGeno this currently doesn't work with release version, but does work with latest R-devel
+  shouldSaveVcfFile           = FALSE, # Note that due to a bug in VariantAnnotation::.makeVcfGeno it is necessary to add "DUMMY" genotypes data
   shouldSaveRdaFile           = FALSE
 ) {
   jiangGenotypes <- read.table(jiangGenotypesFilename, skip=1, header=TRUE, sep="\t", as.is=TRUE, nrows=3452)
@@ -106,7 +106,7 @@ loadJiangGenotypesAsVcf <- function(
   jiangVcf <- jiangVcf[order(rowData(jiangVcf))]
   if(shouldSaveVcfFile) {
     writeVcf(jiangVcf, jiangVcfFilename, index=TRUE)
-    writeVcf(jiangVcf, jiangVcfFilename)
+#    writeVcf(jiangVcf, jiangVcfFilename)
   }
   if(shouldSaveRdaFile) {
     save(jiangVcf, file=jiangRdaFilename)
