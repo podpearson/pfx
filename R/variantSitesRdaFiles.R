@@ -16,6 +16,7 @@ createSingleChromosomeVariantSitesRdaFile <- function(
 #  filtersToRemove             = c("NoAlternative"),
   filtersToRemove             = NULL,
   samplesToRemove             = NULL,
+  possibleMissingValues       = c(".", "./.", ".|."),
   outputRdaFilename           = sub("\\.vcf[\\.gz]*$", paste("\\.variantSites\\.", chromosome,"\\.rda", sep=""), vcfFilename),
   overwriteExisting           = !(file.exists(outputRdaFilename)),
   saveAsRobjectFile           = TRUE
@@ -36,7 +37,8 @@ createSingleChromosomeVariantSitesRdaFile <- function(
       vcf <- vcf[, sampleToKeep]
     }
     if(shouldRemoveInvariant) {
-      invariantSNPs <- apply(geno(vcf)[["GT"]], 1, function(x) length(which(x=="0")) == 0 | length(which(x=="1")) == 0)
+#      invariantSNPs <- apply(geno(vcf)[["GT"]], 1, function(x) length(which(x=="0")) == 0 | length(which(x=="1")) == 0)
+      invariantSNPs <- apply(geno(vcf)[["GT"]], 1, function(x) length(table(x[!(x %in% possibleMissingValues)], useNA="no"))==1)
       vcf <- vcf[!invariantSNPs]
     }
     if(!is.null(filtersToRemove)) {
