@@ -2,7 +2,7 @@
 # 
 # Package: pfx
 # Author: Richard D Pearson
-# Email: richard.pearson@well.ox.ac.uk
+# Email: richard.pearson@well.ox.ac.uk 
 #
 ###############################################################################
 
