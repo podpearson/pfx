@@ -53,7 +53,6 @@ filterVcf <- function(
   }
   if(shouldRemoveInvariant) {
     invariantSNPs <- apply(geno(vcf)[["GT"]], 1, function(x) length(table(x[!(x %in% possibleMissingValues)], useNA="no"))<=1)
-    browser() 
     vcf <- vcf[!invariantSNPs]
   }
   if(keepPASSvariantsOnly) {
