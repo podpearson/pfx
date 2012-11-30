@@ -31,6 +31,26 @@ filterVcf <- function(
     sampleToKeep <- setdiff(row.names(colData(vcf)), samplesToRemove)
     vcf <- vcf[, sampleToKeep]
   }
+  if(!is.null(additionalInfoFilters)) {
+    sapply(
+      names(additionalInfoFilters),
+      function(filterName) {
+        if(additionalInfoFilters[[filterName]][["operator"]] == "%in%") {
+          vcf <<- vcf[values(info(vcf))[[filterName]] %in% additionalInfoFilters[[filterName]][["value"]]]
+        }
+      }
+    )
+  }
+  if(!is.null(additionalGenotypeFilters)) {
+    sapply(
+      names(additionalGenotypeFilters),
+      function(filterName) {
+        if(additionalGenotypeFilters[[filterName]][["operator"]] == "<=") {
+          geno(vcf)[["GT"]][geno(vcf)[[filterName]] <= additionalGenotypeFilters[[filterName]][["value"]]] <<- NA
+        }
+      }
+    )
+  }
   if(shouldRemoveInvariant) {
     invariantSNPs <- apply(geno(vcf)[["GT"]], 1, function(x) length(table(x[!(x %in% possibleMissingValues)], useNA="no"))==1)
     vcf <- vcf[!invariantSNPs]
@@ -49,27 +69,6 @@ filterVcf <- function(
   }
   if(!is.null(regionsMask)) {
     vcf <- vcf[is.na(GenomicRanges::match(rowData(vcf), regionsMask))]
-  }
-  if(!is.null(additionalInfoFilters)) {
-    sapply(
-      names(additionalInfoFilters),
-      function(filterName) {
-        if(additionalInfoFilters[[filterName]][["operator"]] == "%in%") {
-          vcf <<- vcf[values(info(vcf))[[filterName]] %in% additionalInfoFilters[[filterName]][["value"]]]
-        }
-      }
-    )
-  }
-  browser()
-  if(!is.null(additionalGenotypeFilters)) {
-    sapply(
-      names(additionalGenotypeFilters),
-      function(filterName) {
-        if(additionalGenotypeFilters[[filterName]][["operator"]] == "<=") {
-          geno(vcf)[["GT"]][geno(vcf)[[filterName]] <= additionalGenotypeFilters[[filterName]][["value"]]] <<- NA
-        }
-      }
-    )
   }
 
   return(vcf)
