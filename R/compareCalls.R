@@ -15,13 +15,14 @@ compareCalls <- function(
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
   plotFilestem                = paste(meta(exptData(subjectVcf)[["header"]])["DataSetName", "Value"], "comparison", sep=".")
 ) {
-  sampleAnnotation <- read.delim(sampleAnnotationFilename)
-  sampleAnnotation[["cross"]] <- ifelse(sampleAnnotation[["project_code"]]=="PFproj1", "Hb3xDd2", ifelse(sampleAnnotation[["project_code"]]=="PFproj2", "3d7xHb3", "7g8xGb4"))
-  sampleAnnotation[["qcStatus"]] <- ifelse(sampleAnnotation[["ajm_qc"]]=="fail", "fail", "pass")
-  sampleAnnotation <- sampleAnnotation[!grepl("not a cross progeny sample", sampleAnnotation[["ajm_qc_notes"]]), ]
-  sampleAnnotation <- sampleAnnotation[!duplicated(sampleAnnotation[["ox_code"]]), ]
-  row.names(sampleAnnotation) <- sampleAnnotation[["ox_code"]]
-#  row.names(sampleAnnotation) <- gsub("-", "\\.", sampleAnnotation[["ox_code"]])
+  sampleAnnotation <- readSampleAnnotation(sampleAnnotationFilename)
+#  sampleAnnotation <- read.delim(sampleAnnotationFilename)
+#  sampleAnnotation[["cross"]] <- ifelse(sampleAnnotation[["project_code"]]=="PFproj1", "Hb3xDd2", ifelse(sampleAnnotation[["project_code"]]=="PFproj2", "3d7xHb3", "7g8xGb4"))
+#  sampleAnnotation[["qcStatus"]] <- ifelse(sampleAnnotation[["ajm_qc"]]=="fail", "fail", "pass")
+#  sampleAnnotation <- sampleAnnotation[!grepl("not a cross progeny sample", sampleAnnotation[["ajm_qc_notes"]]), ]
+#  sampleAnnotation <- sampleAnnotation[!duplicated(sampleAnnotation[["ox_code"]]), ]
+#  row.names(sampleAnnotation) <- sampleAnnotation[["ox_code"]]
+##  row.names(sampleAnnotation) <- gsub("-", "\\.", sampleAnnotation[["ox_code"]])
   
   subjectGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(subjectVcf))
   dimnames(subjectGTsCFparents)[[2]] <- paste(sampleAnnotation[dimnames(subjectGTsCFparents)[[2]], "source_code"], " (", dimnames(subjectGTsCFparents)[[2]], ")", sep="")

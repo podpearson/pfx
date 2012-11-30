@@ -73,6 +73,7 @@ recombinationPlotFromVCF <- function(
   genoToLoad                  = c("GT", "AD", names(additionalGenotypeFilters)),
   GTsToIntMapping             = c("0"=1, "0/0"=1, "0|0"=1, "1"=2, "1/1"=2, "1|1"=2, "."=0, "./."=0, "./."=0, "2"=0, "3"=0, "0/1"=0, "1/0"=0, "0|1"=0, "1|0"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
 #  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0, "2"=0, "3"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
+  sampleIDmappings            = createSampleIDmappings(vcfFilename),
   parametersList              = list(
     "7g8xGb4" = list(
       vcfFilename                 = vcfFilename,
