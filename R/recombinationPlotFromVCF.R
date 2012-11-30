@@ -21,12 +21,14 @@
 # )
 # dev.off()
 # 
-# pdf("MAL4_7g8xGb4_Zam.pdf", width=14, height=4)
+# pdf("MAL4_7g8xGb4_Zam_SNPs_20_200.pdf", width=14, height=4)
 # recombinationPlotFromVCF(
 #   "/data/galton/users/rpearson/zam/delivery/plasmodium/7g8_gb4_wk_flow_I_combined_BC_calls_at_all_k.decomp.vcf",
 #   "MAL4",
 #   GTsToIntMapping=c("0/0"=1, "1/1"=2),
-#   keepPASSvariantsOnly=TRUE
+#   keepPASSvariantsOnly=TRUE,
+#   additionalInfoFilters     = list("SVTYPE" = list(operator="%in%", value="SNP")),
+#   additionalGenotypeFilters     = list("GT_CONF" = list(operator="<=", value=20), "SITE_CONF" = list(operator="<=", value=200))
 # )
 # dev.off()
 
@@ -41,6 +43,15 @@ recombinationPlotFromVCF <- function(
   keepPASSvariantsOnly        = FALSE,
   filtersToRemove             = c("Heterozygous", "Missingness"),     # set to NULL if you want to keep all variants. Also, this is overridden if keepPASSvariantsOnly==TRUE
   samplesToRemove             = NULL,
+  additionalInfoFilters       = NULL,
+#  additionalInfoFilters     = list(
+#    "SVTYPE" = list(operator="%in%", value="SNP")
+#  ),
+  additionalGenotypeFilters   = NULL,
+#  additionalGenotypeFilters     = list(
+#    "GT_CONF" = list(operator="<=", value=20),
+#    "SITE_CONF" = list(operator="<=", value=200)
+#  )
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0, "2"=0, "3"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
   verbose                     = TRUE,
   ...
@@ -58,6 +69,8 @@ recombinationPlotFromVCF <- function(
       keepPASSvariantsOnly        = keepPASSvariantsOnly,
       filtersToRemove             = filtersToRemove,
       samplesToRemove             = samplesToRemove,
+      additionalInfoFilters       = additionalInfoFilters,
+      additionalGenotypeFilters   = additionalGenotypeFilters,
       overwriteExisting           = TRUE,
       saveAsRobjectFile           = FALSE
     ),
