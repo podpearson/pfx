@@ -60,6 +60,7 @@ filterVcf <- function(
       }
     )
   }
+  browser()
   if(!is.null(additionalGenotypeFilters)) {
     sapply(
       names(additionalGenotypeFilters),
