@@ -25,7 +25,7 @@
 # recombinationPlotFromVCF(
 #   "/data/galton/users/rpearson/zam/delivery/plasmodium/7g8_gb4_wk_flow_I_combined_BC_calls_at_all_k.decomp.vcf",
 #   "MAL4",
-#   GTsToIntMapping=c("0/0"=1, "1/1"=2),
+#   GTsToIntMapping=c("0/0"=1, "1/1"=2, "."=0),
 #   keepPASSvariantsOnly=TRUE
 # )
 # dev.off()
@@ -33,7 +33,7 @@
 # recombinationPlotFromVCF(
 #   "/data/galton/users/rpearson/zam/delivery/plasmodium/7g8_gb4_wk_flow_I_combined_BC_calls_at_all_k.decomp.vcf",
 #   "MAL4",
-#   GTsToIntMapping=c("0/0"=1, "1/1"=2),
+#   GTsToIntMapping=c("0/0"=1, "1/1"=2, "."=0),
 #   keepPASSvariantsOnly=TRUE,
 #   additionalInfoFilters     = list("SVTYPE" = list(operator="%in%", value="SNP")),
 #   additionalGenotypeFilters     = list("GT_CONF" = list(operator="<=", value=20), "SITE_CONF" = list(operator="<=", value=200))
@@ -43,7 +43,7 @@
 # GTsInt <- recombinationPlotFromVCF(
 #   "/data/galton/users/rpearson/zam/delivery/plasmodium/7g8_gb4_wk_flow_I_combined_BC_calls_at_all_k.decomp.vcf",
 #   "MAL4",
-#   GTsToIntMapping=c("0/0"=1, "1/1"=2),
+#   GTsToIntMapping=c("0/0"=1, "1/1"=2, "."=0),
 #   keepPASSvariantsOnly=TRUE,
 #   additionalInfoFilters     = list("SVTYPE" = list(operator="%in%", value="SNP")),
 #   additionalGenotypeFilters     = list("GT_CONF" = list(operator="<=", value=50), "SITE_CONF" = list(operator="<=", value=1000))
@@ -71,11 +71,13 @@ recombinationPlotFromVCF <- function(
 #    "SITE_CONF" = list(operator="<=", value=200)
 #  )
   genoToLoad                  = c("GT", "AD", names(additionalGenotypeFilters)),
-  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0, "2"=0, "3"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
+  GTsToIntMapping             = c("0"=1, "0/0"=1, "0|0"=1, "1"=2, "1/1"=2, "1|1"=2, "."=0, "./."=0, "./."=0, "2"=0, "3"=0, "0/1"=0, "1/0"=0, "0|1"=0, "1|0"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
+#  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0, "2"=0, "3"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
   parametersList              = list(
     "7g8xGb4" = list(
       vcfFilename                 = vcfFilename,
       parentalIDs                 = parentalIDs,
+      genoToLoad                  = genoToLoad,
       shouldRemoveInvariant       = shouldRemoveInvariant,
       removeMissingInParents      = removeMissingInParents,
       shouldRemoveMendelianErrors = shouldRemoveMendelianErrors,
@@ -95,66 +97,129 @@ recombinationPlotFromVCF <- function(
   if(verbose) {
     cat("recombinationPlotFromVCF: reading data from ", vcfFilename, "\n", sep="")
   }
-  GTsInt <- genotypeCallsFromGTas012(
-    createSingleChromosomeVariantSitesRdaFile(
-      vcfFilename                 = vcfFilename,
-      chromosome                  = chromosome,
-      genoToLoad                  = genoToLoad,
-      shouldRemoveInvariant       = shouldRemoveInvariant,
-      regionsMask                 = regionsMask,
-      keepPASSvariantsOnly        = keepPASSvariantsOnly,
-      filtersToRemove             = filtersToRemove,
-      samplesToRemove             = samplesToRemove,
-      additionalInfoFilters       = additionalInfoFilters,
-      additionalGenotypeFilters   = additionalGenotypeFilters,
-      overwriteExisting           = TRUE,
-      saveAsRobjectFile           = FALSE
-    ),
-    GTsToIntMapping             = GTsToIntMapping
+  GTsIntList <- sapply(
+    parametersList,
+    function(parameters) {
+      GTsInt <- genotypeCallsFromGTas012(
+        createSingleChromosomeVariantSitesRdaFile(
+          vcfFilename                 = parameters[["vcfFilename"]],
+          chromosome                  = chromosome,
+          genoToLoad                  = parameters[["genoToLoad"]],
+          shouldRemoveInvariant       = parameters[["shouldRemoveInvariant"]],
+          regionsMask                 = parameters[["regionsMask"]],
+          keepPASSvariantsOnly        = parameters[["keepPASSvariantsOnly"]],
+          filtersToRemove             = parameters[["filtersToRemove"]],
+          samplesToRemove             = parameters[["samplesToRemove"]],
+          additionalInfoFilters       = parameters[["additionalInfoFilters"]],
+          additionalGenotypeFilters   = parameters[["additionalGenotypeFilters"]],
+          overwriteExisting           = TRUE,
+          saveAsRobjectFile           = FALSE
+        ),
+        GTsToIntMapping             = GTsToIntMapping
+      )
+      if(is.null(parentalIDs)) {
+        parentalIDs <- dimnames(GTsInt)[[2]][1:2]
+      }
+      if(!identical(parentalIDs, dimnames(GTsInt)[[2]][1:2])) {
+        if(verbose) {
+          cat("recombinationPlotFromVCF: putting parents first\n")
+        }
+        GTsInt <- cbind(
+          GTsInt[, parentalIDs],
+          GTsInt[, -which(dimnames(GTsInt)[[2]] %in% parentalIDs)]
+        )
+      }
+      if(removeMissingInParents[1] == "either") {
+        if(verbose) {
+          cat("recombinationPlotFromVCF: removing unwanted variants\n")
+        }
+        if(shouldRemoveMendelianErrors) {
+          rowsToUse <- (!GTsInt[, 1]==0 & !GTsInt[, 2]==0) & !(GTsInt[, 1] == GTsInt[, 2])
+        } else {
+          rowsToUse <- !GTsInt[, 1]==0 & !GTsInt[, 2]==0
+        }
+        GTsInt <- GTsInt[rowsToUse, ]
+      }
+      if(removeMissingInParents[1] == "both") {
+        if(verbose) {
+          cat("recombinationPlotFromVCF: removing unwanted variants\n")
+        }
+        if(shouldRemoveMendelianErrors) {
+          rowsToUse <- (!GTsInt[, 1]==0 | !GTsInt[, 2]==0) & !(GTsInt[, 1] == GTsInt[, 2])
+        } else {
+          rowsToUse <- !GTsInt[, 1]==0 | !GTsInt[, 2]==0
+        }
+        GTsInt <- GTsInt[rowsToUse, ]
+      }
+    },
+    USE.NAMES=TRUE,
+    simplify=FALSE
   )
-  if(is.null(parentalIDs)) {
-    parentalIDs <- dimnames(GTsInt)[[2]][1:2]
-  }
-  if(!identical(parentalIDs, dimnames(GTsInt)[[2]][1:2])) {
-    if(verbose) {
-      cat("recombinationPlotFromVCF: putting parents first\n")
-    }
-    GTsInt <- cbind(
-      GTsInt[, parentalIDs],
-      GTsInt[, -which(dimnames(GTsInt)[[2]] %in% parentalIDs)]
-    )
-  }
-  if(removeMissingInParents[1] == "either") {
-    if(verbose) {
-      cat("recombinationPlotFromVCF: removing unwanted variants\n")
-    }
-    if(shouldRemoveMendelianErrors) {
-      rowsToUse <- (!GTsInt[, 1]==0 & !GTsInt[, 2]==0) & !(GTsInt[, 1] == GTsInt[, 2])
-    } else {
-      rowsToUse <- !GTsInt[, 1]==0 & !GTsInt[, 2]==0
-    }
-    GTsInt <- GTsInt[rowsToUse, ]
-  }
-  if(removeMissingInParents[1] == "both") {
-    if(verbose) {
-      cat("recombinationPlotFromVCF: removing unwanted variants\n")
-    }
-    if(shouldRemoveMendelianErrors) {
-      rowsToUse <- (!GTsInt[, 1]==0 | !GTsInt[, 2]==0) & !(GTsInt[, 1] == GTsInt[, 2])
-    } else {
-      rowsToUse <- !GTsInt[, 1]==0 | !GTsInt[, 2]==0
-    }
-    GTsInt <- GTsInt[rowsToUse, ]
-  }
+#  GTsInt <- genotypeCallsFromGTas012(
+#    createSingleChromosomeVariantSitesRdaFile(
+#      vcfFilename                 = vcfFilename,
+#      chromosome                  = chromosome,
+#      genoToLoad                  = genoToLoad,
+#      shouldRemoveInvariant       = shouldRemoveInvariant,
+#      regionsMask                 = regionsMask,
+#      keepPASSvariantsOnly        = keepPASSvariantsOnly,
+#      filtersToRemove             = filtersToRemove,
+#      samplesToRemove             = samplesToRemove,
+#      additionalInfoFilters       = additionalInfoFilters,
+#      additionalGenotypeFilters   = additionalGenotypeFilters,
+#      overwriteExisting           = TRUE,
+#      saveAsRobjectFile           = FALSE
+#    ),
+#    GTsToIntMapping             = GTsToIntMapping
+#  )
+#  if(is.null(parentalIDs)) {
+#    parentalIDs <- dimnames(GTsInt)[[2]][1:2]
+#  }
+#  if(!identical(parentalIDs, dimnames(GTsInt)[[2]][1:2])) {
+#    if(verbose) {
+#      cat("recombinationPlotFromVCF: putting parents first\n")
+#    }
+#    GTsInt <- cbind(
+#      GTsInt[, parentalIDs],
+#      GTsInt[, -which(dimnames(GTsInt)[[2]] %in% parentalIDs)]
+#    )
+#  }
+#  if(removeMissingInParents[1] == "either") {
+#    if(verbose) {
+#      cat("recombinationPlotFromVCF: removing unwanted variants\n")
+#    }
+#    if(shouldRemoveMendelianErrors) {
+#      rowsToUse <- (!GTsInt[, 1]==0 & !GTsInt[, 2]==0) & !(GTsInt[, 1] == GTsInt[, 2])
+#    } else {
+#      rowsToUse <- !GTsInt[, 1]==0 & !GTsInt[, 2]==0
+#    }
+#    GTsInt <- GTsInt[rowsToUse, ]
+#  }
+#  if(removeMissingInParents[1] == "both") {
+#    if(verbose) {
+#      cat("recombinationPlotFromVCF: removing unwanted variants\n")
+#    }
+#    if(shouldRemoveMendelianErrors) {
+#      rowsToUse <- (!GTsInt[, 1]==0 | !GTsInt[, 2]==0) & !(GTsInt[, 1] == GTsInt[, 2])
+#    } else {
+#      rowsToUse <- !GTsInt[, 1]==0 | !GTsInt[, 2]==0
+#    }
+#    GTsInt <- GTsInt[rowsToUse, ]
+#  }
 
   if(verbose) {
     cat("recombinationPlotFromVCF: creating plot\n")
   }
-  recombinationPlot(
-    convertGTsIntToParentBasedGTs(
-      GTsInt
-    ),
-    ...
+  sapply(
+    GTsIntList,
+    function(GTsInt) {
+      recombinationPlot(
+        convertGTsIntToParentBasedGTs(
+          GTsInt
+        ),
+        ...
+      )
+    }
   )
-  return(GTsInt)
+  return(GTsIntList)
 }
