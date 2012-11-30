@@ -25,7 +25,8 @@ filterVcf <- function(
 #    "GT_CONF" = list(operator="<=", value=20),
 #    "SITE_CONF" = list(operator="<=", value=200)
 #  )
-  possibleMissingValues       = c(".", "./.", ".|.")
+  possibleMissingValues       = c(".", "./.", ".|."),
+  preferredMissingValue       = possibleMissingValues[1]
 ) {
   if(!is.null(samplesToRemove)) {
     sampleToKeep <- setdiff(row.names(colData(vcf)), samplesToRemove)
@@ -46,7 +47,7 @@ filterVcf <- function(
       names(additionalGenotypeFilters),
       function(filterName) {
         if(additionalGenotypeFilters[[filterName]][["operator"]] == "<=") {
-          geno(vcf)[["GT"]][geno(vcf)[[filterName]] <= additionalGenotypeFilters[[filterName]][["value"]]] <<- NA
+          geno(vcf)[["GT"]][geno(vcf)[[filterName]] <= additionalGenotypeFilters[[filterName]][["value"]]] <<- preferredMissingValue
         }
       }
     )
