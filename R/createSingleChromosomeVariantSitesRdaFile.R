@@ -10,6 +10,7 @@
 createSingleChromosomeVariantSitesRdaFile <- function(
   vcfFilename                 = file.path("/data/galton/users/rpearson", "crossesTesting", "release", "7g8xGb4-qcPlusSamples-0.1.vcf.gz"),
   chromosome                  = "MAL1",
+  genoToLoad                  = c("GT", "AD"),
   shouldRemoveInvariant       = TRUE,
 #  regionsMask                 = varRegions_v2(), # will remove any variants in these regions. Set to NULL if you don't want to mask any variants out in this way
   regionsMask                 = NULL,
@@ -37,7 +38,7 @@ createSingleChromosomeVariantSitesRdaFile <- function(
   if(overwriteExisting) {
 #    rng <- GRanges(seqnames=chromosome, ranges=IRanges(1, 3.3e+6)) # slightly more than largest Pf chromosome - not very elegant but there you go
     rng <- GRanges(seqnames=chromosome, ranges=IRanges(1, 536870912)) # decided there should be no reason to make the above Pf specific, so went for a maximum very large chromosome
-    param <- ScanVcfParam(which=rng, geno=c("GT", "AD"))
+    param <- ScanVcfParam(which=rng, geno=c(genoToLoad))
     if(grepl("\\.vcf$", vcfFilename)) {
       if(!file.exists(paste(vcfFilename, "gz", sep="."))) {
         bgzip(vcfFilename)

@@ -62,6 +62,7 @@ recombinationPlotFromVCF <- function(
 #    "GT_CONF" = list(operator="<=", value=20),
 #    "SITE_CONF" = list(operator="<=", value=200)
 #  )
+  genoToLoad                  = c("GT", "AD", names(additionalGenotypeFilters)),
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0, "2"=0, "3"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
   parametersList              = list(
     "7g8xGb4" = list(
@@ -90,6 +91,7 @@ recombinationPlotFromVCF <- function(
     createSingleChromosomeVariantSitesRdaFile(
       vcfFilename                 = vcfFilename,
       chromosome                  = chromosome,
+      genoToLoad                  = genoToLoad,
       shouldRemoveInvariant       = shouldRemoveInvariant,
       regionsMask                 = regionsMask,
       keepPASSvariantsOnly        = keepPASSvariantsOnly,
