@@ -152,6 +152,9 @@ recombinationPlotFromVCF <- function(
         }
         GTsInt <- GTsInt[rowsToUse, ]
       }
+      if(!is.null(sampleIDmappings)) {
+        GTsInt <- reorderSamples(GTsInt, parentalIDs, sampleIDmappings)
+      }
     },
     USE.NAMES=TRUE,
     simplify=FALSE
