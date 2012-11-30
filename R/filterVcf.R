@@ -55,7 +55,7 @@ filterVcf <- function(
       names(additionalInfoFilters),
       function(filterName) {
         if(additionalInfoFilters[[filterName]][["operator"]] == "%in%") {
-          vcf <- vcf[values(info(vcf))[[filterName]] %in% additionalInfoFilters[[filterName]][["value"]]]
+          vcf <<- vcf[values(info(vcf))[[filterName]] %in% additionalInfoFilters[[filterName]][["value"]]]
         }
       }
     )

@@ -31,6 +31,16 @@
 #   additionalGenotypeFilters     = list("GT_CONF" = list(operator="<=", value=20), "SITE_CONF" = list(operator="<=", value=200))
 # )
 # dev.off()
+# pdf("MAL4_7g8xGb4_Zam_SNPs_50_1000.pdf", width=14, height=4)
+# recombinationPlotFromVCF(
+#   "/data/galton/users/rpearson/zam/delivery/plasmodium/7g8_gb4_wk_flow_I_combined_BC_calls_at_all_k.decomp.vcf",
+#   "MAL4",
+#   GTsToIntMapping=c("0/0"=1, "1/1"=2),
+#   keepPASSvariantsOnly=TRUE,
+#   additionalInfoFilters     = list("SVTYPE" = list(operator="%in%", value="SNP")),
+#   additionalGenotypeFilters     = list("GT_CONF" = list(operator="<=", value=50), "SITE_CONF" = list(operator="<=", value=1000))
+# )
+# dev.off()
 
 recombinationPlotFromVCF <- function(
   vcfFilename                 = "/data/galton/users/rpearson/crossesTesting/release/7g8xGb4-qcPlusSamples-0.1.vcf.gz",
