@@ -24,5 +24,5 @@ reorderSamples <- function(
   )
   linePositions <- which(as.integer(factor(uniqueSampleIDs))!=c(as.integer(factor(uniqueSampleIDs))[-1], NA))
   
-  return(list(reorderedGTsInt=reorderedGTsInt, linePositions=linePositions))
+  return(list(GTsInt=reorderedGTsInt, linePositions=linePositions))
 }
