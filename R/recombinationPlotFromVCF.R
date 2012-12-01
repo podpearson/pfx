@@ -74,6 +74,7 @@ recombinationPlotFromVCF <- function(
   GTsToIntMapping             = c("0"=1, "0/0"=1, "0|0"=1, "1"=2, "1/1"=2, "1|1"=2, "."=0, "./."=0, "./."=0, "2"=0, "3"=0, "0/1"=0, "1/0"=0, "0|1"=0, "1|0"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
 #  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0, "2"=0, "3"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
   sampleIDmappings            = createSampleIDmappings(vcfFilename),
+  linePositions               = c(2),
   parametersList              = list(
     "7g8xGb4" = list(
       vcfFilename                 = vcfFilename,
@@ -118,8 +119,9 @@ recombinationPlotFromVCF <- function(
         ),
         GTsToIntMapping             = GTsToIntMapping
       )
+      browser()
       if(is.null(parentalIDs)) {
-        parentalIDs <- dimnames(GTsInt)[[2]][1:2]
+        parentalIDs <<- dimnames(GTsInt)[[2]][1:2]
       }
       if(!identical(parentalIDs, dimnames(GTsInt)[[2]][1:2])) {
         if(verbose) {
@@ -153,7 +155,9 @@ recombinationPlotFromVCF <- function(
         GTsInt <- GTsInt[rowsToUse, ]
       }
       if(!is.null(sampleIDmappings)) {
-        GTsInt <- reorderSamples(GTsInt, parentalIDs, sampleIDmappings)
+        reorderResults <- reorderSamples(GTsInt, parentalIDs, sampleIDmappings)
+        GTsInt <- reorderResults[["reorderedGTsInt"]]
+        linePositions <- reorderResults[["linePositions"]]
       }
     },
     USE.NAMES=TRUE,
@@ -221,6 +225,7 @@ recombinationPlotFromVCF <- function(
         convertGTsIntToParentBasedGTs(
           GTsInt
         ),
+        linePositions = linePositions,
         ...
       )
     }
