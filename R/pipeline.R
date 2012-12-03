@@ -34,15 +34,41 @@ pipeline <- function(
   discordanceThresholdRawVsJia= 100,
   discordanceThresholdFltVsJia= 100,
   shouldCompareWithJiang      = grepl("7g8xGb4", cross),
-  overwriteExisting           = NULL
+  overwriteExisting           = NULL,
+  shouldUseSavedVersions      = TRUE,
+  vcfListRda                  = paste(cross, "vcfList.rda", sep="."),
+  vcfVariantRda               = paste(cross, "vcfVariant.rda", sep="."),
+  vcfVariantAnnotatedRda      = paste(cross, "vcfVariantAnnotated.rda", sep="."),
+  vcfListRdaFilename          = paste(cross, "vcfList.rda", sep="."),
+  vcfListRdaFilename          = paste(cross, "vcfList.rda", sep="."),
+  vcfListRdaFilename          = paste(cross, "vcfList.rda", sep="."),
+  vcfListRdaFilename          = paste(cross, "vcfList.rda", sep="."),
+  vcfListRdaFilename          = paste(cross, "vcfList.rda", sep=".")
 ) {
-  if(is.null(overwriteExisting)) {
-    vcfList <- variantSitesRdaFiles(vcfFilename, chromosomes=chromosomes, filtersToRemove=filtersToRemove, samplesToRemove=samplesToRemove)
+  if(file.exists(vcfListRda) & shouldUseSavedVersions) {
+    load(vcfListRda)
   } else {
-    vcfList <- variantSitesRdaFiles(vcfFilename, chromosomes=chromosomes, filtersToRemove=filtersToRemove, samplesToRemove=samplesToRemove, overwriteExisting=overwriteExisting)
+    if(is.null(overwriteExisting)) {
+      vcfList <- variantSitesRdaFiles(vcfFilename, chromosomes=chromosomes, filtersToRemove=filtersToRemove, samplesToRemove=samplesToRemove)
+    } else {
+      vcfList <- variantSitesRdaFiles(vcfFilename, chromosomes=chromosomes, filtersToRemove=filtersToRemove, samplesToRemove=samplesToRemove, overwriteExisting=overwriteExisting)
+    }
+    save(vcfList, file=vcfListRda)
   }
-  vcfVariant <- combineVcfListIntoVcf(vcfList)
-  vafVariantAnnotated <- annotateSegregationStatus(vcfVariant)
+  if(file.exists(vcfVariantRda) & shouldUseSavedVersions) {
+    load(vcfVariantRda)
+  } else {
+    vcfVariant <- combineVcfListIntoVcf(vcfList)
+    save(vcfVariant, file=vcfVariantRda)
+  }
+  if(file.exists(vcfVariantAnnotatedRda) & shouldUseSavedVersions) {
+    load(vcfVariantAnnotatedRda)
+  } else {
+    vcfVariantAnnotated <- annotateSegregationStatus(vcfVariant)
+    save(vcfVariantAnnotated, file=vcfVariantAnnotatedRda)
+  }
+  browser()
+  
 #  qcFailedSamples <- determineQCfailedSites(
 #    vcf,
 #    heterozygosityThreshold=heterozygosityThreshold,

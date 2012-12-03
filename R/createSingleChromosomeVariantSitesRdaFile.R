@@ -14,6 +14,7 @@ createSingleChromosomeVariantSitesRdaFile <- function(
   shouldRemoveInvariant       = TRUE,
 #  regionsMask                 = varRegions_v2(), # will remove any variants in these regions. Set to NULL if you don't want to mask any variants out in this way
   regionsMask                 = NULL,
+  shouldSetMultiallelicFilter = TRUE,
   keepPASSvariantsOnly        = FALSE,
 #  filtersToRemove             = c("NoAlternative"),
   filtersToRemove             = NULL,
@@ -53,6 +54,7 @@ createSingleChromosomeVariantSitesRdaFile <- function(
       vcf,
       shouldRemoveInvariant       = shouldRemoveInvariant,
       regionsMask                 = regionsMask,
+      shouldSetMultiallelicFilter = shouldSetMultiallelicFilter,
       keepPASSvariantsOnly        = keepPASSvariantsOnly,
       filtersToRemove             = filtersToRemove,
       samplesToRemove             = samplesToRemove,
