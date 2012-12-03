@@ -38,12 +38,7 @@ pipeline <- function(
   shouldUseSavedVersions      = TRUE,
   vcfListRda                  = paste(cross, "vcfList.rda", sep="."),
   vcfVariantRda               = paste(cross, "vcfVariant.rda", sep="."),
-  vcfVariantAnnotatedRda      = paste(cross, "vcfVariantAnnotated.rda", sep="."),
-  vcfListRdaFilename          = paste(cross, "vcfList.rda", sep="."),
-  vcfListRdaFilename          = paste(cross, "vcfList.rda", sep="."),
-  vcfListRdaFilename          = paste(cross, "vcfList.rda", sep="."),
-  vcfListRdaFilename          = paste(cross, "vcfList.rda", sep="."),
-  vcfListRdaFilename          = paste(cross, "vcfList.rda", sep=".")
+  vcfVariantAnnotatedRda      = paste(cross, "vcfVariantAnnotated.rda", sep=".")
 ) {
   if(file.exists(vcfListRda) & shouldUseSavedVersions) {
     load(vcfListRda)
