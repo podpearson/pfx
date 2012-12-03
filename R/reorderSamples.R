@@ -23,6 +23,7 @@ reorderSamples <- function(
     sampleIDmappings[-(parentalSampleIndexes)][order(sampleIDmappings[-(parentalSampleIndexes)])]
   )
   linePositions <- which(as.integer(factor(uniqueSampleIDs))!=c(as.integer(factor(uniqueSampleIDs))[-1], NA))
+  browser()
   
-  return(list(GTsInt=reorderedGTsInt, linePositions=linePositions))
+  return(list(GTsInt=reorderedGTsInt, linePositions=linePositions, parentalIDs=uniqueSampleIDs))
 }

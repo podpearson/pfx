@@ -119,7 +119,7 @@ recombinationPlotFromVCF <- function(
         ),
         GTsToIntMapping             = GTsToIntMapping
       )
-      browser()
+#      browser()
       if(is.null(parentalIDs)) {
         parentalIDs <<- dimnames(GTsInt)[[2]][1:2]
       }
@@ -157,7 +157,7 @@ recombinationPlotFromVCF <- function(
       if(!is.null(sampleIDmappings)) {
         return(reorderSamples(GTsInt, parentalIDs, sampleIDmappings))
       } else {
-        return(list(GTsInt=GTsInt, linePositions=linePositions))
+        return(list(GTsInt=GTsInt, linePositions=linePositions, parentalIDs=parentalIDs))
       }
     },
     USE.NAMES=TRUE,
