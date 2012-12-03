@@ -119,7 +119,7 @@ recombinationPlotFromVCF <- function(
         ),
         GTsToIntMapping             = GTsToIntMapping
       )
-#      browser()
+      browser()
       if(is.null(parentalIDs)) {
         parentalIDs <<- dimnames(GTsInt)[[2]][1:2]
       }
