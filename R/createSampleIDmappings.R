@@ -9,6 +9,7 @@
 
 createSampleIDmappings <- function(
   vcfFilename                 = "/data/galton/users/rpearson/crossesTesting/release/7g8xGb4-qcPlusSamples-0.1.vcf.gz",
+  shouldUseSampleAnnotation   = TRUE,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
   sampleDuplicates        = c(
     "JF6" = "JF6_KC2",
@@ -25,21 +26,26 @@ createSampleIDmappings <- function(
   )
 ) {
   sampleIDs <- determineSampleIDsFromVcf(vcfFilename)
-  sampleAnnotation <- readSampleAnnotation(sampleAnnotationFilename)
-  sampleIDmappings <- sub(
-    "^([^_]+)_.*$",
-    "\\1",
-    sampleAnnotation[sampleIDs, "source_code"]
-  )
-  names(sampleIDmappings) <- paste(
-    sampleAnnotation[sampleIDs, "source_code"],
-    " (",
-    sampleAnnotation[sampleIDs, "ox_code"],
-    ", ",
-    sampleAnnotation[sampleIDs, "ena_run_accession"],
-    ")",
-    sep=""
-  )
+  if(shouldUseSampleAnnotation) {
+    sampleAnnotation <- readSampleAnnotation(sampleAnnotationFilename)
+    sampleIDmappings <- sub(
+      "^([^_]+)_.*$",
+      "\\1",
+      sampleAnnotation[sampleIDs, "source_code"]
+    )
+    names(sampleIDmappings) <- paste(
+      sampleAnnotation[sampleIDs, "source_code"],
+      " (",
+      sampleAnnotation[sampleIDs, "ox_code"],
+      ", ",
+      sampleAnnotation[sampleIDs, "ena_run_accession"],
+      ")",
+      sep=""
+    )
+  } else {
+    sampleIDmappings <- sampleIDs
+    names(sampleIDmappings) <- sampleIDs
+  }
   if(!is.null(sampleDuplicates)) {
     matches <- match(sampleIDmappings, names(sampleDuplicates))
     hasMatch <- which(!is.na(matches))

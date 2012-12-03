@@ -14,8 +14,8 @@ convertGTsIntToParentBasedGTs <- function(
   reverseOrderOfSamples       = TRUE,
   return0asNA                 = FALSE
 ) {
-  GTsFirstParent <- matrix(GTsToUse[, 1], nrow=nrow(GTsToUse), ncol=ncol(GTsToUse))
-  GTsSecondParent <- matrix(GTsToUse[, 2], nrow=nrow(GTsToUse), ncol=ncol(GTsToUse))
+  GTsFirstParent <- matrix(GTsToUse[, IDparent1], nrow=nrow(GTsToUse), ncol=ncol(GTsToUse))
+  GTsSecondParent <- matrix(GTsToUse[, IDparent2], nrow=nrow(GTsToUse), ncol=ncol(GTsToUse))
   if(reverseOrderOfSamples) {
     GTsCFparents <- (
       ((GTsToUse == 0) * 0) +

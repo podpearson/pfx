@@ -17,7 +17,24 @@
 # recombinationPlotFromVCF(
 #   "/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.vcf.gz",
 #   "MAL4",
-#   GTsToIntMapping=c("7"=1, "G"=2)
+#   GTsToIntMapping=c("7"=1, "G"=2),
+#   sampleIDmappings=createSampleIDmappings(
+#     "/data/malariagen2/users/rpearson/pfCrosses/externalData/gb-2011-12-4-r33-s3.vcf.gz",
+#     shouldUseSampleAnnotation = FALSE,
+#     sampleDuplicates        = c(
+#       "_7G8" = "7G8_JH6",
+#       "JH6"  = "7G8_JH6",
+#       "JF6"  = "JF6_KC2",
+#       "KC2"  = "JF6_KC2",
+#       "AUD"  = "AUD_LC12",
+#       "LC12" = "AUD_LC12",
+#       "KB8"  = "KB8_KC5_NH11",
+#       "KC5"  = "KB8_KC5_NH11",
+#       "NH11" = "KB8_KC5_NH11",
+#       "D2"   = "D2_TF1",
+#       "TF1"  = "D2_TF1"
+#     )
+#   )
 # )
 # dev.off()
 # 
@@ -225,7 +242,8 @@ recombinationPlotFromVCF <- function(
       recombinationPlot(
         convertGTsIntToParentBasedGTs(
           GTsInt[["GTsInt"]],
-          parentalIDs = GTsInt[["parentalIDs"]]
+          IDparent1 = GTsInt[["parentalIDs"]][1],
+          IDparent2 = GTsInt[["parentalIDs"]][2]
         ),
         linePositions = GTsInt[["linePositions"]],
         ...
