@@ -13,7 +13,7 @@ annotateSegregationStatus <- function(
 ) {
   GTsInt <- genotypeCallsFromGTas012(vcf)
   columnIndexesOfParents <- match(parentalIDs, dimnames(GTsInt)[[2]])
-  columnIndexesOfProgeny <- setdiff(seq(along=dimnames(GTsInt)[[2]], match(parentalIDs, dimnames(GTsInt)[[2]]))
+  columnIndexesOfProgeny <- setdiff(seq(along=dimnames(GTsInt)[[2]], match(parentalIDs, dimnames(GTsInt)[[2]])))
   segregating <- (
     (GTsInt[, parentalIDs[1]] == 1 & GTsInt[, parentalIDs[2]] == 2) |
     (GTsInt[, parentalIDs[1]] == 2 & GTsInt[, parentalIDs[2]] == 1)
