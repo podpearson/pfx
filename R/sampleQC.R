@@ -66,17 +66,19 @@ sampleQC <- function(
     columnIndexesOfProgeny <- setdiff(seq(along=dimnames(GTsInt)[[2]]), match(parentalIDs, dimnames(GTsInt)[[2]]))
     MendelianErrorsPerSample=apply(
       GTsInt,
-      1,
+      2,
       function(genotypesForVariant) {
         sum(
-          genotypesForVariant[parentalIDs[1]] == 1 &
-            genotypesForVariant[parentalIDs[2]] == 1 &
-            genotypesForVariant[columnIndexesOfProgeny] != 1
+          GTsInt[, parentalIDs[1]] == 1 &
+            GTsInt[, parentalIDs[2]] == 1 &
+            genotypesForVariant != 1,
+          na.rm=TRUE
         ) +
         sum(
-          genotypesForVariant[parentalIDs[1]] == 2 &
-            genotypesForVariant[parentalIDs[2]] == 2 &
-            genotypesForVariant[columnIndexesOfProgeny] != 2
+          GTsInt[, parentalIDs[1]] == 2 &
+            GTsInt[, parentalIDs[2]] == 2 &
+            genotypesForVariant != 2,
+          na.rm=TRUE
         )
       }
     )
