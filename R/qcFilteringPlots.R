@@ -40,7 +40,7 @@ qcFilteringPlots <- function(
     "QD"             = "highIsGood",
 #    "RPA"            = "lowIsGood",
     "ReadPosRankSum" = "highIsGood",
-    "SB"             = "highIsGood",
+#    "SB"             = "highIsGood",
     "meanMAF"        = "lowIsGood"
 #    "missingness"    = "lowIsGood"
   ),
