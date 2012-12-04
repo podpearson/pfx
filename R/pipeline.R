@@ -67,7 +67,7 @@ pipeline <- function(
     save(vcfVariantAnnotated, file=vcfVariantAnnotatedRda)
   }
   qcFilteringResults <- qcFilteringPlots(vcfVariantAnnotated, plotFilestem=cross)
-  browser()
+#  browser()
   
 #  qcFailedSamples <- determineQCfailedSites(
 #    vcf,
