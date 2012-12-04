@@ -31,7 +31,8 @@ createSingleChromosomeVariantSitesRdaFile <- function(
   possibleMissingValues       = c(".", "./.", ".|."),
   outputRdaFilename           = sub("\\.vcf[\\.gz]*$", paste("\\.variantSites\\.", chromosome,"\\.rda", sep=""), vcfFilename),
   overwriteExisting           = !(file.exists(outputRdaFilename)),
-  saveAsRobjectFile           = TRUE
+  saveAsRobjectFile           = TRUE,
+  parentalStrains             = NULL
 ) {
   if(vcfFilename == outputRdaFilename) {
     stop("Input and output filename are the same")
@@ -91,6 +92,10 @@ createSingleChromosomeVariantSitesRdaFile <- function(
     }
   } else {
     load(outputRdaFilename)
+  }
+  if(!is.null(parentalStrains)) {
+    newSampleOrdering <- c(parentalStrains, setdiff(dimnames(vcf)[[2]], parentalStrains))
+    vcf <- vcf[, newSampleOrdering]
   }
   return(vcf)
 }

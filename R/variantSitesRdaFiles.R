@@ -13,20 +13,34 @@ variantSitesRdaFiles <- function(
 #  chromosomes                 = c(paste("MAL", 1:14, sep=""), "MITO1", paste("PLAST", 1:2, sep=""))
   filtersToRemove             = NULL,
   samplesToRemove             = NULL,
-  overwriteExisting           = NULL
+  overwriteExisting           = NULL,
+  parentalStrains             = NULL
 )  {
   if(is.null(overwriteExisting)) {
     lapply(
       chromosomes,
       function(x) {
-        createSingleChromosomeVariantSitesRdaFile(vcfFilename, x, filtersToRemove=filtersToRemove, samplesToRemove=samplesToRemove)
+        createSingleChromosomeVariantSitesRdaFile(
+          vcfFilename,
+          x,
+          filtersToRemove=filtersToRemove,
+          samplesToRemove=samplesToRemove,
+          parentalStrains=parentalStrains
+        )
       }
     )
   } else {
     lapply(
       chromosomes,
       function(x) {
-        createSingleChromosomeVariantSitesRdaFile(vcfFilename, x, filtersToRemove=filtersToRemove, samplesToRemove=samplesToRemove, overwriteExisting=overwriteExisting)
+        createSingleChromosomeVariantSitesRdaFile(
+          vcfFilename,
+          x,
+          filtersToRemove=filtersToRemove,
+          samplesToRemove=samplesToRemove,
+          overwriteExisting=overwriteExisting,
+          parentalStrains=parentalStrains
+        )
       }
     )
   }
