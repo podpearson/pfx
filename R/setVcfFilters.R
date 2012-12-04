@@ -31,7 +31,7 @@ setVcfFilters <- function(
     filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & multiAllelicVariants] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & multiAllelicVariants], "MultiAllelic", sep=";")
     filt(vcf)[filt(vcf) %in% c("PASS", ".") & multiAllelicVariants] <- "MultiAllelic"
   }
-  if(shouldRemoveInvariant) {
+  if(shouldSetInvariantFilter) {
     invariantSNPs <- apply(geno(vcf)[["GT"]], 1, function(x) length(table(x[!(x %in% possibleMissingValues)], useNA="no"))<=1)
     filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & invariantSNPs] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & invariantSNPs], "Invariant", sep=";")
     filt(vcf)[filt(vcf) %in% c("PASS", ".") & invariantSNPs] <- "Invariant"
