@@ -17,11 +17,11 @@ filterVcf <- function(
 #  filtersToRemove             = c("NoAlternative"),
   filtersToRemove             = NULL,
   samplesToRemove             = NULL,
-  additionalInfoFilters         = NULL,
+  additionalInfoFilters       = NULL,
 #  additionalInfoFilters     = list(
 #    "SVTYPE" = list(operator="%in%", value="SNP")
 #  ),
-  additionalGenotypeFilters     = NULL,
+  additionalGenotypeFilters   = NULL,
 #  additionalGenotypeFilters     = list(
 #    "GT_CONF" = list(operator="<=", value=20),
 #    "SITE_CONF" = list(operator="<=", value=200)

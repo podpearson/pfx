@@ -1,4 +1,4 @@
-# annotateSegregationStatus.R
+# annotateVcf.R
 # 
 # Package: pfx
 # Author: Richard D Pearson
@@ -7,7 +7,7 @@
 ###############################################################################
 
 
-annotateSegregationStatus <- function(
+annotateVcf <- function(
   vcf,
   parentalIDs                 = dimnames(vcf)[[2]][1:2]
 ) {
@@ -40,6 +40,8 @@ annotateSegregationStatus <- function(
 #  MAF <- pmin(ADsArray[1,,], ADsArray[2,,])/(ADsArray[1,,]+ADsArray[2,,])
   meanVariantMAFs <- rowMeans(MAF, na.rm = TRUE)
   
+  missingness <- apply(GTsInt, 1, function(x) length(which(x==0)))
+  
 # debugging stuff - ignore
 #  ADsArray[,1,2]
 #  geno(vcf)[["AD"]][1,2]
@@ -64,6 +66,7 @@ annotateSegregationStatus <- function(
     values(info(vcf)),
     DataFrame(
       meanMAF = meanVariantMAFs,
+      missingness = missingness,
       SEGREGATING=(
         (GTsInt[, parentalIDs[1]] == 1 & GTsInt[, parentalIDs[2]] == 2) |
         (GTsInt[, parentalIDs[1]] == 2 & GTsInt[, parentalIDs[2]] == 1)
@@ -97,6 +100,7 @@ annotateSegregationStatus <- function(
       INFO=rbind(
         info(exptData(vcf)[["header"]]),
         DataFrame(Number="1", Type="Float", Description="Mean across samples of proportion of minor allele reads (something like a heterozygosity score)", row.names="meanMAF"),
+        DataFrame(Number="1", Type="Integer", Description="Number of samples with a missing genotype call", row.names="missingness"),
         DataFrame(Number="0", Type="Flag", Description="Is this a segregating site (i.e. do parents have different genotypes", row.names="SEGREGATING"),
         DataFrame(Number="1", Type="Integer", Description="Number of Mendelian errors (parents have same genotype, progeny has differenet genotype) in progeny", row.names="MendelianErrors")
       )

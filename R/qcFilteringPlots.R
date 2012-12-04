@@ -24,7 +24,8 @@ qcFilteringPlots <- function(
 #    "RPA"            = "lowIsGood",
     "ReadPosRankSum" = "highIsGood",
     "SB"             = "highIsGood",
-    "meanMAF"        = "lowIsGood"
+    "meanMAF"        = "lowIsGood",
+    "missingness"    = "lowIsGood"
   ),
   variablesToPlotQuantiles = c(
 #    "AC"             = "highIsGood",
@@ -41,6 +42,7 @@ qcFilteringPlots <- function(
     "ReadPosRankSum" = "highIsGood",
     "SB"             = "highIsGood",
     "meanMAF"        = "lowIsGood"
+#    "missingness"    = "lowIsGood"
   ),
   subsetToBiallelic           = TRUE,
   regionsToMask               = varRegions_v3(),
