@@ -10,7 +10,7 @@
 setVcfFilters <- function(
   vcf,
   shouldSetInvariantFilter    = FALSE,
-  shouldSetInvariantFilter    = TRUE,
+#  shouldSetInvariantFilter    = TRUE,
 #  regionsMask                 = varRegions_v2(), # will filter any variants in these regions. Set to NULL if you don't want to mask any variants out in this way
 #  regionsMask                 = varRegions_v3,
   regionsMask                 = NULL,
