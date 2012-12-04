@@ -84,13 +84,14 @@ pipeline <- function(
     save(vcfInitialFiltered, file=vcfInitialFilteredRda)
   }
   initialSampleQCresults <- sampleQC(vcfInitialFiltered, discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "initital", sep="."))
+  recombinationPlotSeries(vcfInitialFiltered, plotFilestem=paste(cross, "initital", sep="."))
 #    vcf <- vcfVariantAnnotated
 #    regionsToMask               = varRegions_v3()
 #    vcf <- vcf[!(rowData(vcf) %in% regionsToMask)]
 #    vcf <- vcf[elementLengths(alt(vcf)) == 1]
 #    quantiles <- cut_number(values(info(vcf))[["QD"]], 100)
 #    proportions <- by(values(info(vcf))[["MendelianErrors"]], quantiles, function(x) length(which(x>0))/length(x))
-#  browser()
+  browser()
   
 #  qcFailedSamples <- determineQCfailedSites(
 #    vcf,

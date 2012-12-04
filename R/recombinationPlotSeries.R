@@ -1,0 +1,51 @@
+# recombinationPlotSeries.R
+# 
+# Package: pfx
+# Author: Richard D Pearson
+# Email: richard.pearson@well.ox.ac.uk
+#
+###############################################################################
+
+
+recombinationPlotSeries <- function(
+  vcf,
+  filters                     = setdiff(unique(unlist(strsplit(filt(vcf), ";"))), c("PASS", ".")),
+  chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
+  plotFilestem                = paste(meta(exptData(vcf)[["header"]])["DataSetName", "Value"], seqlevels(vcf), "chromosomePaintingSeries", sep="."),
+  width                       = 14,
+  height                      = 4,
+  verbose                     = TRUE
+) {
+  sapply(
+    chromosomes,
+    function(chromosome) {
+      GTsInt <- genotypeCallsFromGTas012(vcf[seqnames(vcf)==chromosome])  
+      GTsCFparents <- convertGTsIntToParentBasedGTs(GTsInt)
+      pdf(paste(plotFilestem, chromosome, "raw", "pdf", sep="."), height=height, width=width)
+      recombinationPlot(GTsCFparents)
+      dev.off()
+      sapply(
+        seq(along=filters),
+        function(numberOfFilters) {
+          filtersToUse <- filters[1:numberOfFilters]
+          filtersJoined <- paste(filtersToUse, collapse="_")
+          variantsToRemoveMatrix <- sapply(
+            filtersToUse,
+            function(filter) {
+              variantsToRemove <- grepl(filter, filt(vcf))
+            }
+          )
+          variantsToRemove <- apply(variantsToRemoveMatrix, 1, any)
+          GTsCFparents <- convertGTsIntToParentBasedGTs(GTsInt[!variantsToRemove, ])
+          if(verbose) {
+            cat("recombinationPlotSeries: creating recombination plot", filtersJoined)
+          }
+          pdf(paste(plotFilestem, chromosome, filtersJoined, "pdf", sep="."), height=height, width=width)
+          recombinationPlot(GTsCFparents)
+          dev.off()
+        }
+      )
+    }
+  )
+  return()
+}
