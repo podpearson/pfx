@@ -32,7 +32,7 @@ recombinationPlotSeries <- function(
           variantsToRemoveMatrix <- sapply(
             filtersToUse,
             function(filter) {
-              variantsToRemove <- grepl(filter, filt(vcf))
+              variantsToRemove <- grepl(filter, filt(vcf[seqnames(vcf)==chromosome]))
             }
           )
           variantsToRemove <- apply(variantsToRemoveMatrix, 1, any)
