@@ -14,11 +14,11 @@ qcFilteringPlots <- function(
 #    "AC"             = "highIsGood",
     "BaseQRankSum"   = "highIsGood",
 #    "DS"             = "lowIsGood",
-#    "Dels"           = "lowIsGood",
-#    "FS"             = "lowIsGood",
+    "Dels"           = "lowIsGood",
+    "FS"             = "lowIsGood",
     "HaplotypeScore" = "lowIsGood",
     "MQ"             = "highIsGood",
-#    "MQ0"            = "lowIsGood",
+    "MQ0"            = "lowIsGood",
     "MQRankSum"      = "highIsGood",
     "QD"             = "highIsGood",
 #    "RPA"            = "lowIsGood",
@@ -125,5 +125,5 @@ qcFilteringPlots <- function(
 #      251099+c(1, 10, 30, 50, 100, 200, 300, 500, 1000, 2000, 3000, 5000, 10000, 20000, 30000, 50000, 100000, 200000, 251099)
 #    ),
 #  ]
-  return(quantilesDF=plotDFquantiles, filteringDF=plotDF)
+  return(list(quantilesDF=plotDFquantiles, filteringDF=plotDF))
 }
