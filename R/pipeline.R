@@ -24,9 +24,11 @@
 pipeline <- function(
   cross                       = "7g8xGb4",
   vcfFilename                 = file.path("/data/galton/users/rpearson", "crossesTesting", "release", paste(cross, "-qcPlusSamples-0.1.vcf.gz", sep="")),
-  gffFilename                 = "/data/galton/mirror/nfs/team112/annotation/plasmodium/falciparum/Pfalciparum_PlasmoDB-7.2.gff",
-  gffGRL                      = readGffAsGRangesList(gffFilename),
-  chromosomes                 = sprintf("MAL%d", 1:14),
+#  chromosomes                 = sprintf("MAL%d", 1:14),
+  chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
+#  gffFilename                 = "/data/galton/mirror/nfs/team112/annotation/plasmodium/falciparum/Pfalciparum_PlasmoDB-7.2.gff",
+  gffFilename                 = "/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/Pf3D7_v3.gff",
+  gffGRL                      = readGffAsGRangesList(gffFilename, chromsomeNames=chromosomes),
   parentalStrains             = NULL,
 #  chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
   filtersToRemove             = NULL,
@@ -83,8 +85,9 @@ pipeline <- function(
     )
     save(vcfInitialFiltered, file=vcfInitialFilteredRda)
   }
-  initialSampleQCresults <- sampleQC(vcfInitialFiltered, discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "initital", sep="."))
-  recombinationPlotSeries(vcfInitialFiltered, plotFilestem=paste(cross, "initital", sep="."))
+  initialSampleQCresults <- sampleQC(vcfInitialFiltered, discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "initital", sep="."), gffGRL=gffGRL)
+  initialSNPnumbersMatrix <- recombinationPlotSeries(vcfInitialFiltered, plotFilestem=paste(cross, "initital", sep="."))
+  
 #    vcf <- vcfVariantAnnotated
 #    regionsToMask               = varRegions_v3()
 #    vcf <- vcf[!(rowData(vcf) %in% regionsToMask)]
@@ -150,7 +153,8 @@ pipeline <- function(
     medianBreakpointAccuracies = medianBreakpointAccuracies,
     recombinationRates         = recombinationRates,
     qcFilteringResults         = qcFilteringResults,
-    initialSampleQCresults     = initialSampleQCresults
+    initialSampleQCresults     = initialSampleQCresults,
+    initialSNPnumbersMatrix    = initialSNPnumbersMatrix
   )
   if(shouldCompareWithJiang) {
     returnList <- c(

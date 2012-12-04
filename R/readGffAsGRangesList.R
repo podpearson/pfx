@@ -9,7 +9,7 @@
 
 readGffAsGRangesList <- function(
   gffFilename                 = "/data/galton/mirror/nfs/team112/annotation/plasmodium/falciparum/Pfalciparum_PlasmoDB-7.2.gff",
-  outputRdaFilename           = "Pfalciparum_PlasmoDB-7.2.gff.rda",
+  outputRdaFilename           = paste(gffFilename, "rda", sep="."),
   overwriteExisting           = !file.exists(outputRdaFilename),
   chromsomeNames              = paste("MAL", 1:14, sep=""),
   verbose                     = TRUE

@@ -42,6 +42,10 @@ annotateVcf <- function(
   
   missingness <- apply(GTsInt, 1, function(x) length(which(x==0)))
   
+  ADas0123 <- genotypeCallsFromADas0123(vcf)
+  missingnessPerVariant <- apply(ADas0123, 1, function(x) length(which(x==0)))
+  heterozygosityPerVariant <- apply(ADas0123, 1, function(x) length(which(x==3)))
+  
 # debugging stuff - ignore
 #  ADsArray[,1,2]
 #  geno(vcf)[["AD"]][1,2]
@@ -67,6 +71,8 @@ annotateVcf <- function(
     DataFrame(
       meanMAF = meanVariantMAFs,
       missingness = missingness,
+      missingness2 = missingnessPerVariant,
+      heterozgosity = heterozygosityPerVariant,
       SEGREGATING=(
         (GTsInt[, parentalIDs[1]] == 1 & GTsInt[, parentalIDs[2]] == 2) |
         (GTsInt[, parentalIDs[1]] == 2 & GTsInt[, parentalIDs[2]] == 1)

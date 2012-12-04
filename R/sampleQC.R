@@ -14,10 +14,16 @@ sampleQC <- function(
   plotFilestem                = meta(exptData(vcf)[["header"]])["DataSetName", "Value"],
   shouldCreatePlots           = TRUE,
   shouldCalcMissingnessAndHet = "AD" %in% names(geno(vcf)),
+  shouldCalcRecombinations    = TRUE,
+  gffFilename                 = "/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/Pf3D7_v3.gff",
+  gffGRL                      = readGffAsGRangesList(gffFilename, chromsomeNames=sprintf("Pf3D7_%02d_v3", 1:14)),
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0),
 #  GTsToIntMapping             = c("7"=1, "G"=2, "."=0), # values for jiangVcf
   parentalIDs                 = dimnames(vcf)[[2]][1:2],
   keepPASSvariantsOnly        = TRUE,
+  thresholdMissingness        = 50,
+  thresholdHeterozgosity      = 1000,
+  thresholdMendelianErrors    = 25,
   verbose                     = TRUE
 ) {
   require(ggplot2)
@@ -39,6 +45,7 @@ sampleQC <- function(
           ylab="Number of SNPs with missing genotype calls",
           geom="bar", stat="identity"
         )
+        + geom_hline(yintercept = thresholdMissingness, colour="red")
         + theme_bw()
         + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
       )
@@ -52,6 +59,7 @@ sampleQC <- function(
           ylab="Number of SNPs with heterozygous genotype calls",
           geom="bar", stat="identity"
         )
+        + geom_hline(yintercept = thresholdHeterozgosity, colour="red")
         + theme_bw()
         + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
       )
@@ -91,6 +99,7 @@ sampleQC <- function(
         ylab="Number of SNPs with Mendelian errors",
         geom="bar", stat="identity"
       )
+      + geom_hline(yintercept = thresholdMendelianErrors, colour="red")
       + theme_bw()
       + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
     )
@@ -162,6 +171,12 @@ sampleQC <- function(
   }
   samplesToRemove <- unique(duplicateSamplePairs[cbind(as.integer(seq(length=dim(duplicateSamplePairs)[1])), as.integer(duplicateSamplePairs[, 4]))])
   uniqueSamples <- setdiff(dimnames(GTsInt)[[2]], samplesToRemove)
+  
+  if(shouldCalcRecombinations) {
+    mgRecombinations <- recombinationPoints(vcf, gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
+    browser()
+  }
+  
   return(list(uniqueSamples = uniqueSamples))
 }
 

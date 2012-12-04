@@ -14,7 +14,7 @@ qcFilteringPlots <- function(
 #    "AC"             = "highIsGood",
     "BaseQRankSum"   = "highIsGood",
 #    "DS"             = "lowIsGood",
-    "Dels"           = "lowIsGood",
+#    "Dels"           = "lowIsGood",
     "FS"             = "lowIsGood",
     "HaplotypeScore" = "lowIsGood",
     "MQ"             = "highIsGood",
@@ -25,7 +25,9 @@ qcFilteringPlots <- function(
     "ReadPosRankSum" = "highIsGood",
     "SB"             = "highIsGood",
     "meanMAF"        = "lowIsGood",
-    "missingness"    = "lowIsGood"
+#    "missingness"    = "lowIsGood",
+    "missingness2"   = "lowIsGood",
+    "heterozgosity"  = "lowIsGood"
   ),
   variablesToPlotQuantiles = c(
 #    "AC"             = "highIsGood",

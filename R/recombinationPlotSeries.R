@@ -16,36 +16,48 @@ recombinationPlotSeries <- function(
   height                      = 4,
   verbose                     = TRUE
 ) {
-  sapply(
+  returnMatrix <- sapply(
     chromosomes,
     function(chromosome) {
       GTsInt <- genotypeCallsFromGTas012(vcf[seqnames(vcf)==chromosome])  
       GTsCFparents <- convertGTsIntToParentBasedGTs(GTsInt)
+      if(verbose) {
+        cat("recombinationPlotSeries: creating recombination plot", chromosome, "raw", "\n")
+      }
       pdf(paste(plotFilestem, chromosome, "raw", "pdf", sep="."), height=height, width=width)
       recombinationPlot(GTsCFparents)
       dev.off()
-      sapply(
-        seq(along=filters),
-        function(numberOfFilters) {
-          filtersToUse <- filters[1:numberOfFilters]
-          filtersJoined <- paste(filtersToUse, collapse="_")
-          variantsToRemoveMatrix <- sapply(
-            filtersToUse,
-            function(filter) {
-              variantsToRemove <- grepl(filter, filt(vcf[seqnames(vcf)==chromosome]))
+      returnValue <- dim(GTsCFparents)[1]
+      names(returnValue) <- "raw"
+      c(
+        returnValue,
+        sapply(
+          seq(along=filters),
+          function(numberOfFilters) {
+            filtersToUse <- filters[1:numberOfFilters]
+            filtersJoined <- paste(filtersToUse, collapse="_")
+            variantsToRemoveMatrix <- sapply(
+              filtersToUse,
+              function(filter) {
+                variantsToRemove <- grepl(filter, filt(vcf[seqnames(vcf)==chromosome]))
+              }
+            )
+            variantsToRemove <- apply(variantsToRemoveMatrix, 1, any)
+            GTsCFparents <- convertGTsIntToParentBasedGTs(GTsInt[!variantsToRemove, ])
+            if(verbose) {
+              cat("recombinationPlotSeries: creating recombination plot", chromosome, filtersJoined, "\n")
             }
-          )
-          variantsToRemove <- apply(variantsToRemoveMatrix, 1, any)
-          GTsCFparents <- convertGTsIntToParentBasedGTs(GTsInt[!variantsToRemove, ])
-          if(verbose) {
-            cat("recombinationPlotSeries: creating recombination plot", filtersJoined)
+            pdf(paste(plotFilestem, chromosome, filtersJoined, "pdf", sep="."), height=height, width=width)
+            recombinationPlot(GTsCFparents)
+            dev.off()
+            returnValue <- length(which(!variantsToRemove))
+            names(returnValue) <- filtersJoined
+            returnValue
           }
-          pdf(paste(plotFilestem, chromosome, filtersJoined, "pdf", sep="."), height=height, width=width)
-          recombinationPlot(GTsCFparents)
-          dev.off()
-        }
+        )
       )
-    }
+    },
+    USE.NAMES=TRUE
   )
-  return()
+  return(returnMatrix)
 }
