@@ -34,7 +34,7 @@ qcFilteringPlots <- function(
     "BaseQRankSum"   = "highIsGood",
 #    "DS"             = "lowIsGood",
 #    "Dels"           = "lowIsGood",
-    "FS"             = "lowIsGood",
+#    "FS"             = "lowIsGood",
     "HaplotypeScore" = "lowIsGood",
     "MQ"             = "highIsGood",
 #    "MQ0"            = "lowIsGood",
