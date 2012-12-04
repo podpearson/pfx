@@ -51,7 +51,7 @@ setVcfFilters <- function(
         } else if(additionalInfoFilters[[filterName]][["operator"]] == ">") {
           filteredVariants <- values(info(vcf))[[additionalInfoFilters[[filterName]][["column"]]]] > additionalInfoFilters[[filterName]][["value"]]
         }
-        browser()
+#        browser()
         filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & filteredVariants] <<- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & filteredVariants], filterName, sep=";")
         filt(vcf)[filt(vcf) %in% c("PASS", ".") & filteredVariants] <<- filterName
       }
