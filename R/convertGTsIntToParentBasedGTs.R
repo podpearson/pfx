@@ -9,8 +9,8 @@
 
 convertGTsIntToParentBasedGTs <- function(
   GTsToUse,
-  IDparent1                   = dimnames(GTsInt)[[2]][1],
-  IDparent2                   = dimnames(GTsInt)[[2]][2],
+  IDparent1                   = dimnames(GTsToUse)[[2]][1],
+  IDparent2                   = dimnames(GTsToUse)[[2]][2],
   reverseOrderOfSamples       = TRUE,
   return0asNA                 = FALSE
 ) {
