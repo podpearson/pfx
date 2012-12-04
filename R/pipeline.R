@@ -27,7 +27,7 @@ pipeline <- function(
 #  chromosomes                 = sprintf("MAL%d", 1:14),
   chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
 #  gffFilename                 = "/data/galton/mirror/nfs/team112/annotation/plasmodium/falciparum/Pfalciparum_PlasmoDB-7.2.gff",
-  gffFilename                 = "/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/Pf3D7_v3.gff",
+  gffFilename                 = "/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/Pf3D7_v3.gatk.gff",
   gffGRL                      = readGffAsGRangesList(gffFilename, chromsomeNames=chromosomes),
   parentalStrains             = NULL,
 #  chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),

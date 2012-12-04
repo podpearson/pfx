@@ -12,9 +12,14 @@ genotypeCallsFromADas0123 <- function(
 ) {
   ADsArray <- array(
     unlist(geno(vcf)[["AD"]]),
-    dim=c(2, dim(geno(vcf)[["AD"]])[2], dim(geno(vcf)[["AD"]])[1]),
-    dimnames=list(c("Ref", "Nonref"), dimnames(geno(vcf)[["AD"]])[[2]], dimnames(geno(vcf)[["AD"]])[[1]])
+    dim=c(2, dim(geno(vcf)[["AD"]])[1], dim(geno(vcf)[["AD"]])[2]),
+    dimnames=list(c("Ref", "Nonref"), dimnames(geno(vcf)[["AD"]])[[1]], dimnames(geno(vcf)[["AD"]])[[2]])
   )
+#  ADsArray <- array(
+#    unlist(geno(vcf)[["AD"]]),
+#    dim=c(2, dim(geno(vcf)[["AD"]])[2], dim(geno(vcf)[["AD"]])[1]),
+#    dimnames=list(c("Ref", "Nonref"), dimnames(geno(vcf)[["AD"]])[[2]], dimnames(geno(vcf)[["AD"]])[[1]])
+#  )
   ADas0123 <- t(
     (((ADsArray[1, , ] + ADsArray[2, , ]) < 5) * 0) +
     (((ADsArray[1, , ] + ADsArray[2, , ]) >= 5 & ADsArray[2, , ] <=1) * 1) +
