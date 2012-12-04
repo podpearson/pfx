@@ -35,6 +35,7 @@ pipeline <- function(
   plotFilestem                = NULL,
   heterozygosityThreshold     = 0.3,
   missingnessThreshold        = 0.3,
+  discordanceThresholdInitial = 1000,
   discordanceThresholdMg      = 10000,
   discordanceThresholdSeg     = 100,
   discordanceThresholdJiang   = 100,
@@ -82,7 +83,7 @@ pipeline <- function(
     )
     save(vcfInitialFiltered, file=vcfInitialFilteredRda)
   }
-  initialSampleQCresults <- sampleQC(vcfInitialFiltered, discordanceThreshold=discordanceThresholdMg, plotFilestem=paste(cross, "initital", sep="."))
+  initialSampleQCresults <- sampleQC(vcfInitialFiltered, discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "initital", sep="."))
 #    vcf <- vcfVariantAnnotated
 #    regionsToMask               = varRegions_v3()
 #    vcf <- vcf[!(rowData(vcf) %in% regionsToMask)]
