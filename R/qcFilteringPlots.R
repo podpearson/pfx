@@ -13,20 +13,22 @@ qcFilteringPlots <- function(
   variablesToPlot             = c(
 #    "AC"             = "highIsGood",
     "BaseQRankSum"   = "highIsGood",
-    "DS"             = "lowIsGood",
-    "Dels"           = "lowIsGood",
-    "FS"             = "lowIsGood",
+#    "DS"             = "lowIsGood",
+#    "Dels"           = "lowIsGood",
+#    "FS"             = "lowIsGood",
     "HaplotypeScore" = "lowIsGood",
     "MQ"             = "highIsGood",
-    "MQ0"            = "lowIsGood",
+#    "MQ0"            = "lowIsGood",
     "MQRankSum"      = "highIsGood",
     "QD"             = "highIsGood",
 #    "RPA"            = "lowIsGood",
     "ReadPosRankSum" = "highIsGood",
-    "SB"             = "highIsGood"
+    "SB"             = "highIsGood",
+    "meanMAF"        = "lowIsGood"
   ),
   subsetToBiallelic           = TRUE,
   regionsToMask               = varRegions_v3(),
+  numberOfQuantiles           = 20,
   verbose                     = TRUE
 ) {
   if(!is.null(regionsToMask)) {
@@ -60,6 +62,25 @@ qcFilteringPlots <- function(
       }
     )
   )
+  plotDFquantiles <- do.call(
+    rbind,
+    lapply(
+      names(variablesToPlot),
+      function(variableToPlot) {
+        if(verbose) {
+          cat(variableToPlot, "\n")
+        }
+#        quantiles <- cut(values(info(vcf))[[variableToPlot]], quantile(values(info(vcf))[[variableToPlot]], probs=seq(0, 1, 1/100)))
+        quantiles <- cut_number(values(info(vcf))[[variableToPlot]], numberOfQuantiles)
+        proportions <- by(values(info(vcf))[["MendelianErrors"]], quantiles, function(x) length(which(x>0))/length(x))
+        data.frame(
+          Annotation                  = variableToPlot,
+          Quantile                    = factor(seq(along=levels(quantiles))),
+          ProportionOfMendelianErrors = as.vector(proportions)
+        )
+      }
+    )
+  )
   require(ggplot2)
   pdf(paste(plotFilestem, "log10ErrorRates.pdf", sep="."), height=6, width=10)
   print(
@@ -70,9 +91,27 @@ qcFilteringPlots <- function(
       data=plotDF,
       xlab="# segregating sites",
       ylab="log10 (Mendelian/SingleSNPhaplotype error rate)",
-      ylim=c(-2,0)
+      ylim=c(-4,0)
     )
     + scale_colour_brewer(palette="Set3")
+    + theme_bw()
+  )
+  dev.off()
+  pdf(paste(plotFilestem, "binnedErrorRates.pdf", sep="."), height=6, width=10)
+  print(
+    qplot(
+      Quantile,
+      ProportionOfMendelianErrors,
+      fill=Annotation,
+      facets=Annotation~.,
+      data=plotDFquantiles,
+      geom="bar"
+#      xlab="Quantile",
+#      ylab="log10 (Mendelian/SingleSNPhaplotype error rate)",
+#      ylim=c(-2,0)
+    )
+#    + geom_bar()
+    + scale_fill_brewer(palette="Set3")
     + theme_bw()
   )
   dev.off()
@@ -86,5 +125,5 @@ qcFilteringPlots <- function(
 #      251099+c(1, 10, 30, 50, 100, 200, 300, 500, 1000, 2000, 3000, 5000, 10000, 20000, 30000, 50000, 100000, 200000, 251099)
 #    ),
 #  ]
-  
+  return(quantilesDF=plotDFquantiles, filteringDF=plotDF)
 }

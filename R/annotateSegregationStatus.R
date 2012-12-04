@@ -14,13 +14,56 @@ annotateSegregationStatus <- function(
   GTsInt <- genotypeCallsFromGTas012(vcf)
   columnIndexesOfParents <- match(parentalIDs, dimnames(GTsInt)[[2]])
   columnIndexesOfProgeny <- setdiff(seq(along=dimnames(GTsInt)[[2]]), match(parentalIDs, dimnames(GTsInt)[[2]]))
-  segregating <- (
-    (GTsInt[, parentalIDs[1]] == 1 & GTsInt[, parentalIDs[2]] == 2) |
-    (GTsInt[, parentalIDs[1]] == 2 & GTsInt[, parentalIDs[2]] == 1)
+#  segregating <- (
+#    (GTsInt[, parentalIDs[1]] == 1 & GTsInt[, parentalIDs[2]] == 2) |
+#    (GTsInt[, parentalIDs[1]] == 2 & GTsInt[, parentalIDs[2]] == 1)
+#  )
+  ADsArray <- array(
+    unlist(geno(vcf)[["AD"]]),
+    dim=c(2, dim(geno(vcf)[["AD"]])[1], dim(geno(vcf)[["AD"]])[2]),
+    dimnames=list(c("Ref", "Nonref"), dimnames(geno(vcf)[["AD"]])[[1]], dimnames(geno(vcf)[["AD"]])[[2]])
+#  Was originally doing this as below which is incorrect
+#    dim=c(2, dim(geno(vcf)[["AD"]])[2], dim(geno(vcf)[["AD"]])[1]),
+#    dimnames=list(c("Ref", "Nonref"), dimnames(geno(vcf)[["AD"]])[[2]], dimnames(geno(vcf)[["AD"]])[[1]])
   )
+  RefReads <- matrix(
+    sapply(geno(vcf)[["AD"]], function(x) x[1]),
+    ncol=dim(geno(vcf)[["AD"]])[2],
+    dimnames=dimnames(geno(vcf)[["AD"]])
+  )
+  FirstAltReads <- matrix(
+    sapply(geno(vcf)[["AD"]], function(x) x[2]),
+    ncol=dim(geno(vcf)[["AD"]])[2],
+    dimnames=dimnames(geno(vcf)[["AD"]])
+  )
+  MAF <- pmin(RefReads, FirstAltReads)/(RefReads+FirstAltReads)
+#  MAF <- pmin(ADsArray[1,,], ADsArray[2,,])/(ADsArray[1,,]+ADsArray[2,,])
+  meanVariantMAFs <- rowMeans(MAF, na.rm = TRUE)
+  
+# debugging stuff - ignore
+#  ADsArray[,1,2]
+#  geno(vcf)[["AD"]][1,2]
+#  ADsArray[,2,1]
+#  geno(vcf)[["AD"]][2,1]
+#  geno(vcf)[["AD"]][26,1]
+#  geno(vcf)[["AD"]][27,1]
+#  ADsArray[,26,1]
+#  ADsArray[,27,1]
+#  RefReads[26,1]
+#  RefReads[27,1]
+#  FirstAltReads[26,1]
+#  FirstAltReads[27,1]
+#  v2 <- unlist(geno(vcf)[["AD"]][2,])
+#  ADsTemp <- array(
+#    unlist(geno(vcf)[["AD"]][2, ]),
+#    dim=c(2, 1, dim(geno(vcf)[["AD"]])[1]),
+#    dimnames=list(c("Ref", "Nonref"), dimnames(geno(vcf)[["AD"]])[[2]][2], dimnames(geno(vcf)[["AD"]])[[1]])
+#  )
+#  browser()
   info(vcf) <- cbind(
     values(info(vcf)),
     DataFrame(
+      meanMAF = meanVariantMAFs,
       SEGREGATING=(
         (GTsInt[, parentalIDs[1]] == 1 & GTsInt[, parentalIDs[2]] == 2) |
         (GTsInt[, parentalIDs[1]] == 2 & GTsInt[, parentalIDs[2]] == 1)
@@ -53,6 +96,7 @@ annotateSegregationStatus <- function(
       FORMAT=geno(exptData(vcf)[["header"]]),
       INFO=rbind(
         info(exptData(vcf)[["header"]]),
+        DataFrame(Number="1", Type="Float", Description="Mean across samples of proportion of minor allele reads (something like a heterozygosity score)", row.names="meanMAF"),
         DataFrame(Number="0", Type="Flag", Description="Is this a segregating site (i.e. do parents have different genotypes", row.names="SEGREGATING"),
         DataFrame(Number="1", Type="Integer", Description="Number of Mendelian errors (parents have same genotype, progeny has differenet genotype) in progeny", row.names="MendelianErrors")
       )
