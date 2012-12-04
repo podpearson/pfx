@@ -17,13 +17,14 @@ sampleQC <- function(
   shouldCalcRecombinations    = TRUE,
   gffFilename                 = "/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/Pf3D7_v3.gff",
   gffGRL                      = readGffAsGRangesList(gffFilename, chromsomeNames=sprintf("Pf3D7_%02d_v3", 1:14)),
-  GTsToIntMapping             = c("0"=1, "1"=2, "."=0),
+  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0),
 #  GTsToIntMapping             = c("7"=1, "G"=2, "."=0), # values for jiangVcf
   parentalIDs                 = dimnames(vcf)[[2]][1:2],
   keepPASSvariantsOnly        = TRUE,
   thresholdMissingness        = 50,
   thresholdHeterozgosity      = 1000,
   thresholdMendelianErrors    = 25,
+  thresholdRecombinations     = 100,
   verbose                     = TRUE
 ) {
   require(ggplot2)
@@ -33,14 +34,14 @@ sampleQC <- function(
   }
   if(shouldCalcMissingnessAndHet) {
     ADas0123 <- genotypeCallsFromADas0123(vcf)
-    missingnessPerSample <- apply(ADas0123, 2, function(x) length(which(x==0)))
+    lowDepthVariantsPerSample <- apply(ADas0123, 2, function(x) length(which(x==0)))
     heterozygosityPerSample <- apply(ADas0123, 2, function(x) length(which(x==3)))
     if(shouldCreatePlots) {
-      pdf(paste(plotFilestem, "missingnessPerSample.pdf", sep="."), height=5, width=8)
+      pdf(paste(plotFilestem, "lowDepthVariantsPerSample.pdf", sep="."), height=5, width=8)
       print(
         qplot(
-          x=names(missingnessPerSample),
-          y=missingnessPerSample,
+          x=names(lowDepthVariantsPerSample),
+          y=lowDepthVariantsPerSample,
           xlab="Sample ID",
           ylab="Number of SNPs with missing genotype calls",
           geom="bar", stat="identity"
@@ -174,9 +175,47 @@ sampleQC <- function(
   
   if(shouldCalcRecombinations) {
     mgRecombinations <- recombinationPoints(vcf, gffGRL)
-    browser()
+    recombinationsPerSample <- rev(
+      sapply(
+        mgRecombinations[["sampleLevelResults"]],
+        function(x) {
+          sum(sapply(x, length))
+        }
+      )
+    )
+    pdf(paste(plotFilestem, "recombinationsPerSample.pdf", sep="."), height=5, width=8)
+    print(
+      qplot(
+        x=names(recombinationsPerSample),
+        y=recombinationsPerSample,
+        xlab="Sample ID",
+        ylab="Number of apparent recombinations",
+        geom="bar", stat="identity"
+      )
+      + geom_hline(yintercept = thresholdRecombinations, colour="red")
+      + theme_bw()
+      + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+    )
+    dev.off()
+    qcFailedSamples <- names(
+      which(
+#      missingnessPerSample > thresholdMissingness |
+#        heterozygosityPerSample > thresholdHeterozgosity |
+#        MendelianErrorsPerSample > thresholdMendelianErrors |
+        recombinationsPerSample > thresholdRecombinations
+      )
+    )
+  } else {
+    qcFailedSamples <- NULL
+    mgRecombinations <- NULL
   }
   
-  return(list(uniqueSamples = uniqueSamples))
+  return(
+    list(
+      uniqueSamples    = uniqueSamples,
+      qcFailedSamples  = qcFailedSamples,
+      mgRecombinations = mgRecombinations
+    )
+  )
 }
 

@@ -18,8 +18,8 @@
 #v3UG_7g8xGb4 <- pipeline("v3UG_7g8xGb4", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj3-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", samplesToRemove = c("ERR045643", "ERR045644", "ERR045645", "ERR045646", "ERR045647", "ERR045625", "ERR029145"), overwriteExisting=TRUE, discordanceThresholdMg=28000, plotFilestem="v3UG_7g8xGb4", discordanceThresholdRawVsJia=300)
 
 #v3UG_7g8xGb4 <- pipeline("v3UG_7g8xGb4", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj3-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", samplesToRemove = c("ERR045643", "ERR045644", "ERR045645", "ERR045646", "ERR045647", "ERR045625"), discordanceThresholdMg=28000, plotFilestem="v3UG_7g8xGb4", discordanceThresholdRawVsJia=300, overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
-#v3UG_3d7xHb3 <- pipeline("v3UG_3d7xHb3", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj2-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", discordanceThresholdMg=15000, plotFilestem="v3UG_3d7xHb3", parentalStrains=c("ERR019061", "ERR019054"), shouldUseSavedVersions=FALSE)
-#v3UG_Hb3xDd2 <- pipeline("v3UG_Hb3xDd2", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj1-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", discordanceThresholdMg=28000, plotFilestem="v3UG_Hb3xDd2", shouldUseSavedVersions=FALSE)
+#v3UG_3d7xHb3 <- pipeline("v3UG_3d7xHb3", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj2-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", discordanceThresholdMg=15000, plotFilestem="v3UG_3d7xHb3", parentalStrains=c("ERR019061", "ERR019054"), overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+#v3UG_Hb3xDd2 <- pipeline("v3UG_Hb3xDd2", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj1-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", discordanceThresholdMg=28000, plotFilestem="v3UG_Hb3xDd2", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
 
 pipeline <- function(
   cross                       = "7g8xGb4",
@@ -87,6 +87,14 @@ pipeline <- function(
   }
   initialSampleQCresults <- sampleQC(vcfInitialFiltered, discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "initital", sep="."), gffGRL=gffGRL)
   initialSNPnumbersMatrix <- recombinationPlotSeries(vcfInitialFiltered, plotFilestem=paste(cross, "initital", sep="."))
+  finalSamples <- setdiff(dimnames(vcfInitialFiltered)[[2]], initialSampleQCresults)
+  vcfFinalSamples <- annotateVcf(vcfInitialFiltered[, finalSamples])
+  vcfFinalFiltered <- setVcfFilters(
+    vcfFinalSamples,
+    regionsMask                 = varRegions_v3()
+  )
+  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."))
+  vcfSegregating <- vcfFinalFiltered
   
 #    vcf <- vcfVariantAnnotated
 #    regionsToMask               = varRegions_v3()
@@ -94,7 +102,6 @@ pipeline <- function(
 #    vcf <- vcf[elementLengths(alt(vcf)) == 1]
 #    quantiles <- cut_number(values(info(vcf))[["QD"]], 100)
 #    proportions <- by(values(info(vcf))[["MendelianErrors"]], quantiles, function(x) length(which(x>0))/length(x))
-  browser()
   
 #  qcFailedSamples <- determineQCfailedSites(
 #    vcf,
@@ -103,7 +110,7 @@ pipeline <- function(
 #  )
 #  vcfVariantQCplus <- qcPlusVCF(vcfVariant, qcFailedSamples=qcFailedSamples)
 #  vcfVariantQCplus <- vcfVariant
-  rm(vcfVariant)
+#  rm(vcfVariant)
   gc()
 #  if(is.null(plotFilestem)) {
 #    samplesToUse <- uniqueSamples(vcfFiltered, discordanceThreshold=discordanceThresholdMg) # should output heatmap of discordances
@@ -111,8 +118,8 @@ pipeline <- function(
 #    samplesToUse <- uniqueSamples(vcfFiltered, discordanceThreshold=discordanceThresholdMg, plotFilestem=plotFilestem) # should output heatmap of discordances
 #  }
 #  gc()
-  vcfListSegregating <- segregatingSitesList(vcfList, samplesToUse=samplesToUse, pdfFilestem=plotFilestem) #allPaintingSeries, also will probably extend to remove short haplotypes with recombination points in many samples
-  vcfSegregating <- combineVcfListIntoVcf(vcfListSegregating)
+#  vcfListSegregating <- segregatingSitesList(vcfList, samplesToUse=samplesToUse, pdfFilestem=plotFilestem) #allPaintingSeries, also will probably extend to remove short haplotypes with recombination points in many samples
+#  vcfSegregating <- combineVcfListIntoVcf(vcfListSegregating)
 #  uniqueSamples(vcfSegregating, discordanceThreshold=discordanceThresholdSeg, plotFilestem=paste(meta(exptData(vcf)[["header"]])["DataSetName", "Value"], "segregating", sep="."))
   if(shouldCompareWithJiang) {
     jiangVcf <- loadJiangGenotypesAsVcf() # make this return a VCF?
@@ -148,13 +155,12 @@ pipeline <- function(
   returnList <- list(
     vcfSegregating             = vcfSegregating,
     mgRecombinations           = mgRecombinations,
-    jiangRecombinations        = jiangRecombinations,
-    genotypeConcordance        = genotypeConcordance,
     medianBreakpointAccuracies = medianBreakpointAccuracies,
     recombinationRates         = recombinationRates,
     qcFilteringResults         = qcFilteringResults,
     initialSampleQCresults     = initialSampleQCresults,
-    initialSNPnumbersMatrix    = initialSNPnumbersMatrix
+    initialSNPnumbersMatrix    = initialSNPnumbersMatrix,
+    finalSNPnumbersMatrix      = finalSNPnumbersMatrix
   )
   if(shouldCompareWithJiang) {
     returnList <- c(
