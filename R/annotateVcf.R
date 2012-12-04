@@ -43,7 +43,7 @@ annotateVcf <- function(
   missingness <- apply(GTsInt, 1, function(x) length(which(x==0)))
   
   ADas0123 <- genotypeCallsFromADas0123(vcf)
-  missingnessPerVariant <- apply(ADas0123, 1, function(x) length(which(x==0)))
+  missingnessPerVariant <- apply(ADas0123, 1, function(x) length(which(is.na(x) | x==0)))
   heterozygosityPerVariant <- apply(ADas0123, 1, function(x) length(which(x==3)))
   
 # debugging stuff - ignore

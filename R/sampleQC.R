@@ -173,7 +173,7 @@ sampleQC <- function(
   uniqueSamples <- setdiff(dimnames(GTsInt)[[2]], samplesToRemove)
   
   if(shouldCalcRecombinations) {
-    mgRecombinations <- recombinationPoints(vcf, gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
+    mgRecombinations <- recombinationPoints(vcf, gffGRL)
     browser()
   }
   
