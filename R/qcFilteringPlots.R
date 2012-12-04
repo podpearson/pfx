@@ -44,8 +44,10 @@ qcFilteringPlots <- function(
     "meanMAF"        = "lowIsGood"
 #    "missingness"    = "lowIsGood"
   ),
-  subsetToBiallelic           = TRUE,
-  regionsToMask               = varRegions_v3(),
+  subsetToBiallelic           = FALSE,
+#  subsetToBiallelic           = TRUE,
+  regionsToMask               = NULL,
+#  regionsToMask               = varRegions_v3(),
   numberOfQuantiles           = 20,
   verbose                     = TRUE
 ) {

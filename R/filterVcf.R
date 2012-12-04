@@ -12,7 +12,7 @@ filterVcf <- function(
   shouldRemoveInvariant       = TRUE,
 #  regionsMask                 = varRegions_v2(), # will remove any variants in these regions. Set to NULL if you don't want to mask any variants out in this way
   regionsMask                 = NULL,
-  shouldSetMultiallelicFilter = TRUE,
+#  shouldSetMultiallelicFilter = TRUE,
   keepPASSvariantsOnly        = FALSE,
 #  filtersToRemove             = c("NoAlternative"),
   filtersToRemove             = NULL,
@@ -32,11 +32,6 @@ filterVcf <- function(
   if(!is.null(samplesToRemove)) {
     sampleToKeep <- setdiff(row.names(colData(vcf)), samplesToRemove)
     vcf <- vcf[, sampleToKeep]
-  }
-  if(shouldSetMultiallelicFilter) {
-    multiAllelicVariants <- elementLengths(alt(vcf)) > 1
-    filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & multiAllelicVariants] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & multiAllelicVariants], "MultiAllelic", sep=";")
-    filt(vcf)[filt(vcf) %in% c("PASS", ".") & multiAllelicVariants] <- "MultiAllelic"
   }
   if(!is.null(additionalInfoFilters)) {
     sapply(
