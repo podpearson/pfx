@@ -26,6 +26,22 @@ qcFilteringPlots <- function(
     "SB"             = "highIsGood",
     "meanMAF"        = "lowIsGood"
   ),
+  variablesToPlotQuantiles = c(
+#    "AC"             = "highIsGood",
+    "BaseQRankSum"   = "highIsGood",
+#    "DS"             = "lowIsGood",
+#    "Dels"           = "lowIsGood",
+    "FS"             = "lowIsGood",
+    "HaplotypeScore" = "lowIsGood",
+    "MQ"             = "highIsGood",
+#    "MQ0"            = "lowIsGood",
+    "MQRankSum"      = "highIsGood",
+    "QD"             = "highIsGood",
+#    "RPA"            = "lowIsGood",
+    "ReadPosRankSum" = "highIsGood",
+    "SB"             = "highIsGood",
+    "meanMAF"        = "lowIsGood"
+  ),
   subsetToBiallelic           = TRUE,
   regionsToMask               = varRegions_v3(),
   numberOfQuantiles           = 20,
@@ -65,7 +81,7 @@ qcFilteringPlots <- function(
   plotDFquantiles <- do.call(
     rbind,
     lapply(
-      names(variablesToPlot),
+      names(variablesToPlotQuantiles),
       function(variableToPlot) {
         if(verbose) {
           cat(variableToPlot, "\n")
