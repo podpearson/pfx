@@ -50,7 +50,7 @@ qcFilteringPlots <- function(
 #  subsetToBiallelic           = TRUE,
   regionsToMask               = NULL,
 #  regionsToMask               = varRegions_v3(),
-  numberOfQuantiles           = 20,
+  numberOfQuantiles           = 50,
   verbose                     = TRUE
 ) {
   if(!is.null(regionsToMask)) {
@@ -93,7 +93,8 @@ qcFilteringPlots <- function(
           cat(variableToPlot, "\n")
         }
 #        quantiles <- cut(values(info(vcf))[[variableToPlot]], quantile(values(info(vcf))[[variableToPlot]], probs=seq(0, 1, 1/100)))
-        quantiles <- ggplot2::cut_number(values(info(vcf))[[variableToPlot]], numberOfQuantiles)
+#        quantiles <- ggplot2::cut_number(values(info(vcf))[[variableToPlot]], numberOfQuantiles)
+        quantiles <- ceiling(order(values(info(vcf))[[variableToPlot]])/(dim(vcf)[1]/numberOfQuantiles))
         proportions <- by(values(info(vcf))[["MendelianErrors"]], quantiles, function(x) length(which(x>0))/length(x))
         data.frame(
           Annotation                  = variableToPlot,

@@ -24,6 +24,8 @@ sampleQC <- function(
   thresholdMissingness        = 50,
   thresholdHeterozgosity      = 1000,
   thresholdMendelianErrors    = 25,
+  thresholdNoCalls            = 500,
+  thresholdThirdOrFourthAllele= 50,
   thresholdRecombinations     = 100,
   verbose                     = TRUE
 ) {
@@ -73,6 +75,48 @@ sampleQC <- function(
   if(shouldCreatePlots) {
     columnIndexesOfParents <- match(parentalIDs, dimnames(GTsInt)[[2]])
     columnIndexesOfProgeny <- setdiff(seq(along=dimnames(GTsInt)[[2]]), match(parentalIDs, dimnames(GTsInt)[[2]]))
+    nocallGenotypesPerSample=apply(
+      GTsInt,
+      2,
+      function(genotypesForVariant) {
+        sum(genotypesForVariant==0, na.rm=TRUE)
+      }
+    )
+    pdf(paste(plotFilestem, "nocallGenotypesPerSample.pdf", sep="."), height=5, width=8)
+    print(
+      qplot(
+        x=names(nocallGenotypesPerSample),
+        y=nocallGenotypesPerSample,
+        xlab="Sample ID",
+        ylab="Number of no call genotypes",
+        geom="bar", stat="identity"
+      )
+      + geom_hline(yintercept = thresholdNoCalls, colour="red")
+      + theme_bw()
+      + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+    )
+    dev.off()
+    thirdOrFourthAllelesPerSample=apply(
+      GTsInt,
+      2,
+      function(genotypesForVariant) {
+        sum(is.na(genotypesForVariant))
+      }
+    )
+    pdf(paste(plotFilestem, "thirdOrFourthAllelesPerSample.pdf", sep="."), height=5, width=8)
+    print(
+      qplot(
+        x=names(thirdOrFourthAllelesPerSample),
+        y=thirdOrFourthAllelesPerSample,
+        xlab="Sample ID",
+        ylab="Number of third or fourth allele genotypes",
+        geom="bar", stat="identity"
+      )
+      + geom_hline(yintercept = thresholdThirdOrFourthAllele, colour="red")
+      + theme_bw()
+      + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+    )
+    dev.off()
     MendelianErrorsPerSample=apply(
       GTsInt,
       2,
@@ -164,7 +208,7 @@ sampleQC <- function(
     cat(paste(uniqueSamplePairs, collapse="\n"))
   }
   if(shouldCalcMissingnessAndHet) {
-    duplicateSamplePairs <- cbind(duplicateSamplePairs, (missingnessPerSample[duplicateSamplePairs[, 1]] <= missingnessPerSample[duplicateSamplePairs[, 2]])+1)
+    duplicateSamplePairs <- cbind(duplicateSamplePairs, (lowDepthVariantsPerSample[duplicateSamplePairs[, 1]] <= lowDepthVariantsPerSample[duplicateSamplePairs[, 2]])+1)
     duplicateSamplePairs <- cbind(duplicateSamplePairs, (heterozygosityPerSample[duplicateSamplePairs[, 1]] <= heterozygosityPerSample[duplicateSamplePairs[, 2]])+1)
   } else {
     duplicateSamplePairs <- cbind(duplicateSamplePairs, (duplicateSamplePairs[, 1] <= duplicateSamplePairs[, 2])+1)
