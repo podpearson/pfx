@@ -16,12 +16,17 @@ setVcfFilters <- function(
   regionsMask                 = NULL,
   regionsMaskFilterName       = "InVarRegion",
   shouldSetMultiallelicFilter = FALSE,
+  shouldSetNonSegregatingFilt = FALSE,
+  shouldSetMaxNoCallsFilter   = FALSE,
+  maxNoCallsAllowed           = 1,
   markDotsAsPass              = TRUE,
   keepPASSvariantsOnly        = FALSE,
 #  additionalInfoFilters       = NULL,
   additionalInfoFilters     = list(
     "LowQD" = list(column="QD", operator="<=", value=36)
-  )
+  ),
+  possibleMissingValues       = c(".", "./.", ".|."),
+  parentalIDs                 = dimnames(vcf)[[2]][1:2]
 ) {
   if(markDotsAsPass) {
     filt(vcf)[filt(vcf) == "."] <- "PASS"
@@ -62,6 +67,20 @@ setVcfFilters <- function(
 #    maskedVariants <- is.na(GenomicRanges::match(rowData(vcf), regionsMask))
     filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & maskedVariants] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & maskedVariants], regionsMaskFilterName, sep=";")
     filt(vcf)[filt(vcf) %in% c("PASS", ".") & maskedVariants] <- regionsMaskFilterName
+  }
+  if(shouldSetNonSegregatingFilt) {
+    nonSegregatingVariants <- (
+      geno(vcf)[["GT"]][, parentalIDs[1]] %in% possibleMissingValues |
+      geno(vcf)[["GT"]][, parentalIDs[2]] %in% possibleMissingValues |
+      geno(vcf)[["GT"]][, parentalIDs[1]] == geno(vcf)[["GT"]][, parentalIDs[2]]
+    )
+    filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & nonSegregatingVariants] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & maskedVariants], "NonSegregating", sep=";")
+    filt(vcf)[filt(vcf) %in% c("PASS", ".") & nonSegregatingVariants] <- "NonSegregating"
+  }
+  if(shouldSetMaxNoCallsFilter) {
+    aboveMaxNoCalls <- apply(geno(vcf)[["GT"]], 1, function(x) length(which(x %in% possibleMissingValues)) > maxNoCallsAllowed)
+    filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & aboveMaxNoCalls] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & maskedVariants], "ExcessiveNoCalls", sep=";")
+    filt(vcf)[filt(vcf) %in% c("PASS", ".") & aboveMaxNoCalls] <- "ExcessiveNoCalls"
   }
   return(vcf)
 }

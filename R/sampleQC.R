@@ -21,11 +21,16 @@ sampleQC <- function(
 #  GTsToIntMapping             = c("7"=1, "G"=2, "."=0), # values for jiangVcf
   parentalIDs                 = dimnames(vcf)[[2]][1:2],
   keepPASSvariantsOnly        = TRUE,
-  thresholdMissingness        = 50,
-  thresholdHeterozgosity      = 1000,
-  thresholdMendelianErrors    = 25,
-  thresholdNoCalls            = 500,
-  thresholdThirdOrFourthAllele= 50,
+  thresholdLowDepth           = "3sd",
+  thresholdHeterozgosity      = "3sd",
+  thresholdMendelianErrors    = "3sd",
+  thresholdNoCalls            = "3sd",
+  thresholdThirdOrFourthAllele= "3sd",
+#  thresholdMissingness        = 50,
+#  thresholdHeterozgosity      = 1000,
+#  thresholdMendelianErrors    = 25,
+#  thresholdNoCalls            = 500,
+#  thresholdThirdOrFourthAllele= 50,
   thresholdRecombinations     = "3sd",
   verbose                     = TRUE
 ) {
@@ -37,7 +42,19 @@ sampleQC <- function(
   if(shouldCalcMissingnessAndHet) {
     ADas0123 <- genotypeCallsFromADas0123(vcf)
     lowDepthVariantsPerSample <- apply(ADas0123, 2, function(x) length(which(x==0)))
+    if(is.character(thresholdLowDepth)) {
+      meanValue <- mean(lowDepthVariantsPerSample)
+      sdValue <- sd(lowDepthVariantsPerSample)
+      numberOfSDs <- as.integer(sub("sd", "", thresholdLowDepth))
+      thresholdLowDepth <- meanValue + (numberOfSDs * sdValue)
+    }
     heterozygosityPerSample <- apply(ADas0123, 2, function(x) length(which(x==3)))
+    if(is.character(thresholdHeterozgosity)) {
+      meanValue <- mean(heterozygosityPerSample)
+      sdValue <- sd(heterozygosityPerSample)
+      numberOfSDs <- as.integer(sub("sd", "", thresholdHeterozgosity))
+      thresholdHeterozgosity <- meanValue + (numberOfSDs * sdValue)
+    }
     if(shouldCreatePlots) {
       pdf(paste(plotFilestem, "lowDepthVariantsPerSample.pdf", sep="."), height=5, width=8)
       print(
@@ -45,10 +62,10 @@ sampleQC <- function(
           x=names(lowDepthVariantsPerSample),
           y=lowDepthVariantsPerSample,
           xlab="Sample ID",
-          ylab="Number of SNPs with missing genotype calls",
+          ylab="Number of low depth SNPs",
           geom="bar", stat="identity"
         )
-        + geom_hline(yintercept = thresholdMissingness, colour="red")
+        + geom_hline(yintercept = thresholdLowDepth, colour="red")
         + theme_bw()
         + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
       )
@@ -59,7 +76,7 @@ sampleQC <- function(
           x=names(heterozygosityPerSample),
           y=heterozygosityPerSample,
           xlab="Sample ID",
-          ylab="Number of SNPs with heterozygous genotype calls",
+          ylab="Number of heterozygous SNPs (>=2 ref and alt reads)",
           geom="bar", stat="identity"
         )
         + geom_hline(yintercept = thresholdHeterozgosity, colour="red")
@@ -82,6 +99,12 @@ sampleQC <- function(
         sum(genotypesForVariant==0, na.rm=TRUE)
       }
     )
+    if(is.character(thresholdNoCalls)) {
+      meanValue <- mean(nocallGenotypesPerSample)
+      sdValue <- sd(nocallGenotypesPerSample)
+      numberOfSDs <- as.integer(sub("sd", "", thresholdNoCalls))
+      thresholdNoCalls <- meanValue + (numberOfSDs * sdValue)
+    }
     pdf(paste(plotFilestem, "nocallGenotypesPerSample.pdf", sep="."), height=5, width=8)
     print(
       qplot(
@@ -103,6 +126,12 @@ sampleQC <- function(
         sum(is.na(genotypesForVariant))
       }
     )
+    if(is.character(thresholdThirdOrFourthAllele)) {
+      meanValue <- mean(thirdOrFourthAllelesPerSample)
+      sdValue <- sd(thirdOrFourthAllelesPerSample)
+      numberOfSDs <- as.integer(sub("sd", "", thresholdThirdOrFourthAllele))
+      thresholdThirdOrFourthAllele <- meanValue + (numberOfSDs * sdValue)
+    }
     pdf(paste(plotFilestem, "thirdOrFourthAllelesPerSample.pdf", sep="."), height=5, width=8)
     print(
       qplot(
@@ -135,6 +164,12 @@ sampleQC <- function(
         )
       }
     )
+    if(is.character(thresholdMendelianErrors)) {
+      meanValue <- mean(MendelianErrorsPerSample)
+      sdValue <- sd(MendelianErrorsPerSample)
+      numberOfSDs <- as.integer(sub("sd", "", thresholdMendelianErrors))
+      thresholdMendelianErrors <- meanValue + (numberOfSDs * sdValue)
+    }
     pdf(paste(plotFilestem, "mendelianErrorsPerSample.pdf", sep="."), height=5, width=8)
     print(
       qplot(
@@ -214,11 +249,12 @@ sampleQC <- function(
     duplicateSamplePairs <- cbind(duplicateSamplePairs, (duplicateSamplePairs[, 1] <= duplicateSamplePairs[, 2])+1)
     duplicateSamplePairs <- cbind(duplicateSamplePairs, (duplicateSamplePairs[, 1] <= duplicateSamplePairs[, 2])+1)
   }
-  samplesToRemove <- unique(duplicateSamplePairs[cbind(as.integer(seq(length=dim(duplicateSamplePairs)[1])), as.integer(duplicateSamplePairs[, 4]))])
+  samplesToRemove <- unique(duplicateSamplePairs[cbind(as.integer(seq(length=dim(duplicateSamplePairs)[1])), as.integer(duplicateSamplePairs[, 3]))]) # remove duplicate samples that have non-lowest lowDepthVariants
+#  samplesToRemove <- unique(duplicateSamplePairs[cbind(as.integer(seq(length=dim(duplicateSamplePairs)[1])), as.integer(duplicateSamplePairs[, 4]))])
   uniqueSamples <- setdiff(dimnames(GTsInt)[[2]], samplesToRemove)
   
   if(shouldCalcRecombinations) {
-    mgRecombinations <- recombinationPoints(vcf, gffGRL, shouldCharacterise=FALSE)
+    mgRecombinations <- recombinationPoints(vcf, gffGRL, shouldCharacterise=FALSE, GTsToIntMapping=GTsToIntMapping)
     recombinationsPerSample <- rev(
       sapply(
         mgRecombinations[["sampleLevelResults"]],
@@ -227,9 +263,9 @@ sampleQC <- function(
         }
       )
     )
-    meanRecombinations <- mean(recombinationsPerSample)
-    sdRecombinations <- sd(recombinationsPerSample)
     if(is.character(thresholdRecombinations)) {
+      meanRecombinations <- mean(recombinationsPerSample)
+      sdRecombinations <- sd(recombinationsPerSample)
       numberOfSDs <- as.integer(sub("sd", "", thresholdRecombinations))
       thresholdRecombinations <- meanRecombinations + (numberOfSDs * sdRecombinations)
     }
