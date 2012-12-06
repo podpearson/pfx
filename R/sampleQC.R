@@ -218,7 +218,7 @@ sampleQC <- function(
   uniqueSamples <- setdiff(dimnames(GTsInt)[[2]], samplesToRemove)
   
   if(shouldCalcRecombinations) {
-    mgRecombinations <- recombinationPoints(vcf, gffGRL)
+    mgRecombinations <- recombinationPoints(vcf, gffGRL, shouldCharacterise=FALSE)
     recombinationsPerSample <- rev(
       sapply(
         mgRecombinations[["sampleLevelResults"]],

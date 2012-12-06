@@ -101,7 +101,7 @@ qcFilteringPlots <- function(
         proportions <- by(values(info(vcf))[["MendelianErrors"]], quantiles, function(x) length(which(x>0))/length(x))
         data.frame(
           Annotation                  = variableToPlot,
-          Quantile                    = factor(names(proportions)),
+          Quantile                    = seq(along=proportions),
           ProportionOfMendelianErrors = as.vector(proportions)
         )
       }

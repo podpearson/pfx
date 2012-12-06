@@ -10,7 +10,8 @@
 recombinationPoints <- function(
   vcf,
   gffGRL                      = gffGRL,
-  GTsToIntMapping             = c("0"=1, "1"=2, "."=0)
+  GTsToIntMapping             = c("0"=1, "1"=2, "."=0),
+  shouldCharacterise          = TRUE
 ) {
 #  GTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(vcf))
   chromosomeLevelResults <- sapply(
@@ -19,7 +20,7 @@ recombinationPoints <- function(
       cat(".")
 #      GTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(vcf[seqnames(vcf)==chromosome]))
 #      recombinationsGRL <- findRecombinations(GTsCFparents, chromosome)
-      recombinationsGRL <- findRecombinations(vcf[seqnames(vcf)==chromosome], chromosome, gffGRL=gffGRL[seqnames(gffGRL)==chromosome], GTsToIntMapping=GTsToIntMapping)
+      recombinationsGRL <- findRecombinations(vcf[seqnames(vcf)==chromosome], chromosome, gffGRL=gffGRL[seqnames(gffGRL)==chromosome], GTsToIntMapping=GTsToIntMapping, shouldCharacterise=shouldCharacterise)
       widthsList <- BiocGenerics::sapply(recombinationsGRL, width)
       list(recombinationsGRL=recombinationsGRL, widthsList=widthsList)
     },
@@ -73,7 +74,8 @@ findRecombinations <- function(
   chromosome,
   gffGRL                      = readGffAsGRangesList("/data/galton/mirror/nfs/team112/annotation/plasmodium/falciparum/Pfalciparum_PlasmoDB-7.2.gff"),
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0),
-  removeChromsomeFromRownames = FALSE
+  removeChromsomeFromRownames = FALSE,
+  shouldCharacterise          = TRUE
 ) {
   parentBasedGTs <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(vcf, GTsToIntMapping=GTsToIntMapping), return0asNA=TRUE)
   markerPositions <- start(ranges(rowData(vcf)))
@@ -103,7 +105,7 @@ findRecombinations <- function(
 #            uncertinaty = markerPositions[startIndicesOfHaplotypes] - markerPositions[endIndicesOfHaplotypes]
           )
         }
-        if(length(gr) > 0) {
+        if(shouldCharacterise && length(gr) > 0) {
           values(gr)[["uncertainty"]] <- width(gr)
           values(gr)[["midpoint"]] <- start(gr) + round(width(gr)/2)
           startGR <- GRanges(seqnames=seqnames(gr), ranges=IRanges(start=start(gr), width=1))
