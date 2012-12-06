@@ -58,7 +58,8 @@ setVcfFilters <- function(
     )
   }
   if(!is.null(regionsMask)) {
-    maskedVariants <- is.na(GenomicRanges::match(rowData(vcf), regionsMask))
+    maskedVariants <- rowData(vcf) %in% regionsMask
+#    maskedVariants <- is.na(GenomicRanges::match(rowData(vcf), regionsMask))
     filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & maskedVariants] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & maskedVariants], regionsMaskFilterName, sep=";")
     filt(vcf)[filt(vcf) %in% c("PASS", ".") & maskedVariants] <- regionsMaskFilterName
   }
