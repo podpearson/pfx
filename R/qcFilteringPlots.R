@@ -101,28 +101,13 @@ qcFilteringPlots <- function(
         proportions <- by(values(info(vcf))[["MendelianErrors"]], quantiles, function(x) length(which(x>0))/length(x))
         data.frame(
           Annotation                  = variableToPlot,
-          Quantile                    = seq(along=proportions),
+          Quantile                    = factor(as.character(seq(along=proportions)), levels=as.character(seq(along=proportions))),
           ProportionOfMendelianErrors = as.vector(proportions)
         )
       }
     )
   )
   require(ggplot2)
-  pdf(paste(plotFilestem, "log10ErrorRates.pdf", sep="."), height=6, width=10)
-  print(
-    qplot(
-      NumberOfSegregatingSites,
-      Log10ErrorRate,
-      colour=Annotation,
-      data=plotDF,
-      xlab="# segregating sites",
-      ylab="log10 (Mendelian/SingleSNPhaplotype error rate)",
-      ylim=c(-4,0)
-    )
-    + scale_colour_brewer(palette="Set3")
-    + theme_bw()
-  )
-  dev.off()
   pdf(paste(plotFilestem, "binnedErrorRates.pdf", sep="."), height=6, width=10)
   print(
     qplot(
@@ -138,6 +123,21 @@ qcFilteringPlots <- function(
     )
 #    + geom_bar()
     + scale_fill_brewer(palette="Set3")
+    + theme_bw()
+  )
+  dev.off()
+  pdf(paste(plotFilestem, "log10ErrorRates.pdf", sep="."), height=6, width=10)
+  print(
+    qplot(
+      NumberOfSegregatingSites,
+      Log10ErrorRate,
+      colour=Annotation,
+      data=plotDF,
+      xlab="# segregating sites",
+      ylab="log10 (Mendelian/SingleSNPhaplotype error rate)",
+      ylim=c(-4,0)
+    )
+    + scale_colour_brewer(palette="Set3")
     + theme_bw()
   )
   dev.off()
