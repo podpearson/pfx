@@ -26,7 +26,7 @@ sampleQC <- function(
   thresholdMendelianErrors    = 25,
   thresholdNoCalls            = 500,
   thresholdThirdOrFourthAllele= 50,
-  thresholdRecombinations     = 100,
+  thresholdRecombinations     = "3sd",
   verbose                     = TRUE
 ) {
   require(ggplot2)
@@ -227,6 +227,13 @@ sampleQC <- function(
         }
       )
     )
+    meanRecombinations <- mean(recombinationsPerSample)
+    sdRecombinations <- sd(recombinationsPerSample)
+    if(is.character(thresholdRecombinations)) {
+      numberOfSDs <- as.integer(sub("sd", "", thresholdRecombinations))
+      thresholdRecombinations <- meanRecombinations + (numberOfSDs * sdRecombinations)
+    }
+    
     pdf(paste(plotFilestem, "recombinationsPerSample.pdf", sep="."), height=5, width=8)
     print(
       qplot(

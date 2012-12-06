@@ -87,8 +87,11 @@ pipeline <- function(
   }
   initialSampleQCresults <- sampleQC(vcfInitialFiltered, discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "initital", sep="."), gffGRL=gffGRL)
   initialSNPnumbersMatrix <- recombinationPlotSeries(vcfInitialFiltered, plotFilestem=paste(cross, "initital", sep="."))
-  finalSamples <- setdiff(dimnames(vcfInitialFiltered)[[2]], initialSampleQCresults)
-  vcfFinalSamples <- annotateVcf(vcfInitialFiltered[, finalSamples])
+  if(length(initialSampleQCresults[["qcFailedSamples"]]) > 0) {
+    finalSamples <- setdiff(dimnames(vcfInitialFiltered)[[2]], initialSampleQCresults[["qcFailedSamples"]])
+    vcfVariantOnFinalSamples <- filterVcf(vcfInitialFiltered[, finalSamples])
+    vcfFinalSamples <- annotateVcf(vcfVariantOnFinalSamples[, finalSamples])
+  }
   vcfFinalFiltered <- setVcfFilters(
     vcfFinalSamples,
     regionsMask                 = varRegions_v3()
