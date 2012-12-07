@@ -98,11 +98,17 @@ pipeline <- function(
     } else {
       vcfFinalSamples <- vcfInitialFiltered
     }
+    qcFilteringResultsFinalPreFiltering <- qcFilteringPlots(vcfFinalSamples, plotFilestem=paste(cross, "finalPreFiltering", sep="."))
     filt(vcfFinalSamples) <- "PASS"
     vcfFinalFiltered <- setVcfFilters(
       vcfFinalSamples,
+#      additionalInfoFilters = NULL,
       additionalInfoFilters = list(
-        "LowQD" = list(column="QD", operator="<=", value=36)
+#        "LowQD" = list(column="QD", operator="<=", value=1),
+        "HighSB" = list(column="SB", operator=">=", value=-4200),
+        "HighMeanMAF" = list(column="meanMAF", operator=">=", value=0.1, filterOutNAs=TRUE),
+        "HighMissingness" = list(column="missingness2", operator=">=", value=1, filterOutNAs=TRUE),
+        "HighMQ0" = list(column="MQ0", operator=">=", value=10000, filterOutNAs=TRUE)
       ),
       regionsMask                 = varRegions_v3(),
       shouldSetMultiallelicFilter = TRUE,
@@ -111,10 +117,30 @@ pipeline <- function(
     )
     save(vcfFinalFiltered, file=vcfFinalFilteredRda)
   }
+  qcFilteringResultsFinalPostFiltering <- qcFilteringPlots(
+    filterVcf(
+      vcfFinalFiltered,
+      shouldRemoveInvariant=FALSE,
+      filtersToRemove=c("LowQD", "HighSB", "HighMeanMAF", "HighMissingness", "HighMQ0", "InVarRegion", "ExcessiveNoCalls")
+    ),
+    plotFilestem=paste(cross, "finalPostFiltering", sep=".")
+  )
+#  info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating")])
+#  stem(values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["MQ0"]])
+#  stem(values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["SB"]][values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["SB"]]>-Inf])
+  stem(values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["SB"]][values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["SB"]]>-5000])
+#  info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")])
   finalSampleQCresults <- sampleQC(vcfFinalFiltered, discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "final", sep="."), gffGRL=gffGRL)
-  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("LowQD", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
-  qcPlusUniqueSamples <- setdiff(initialSampleQCresults[["uniqueSamples"]], initialSampleQCresults[["qcFailedSamples"]])
-  finalSNPnumbersMatrix2 <- recombinationPlotSeries(vcfFinalFiltered[, qcPlusUniqueSamples], plotFilestem=paste(cross, "uniqueSamples", sep="."), filters=c("LowQD", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
+#  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("LowQD", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
+#  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("LowQD", "HighSB", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
+#  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("LowQD", "HighSB", "HighMeanMAF", "HighMissingness", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
+#  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("HighMissingness", "HighSB", "HighMeanMAF", "HighMQ0", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
+  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final2", sep="."), filters=c("ExcessiveNoCalls", "HighMissingness", "HighMeanMAF", "HighSB", "HighMQ0", "InVarRegion", "MultiAllelic", "NonSegregating"))
+#  qcPlusUniqueSamples <- setdiff(initialSampleQCresults[["uniqueSamples"]], initialSampleQCresults[["qcFailedSamples"]])
+  qcPlusUniqueSamples <- setdiff(finalSampleQCresults[["uniqueSamples"]], finalSampleQCresults[["qcFailedSamples"]])
+#  finalSNPnumbersMatrix2 <- recombinationPlotSeries(vcfFinalFiltered[, qcPlusUniqueSamples], plotFilestem=paste(cross, "uniqueSamples", sep="."), filters=c("LowQD", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
+  finalSNPnumbersMatrix2 <- recombinationPlotSeries(vcfFinalFiltered[, qcPlusUniqueSamples], plotFilestem=paste(cross, "uniqueSamples", sep="."), filters=c("ExcessiveNoCalls", "HighMissingness", "HighMeanMAF", "HighSB", "HighMQ0", "InVarRegion", "MultiAllelic", "NonSegregating"))
+  finalUniqueSampleQCresults <- sampleQC(vcfFinalFiltered[, qcPlusUniqueSamples], discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "uniqueSamples", sep="."), gffGRL=gffGRL)
   vcfSegregating <- vcfFinalFiltered
   
 #    vcf <- vcfVariantAnnotated

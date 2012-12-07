@@ -193,7 +193,9 @@ sampleQC <- function(
   diag(GTsIntDiscordanceMatrix) <- NA
   if(verbose) {
     stem(GTsIntDiscordanceMatrix)
-    stem(GTsIntDiscordanceMatrix[GTsIntDiscordanceMatrix < stemThreshold])
+    if(length(which(GTsIntDiscordanceMatrix < stemThreshold)) > 0) {
+      stem(GTsIntDiscordanceMatrix[GTsIntDiscordanceMatrix < stemThreshold])
+    }
   }
   if(shouldCreatePlots) {
     pdf(paste(plotFilestem, "pairwiseConcordanceHistogramAll.pdf", sep="."), height=4, width=6)
@@ -243,13 +245,19 @@ sampleQC <- function(
     cat(paste(uniqueSamplePairs, collapse="\n"))
   }
   if(shouldCalcMissingnessAndHet) {
+    lowDepthVariantsPerSample[parentalIDs] <- 0 # This is a fix to ensure parental strains are always selected (even if the quality of these is sometimes lower than that of a duplicate)
+    heterozygosityPerSample[parentalIDs] <- 0   # This is a fix to ensure parental strains are always selected (even if the quality of these is sometimes lower than that of a duplicate)
     duplicateSamplePairs <- cbind(duplicateSamplePairs, (lowDepthVariantsPerSample[duplicateSamplePairs[, 1]] <= lowDepthVariantsPerSample[duplicateSamplePairs[, 2]])+1)
     duplicateSamplePairs <- cbind(duplicateSamplePairs, (heterozygosityPerSample[duplicateSamplePairs[, 1]] <= heterozygosityPerSample[duplicateSamplePairs[, 2]])+1)
   } else {
     duplicateSamplePairs <- cbind(duplicateSamplePairs, (duplicateSamplePairs[, 1] <= duplicateSamplePairs[, 2])+1)
     duplicateSamplePairs <- cbind(duplicateSamplePairs, (duplicateSamplePairs[, 1] <= duplicateSamplePairs[, 2])+1)
   }
-  samplesToRemove <- unique(duplicateSamplePairs[cbind(as.integer(seq(length=dim(duplicateSamplePairs)[1])), as.integer(duplicateSamplePairs[, 3]))]) # remove duplicate samples that have non-lowest lowDepthVariants
+  if(dim(duplicateSamplePairs)[1] > 0) {
+    samplesToRemove <- unique(duplicateSamplePairs[cbind(as.integer(seq(length=dim(duplicateSamplePairs)[1])), as.integer(duplicateSamplePairs[, 3]))]) # remove duplicate samples that have non-lowest lowDepthVariants
+  } else {
+    samplesToRemove <- NULL
+  }
 #  samplesToRemove <- unique(duplicateSamplePairs[cbind(as.integer(seq(length=dim(duplicateSamplePairs)[1])), as.integer(duplicateSamplePairs[, 4]))])
   uniqueSamples <- setdiff(dimnames(GTsInt)[[2]], samplesToRemove)
   
@@ -299,10 +307,10 @@ sampleQC <- function(
   
   return(
     list(
-      uniqueSamples    = uniqueSamples,
-      qcFailedSamples  = qcFailedSamples,
-      mgRecombinations = mgRecombinations
+      uniqueSamples     = uniqueSamples,
+      qcFailedSamples   = qcFailedSamples,
+      mgRecombinations  = mgRecombinations,
+      discordanceMatrix = GTsIntDiscordanceMatrix
     )
   )
 }
-

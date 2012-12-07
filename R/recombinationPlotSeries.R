@@ -44,6 +44,7 @@ recombinationPlotSeries <- function(
             )
             variantsToRemove <- apply(variantsToRemoveMatrix, 1, any)
             GTsCFparents <- convertGTsIntToParentBasedGTs(GTsInt[!variantsToRemove, ])
+            browser()
             if(verbose) {
               cat("recombinationPlotSeries: creating recombination plot", chromosome, filtersJoined, "\n")
             }

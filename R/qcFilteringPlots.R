@@ -23,7 +23,7 @@ qcFilteringPlots <- function(
     "QD"             = "highIsGood",
 #    "RPA"            = "lowIsGood",
     "ReadPosRankSum" = "highIsGood",
-    "SB"             = "highIsGood",
+    "SB"             = "lowIsGood",
     "meanMAF"        = "lowIsGood",
 #    "missingness"    = "lowIsGood",
     "missingness2"   = "lowIsGood",
@@ -42,7 +42,7 @@ qcFilteringPlots <- function(
     "QD"             = "highIsGood",
 #    "RPA"            = "lowIsGood",
     "ReadPosRankSum" = "highIsGood",
-    "SB"             = "highIsGood",
+    "SB"             = "lowIsGood",
     "meanMAF"        = "lowIsGood",
 #    "missingness"    = "lowIsGood"
     "missingness2"   = "lowIsGood",
@@ -86,9 +86,9 @@ qcFilteringPlots <- function(
       }
     )
   )
-  plotDFquantiles <- do.call(
-    rbind,
-    lapply(
+  plotDFquantiles <- # do.call(
+#    rbind,
+    sapply(
       names(variablesToPlotQuantiles),
       function(variableToPlot) {
         if(verbose) {
@@ -99,32 +99,67 @@ qcFilteringPlots <- function(
         set.seed(12345)
         quantiles <- ceiling(rank(values(info(vcf))[[variableToPlot]], ties.method="random")/(dim(vcf)[1]/numberOfQuantiles))
         proportions <- by(values(info(vcf))[["MendelianErrors"]], quantiles, function(x) length(which(x>0))/length(x))
+        lowerBounds <- by(values(info(vcf))[[variableToPlot]], quantiles, function(x) min(x, na.rm=TRUE))
+        upperBounds <- by(values(info(vcf))[[variableToPlot]], quantiles, function(x) max(x, na.rm=TRUE))
+        xaxisLabels <- paste(seq(along=lowerBounds), ": [", format(lowerBounds, digits=3), ", ", format(upperBounds, digits=3), "]", sep="")
         data.frame(
           Annotation                  = variableToPlot,
-          Quantile                    = factor(as.character(seq(along=proportions)), levels=as.character(seq(along=proportions))),
+          Quantile                    = factor(xaxisLabels, levels=xaxisLabels),
+#          Quantile                    = factor(as.character(seq(along=proportions)), levels=as.character(seq(along=proportions))),
           ProportionOfMendelianErrors = as.vector(proportions)
         )
-      }
+      },
+      simplify=FALSE,
+      USE.NAMES=TRUE
     )
-  )
+#  )
   require(ggplot2)
-  pdf(paste(plotFilestem, "binnedErrorRates.pdf", sep="."), height=6, width=10)
-  print(
-    qplot(
-      Quantile,
-      ProportionOfMendelianErrors,
-      fill=Annotation,
-      facets=Annotation~.,
-      data=plotDFquantiles,
-      geom="bar"
-#      xlab="Quantile",
-#      ylab="log10 (Mendelian/SingleSNPhaplotype error rate)",
-#      ylim=c(-2,0)
-    )
-#    + geom_bar()
-    + scale_fill_brewer(palette="Set3")
-    + theme_bw()
+  require(gridExtra)
+  pdf(paste(plotFilestem, "binnedErrorRates.pdf", sep="."), height=20, width=30)
+  maxHeight <- max(sapply(plotDFquantiles, function(x) max(x[["ProportionOfMendelianErrors"]])))
+  plots <- lapply(
+    seq(along = plotDFquantiles),
+#    names(plotDFquantiles),
+    function(plotDFquantileIndex) {
+      qplot(
+        Quantile,
+        ProportionOfMendelianErrors,
+#        fill=Annotation,
+#        facets=Annotation~.,
+        data=plotDFquantiles[[plotDFquantileIndex]],
+        geom="bar",
+        fill=I(brewer.pal(12, "Set3")[plotDFquantileIndex]),
+        main=names(plotDFquantiles)[plotDFquantileIndex],
+        ylim = c(0, maxHeight)
+      ) +
+#      scale_fill_brewer(palette="Set3")[plotDFquantileIndex] +
+      theme_bw() +
+      opts(legend.position = c(0.5, 1)) + 
+      theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
+      theme(axis.title.x = element_blank())
+    }
   )
+  print(
+    do.call(
+      grid.arrange,  c(plots, ncol=4)
+    )
+  )
+#  print(
+#    qplot(
+#      Quantile,
+#      ProportionOfMendelianErrors,
+#      fill=Annotation,
+#      facets=Annotation~.,
+#      data=plotDFquantiles,
+#      geom="bar"
+##      xlab="Quantile",
+##      ylab="log10 (Mendelian/SingleSNPhaplotype error rate)",
+##      ylim=c(-2,0)
+#    )
+##    + geom_bar()
+#    + scale_fill_brewer(palette="Set3")
+#    + theme_bw()
+#  )
   dev.off()
   pdf(paste(plotFilestem, "log10ErrorRates.pdf", sep="."), height=6, width=10)
   print(
