@@ -115,6 +115,7 @@ qcFilteringPlots <- function(
 #  )
   require(ggplot2)
   require(gridExtra)
+  require(RColorBrewer)
   pdf(paste(plotFilestem, "binnedErrorRates.pdf", sep="."), height=20, width=30)
   maxHeight <- max(sapply(plotDFquantiles, function(x) max(x[["ProportionOfMendelianErrors"]])))
   plots <- lapply(
