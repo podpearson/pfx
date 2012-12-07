@@ -128,14 +128,14 @@ qcFilteringPlots <- function(
 #        fill=Annotation,
 #        facets=Annotation~.,
         data=plotDFquantiles[[plotDFquantileIndex]],
-        geom="bar",
+        geom="identity",
         fill=I(brewer.pal(12, "Set3")[plotDFquantileIndex]),
         main=names(plotDFquantiles)[plotDFquantileIndex],
         ylim = c(0, maxHeight)
       ) +
 #      scale_fill_brewer(palette="Set3")[plotDFquantileIndex] +
       theme_bw() +
-      opts(legend.position = c(0.5, 1)) + 
+      theme(legend.position = c(0.5, 1)) + 
       theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
       theme(axis.title.x = element_blank())
     }
