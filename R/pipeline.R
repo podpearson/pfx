@@ -180,7 +180,7 @@ pipeline <- function(
     genotypeConcordance <- compareCalls(vcfSegregating, jiangVcf, plotFilestem=paste(cross, "comparison", "filtered", sep="."), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
     gc()
     if(!file.exists(paste(cross, "mgRecombinations.rda", sep="."))) {
-      mgRecombinations <- recombinationPoints(vcfSegregating, gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
+      mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS"], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
       save(mgRecombinations, file=paste(cross, "mgRecombinations.rda", sep="."))
     } else {
       load(paste(cross, "mgRecombinations.rda", sep="."))
@@ -194,7 +194,7 @@ pipeline <- function(
     medianBreakpointAccuracies <- compareRecombinations(mgRecombinations, jiangRecombinations) # to include slide 9 plot, slide 12 plot, median accuracies, Venn
   } else {
     if(!file.exists(paste(cross, "mgRecombinations.rda", sep="."))) {
-      mgRecombinations <- recombinationPoints(vcfSegregating, gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
+      mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS"], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
       save(mgRecombinations, file=paste(cross, "mgRecombinations.rda", sep="."))
     } else {
       load(paste(cross, "mgRecombinations.rda", sep="."))
@@ -202,22 +202,26 @@ pipeline <- function(
   }
   recombinationRates <- analyseRecombinations(mgRecombinations, plotFilestem=cross) # to include slide 13 plot, breakdown of CO and GC by progeny, chromosome and by cross, CO and GC rates
   returnList <- list(
-    vcfSegregating             = vcfSegregating,
-    mgRecombinations           = mgRecombinations,
-    medianBreakpointAccuracies = medianBreakpointAccuracies,
-    recombinationRates         = recombinationRates,
-    qcFilteringResults         = qcFilteringResults,
-    initialSampleQCresults     = initialSampleQCresults,
-    initialSNPnumbersMatrix    = initialSNPnumbersMatrix,
-    finalSNPnumbersMatrix      = finalSNPnumbersMatrix
+    vcfSegregating                       = vcfSegregating,
+    mgRecombinations                     = mgRecombinations,
+    medianBreakpointAccuracies           = medianBreakpointAccuracies,
+    recombinationRates                   = recombinationRates,
+    qcFilteringResults                   = qcFilteringResults,
+    initialSampleQCresults               = initialSampleQCresults,
+    initialSNPnumbersMatrix              = initialSNPnumbersMatrix,
+    qcFilteringResultsFinalPostFiltering = qcFilteringResultsFinalPostFiltering,
+    finalSampleQCresults                 = finalSampleQCresults,
+    finalSNPnumbersMatrix                = finalSNPnumbersMatrix,
+    finalSNPnumbersMatrix2               = finalSNPnumbersMatrix2,
+    finalUniqueSampleQCresults           = finalUniqueSampleQCresults
   )
   if(shouldCompareWithJiang) {
     returnList <- c(
       returnList,
       list(
-        jiangSampleQCresults   = jiangSampleQCresults,
-        jiangRecombinations    = jiangRecombinations,
-        genotypeConcordance    = genotypeConcordance
+        jiangSampleQCresults             = jiangSampleQCresults,
+        jiangRecombinations              = jiangRecombinations,
+        genotypeConcordance              = genotypeConcordance
       )
     )
   }
