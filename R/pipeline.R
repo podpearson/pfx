@@ -179,13 +179,13 @@ pipeline <- function(
 #    genotypeConcordanceRaw <- compareCalls(vcfFiltered, jiangVcf, plotFilestem=paste(cross, "comparison", "raw", sep="."), discordanceThreshold=discordanceThresholdRawVsJia)
     genotypeConcordance <- compareCalls(vcfSegregating, jiangVcf, plotFilestem=paste(cross, "comparison", "filtered", sep="."), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
     gc()
-    if(!file.exists(paste(cross, "mgRecombinations.rda", sep="."))) {
+    if(!file.exists(paste(cross, "mgRecombinations.rda", sep=".")) & shouldUseSavedVersions) {
       mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS"], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
       save(mgRecombinations, file=paste(cross, "mgRecombinations.rda", sep="."))
     } else {
       load(paste(cross, "mgRecombinations.rda", sep="."))
     }
-    if(!file.exists("~/jiangRecombinations.rda")) {
+    if(!file.exists("~/jiangRecombinations.rda") & shouldUseSavedVersions) {
       jiangRecombinations <- recombinationPoints(jiangVcf, gffGRL, GTsToIntMapping = c("7"=1, "G"=2, "."=0))
       save(jiangRecombinations, file="jiangRecombinations.rda")
     } else {
@@ -193,7 +193,7 @@ pipeline <- function(
     }
     medianBreakpointAccuracies <- compareRecombinations(mgRecombinations, jiangRecombinations) # to include slide 9 plot, slide 12 plot, median accuracies, Venn
   } else {
-    if(!file.exists(paste(cross, "mgRecombinations.rda", sep="."))) {
+    if(!file.exists(paste(cross, "mgRecombinations.rda", sep=".")) & shouldUseSavedVersions) {
       mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS"], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
       save(mgRecombinations, file=paste(cross, "mgRecombinations.rda", sep="."))
     } else {
