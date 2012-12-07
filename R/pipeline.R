@@ -204,7 +204,6 @@ pipeline <- function(
   returnList <- list(
     vcfSegregating                       = vcfSegregating,
     mgRecombinations                     = mgRecombinations,
-    medianBreakpointAccuracies           = medianBreakpointAccuracies,
     recombinationRates                   = recombinationRates,
     qcFilteringResults                   = qcFilteringResults,
     initialSampleQCresults               = initialSampleQCresults,
@@ -219,9 +218,10 @@ pipeline <- function(
     returnList <- c(
       returnList,
       list(
-        jiangSampleQCresults             = jiangSampleQCresults,
-        jiangRecombinations              = jiangRecombinations,
-        genotypeConcordance              = genotypeConcordance
+        jiangSampleQCresults                 = jiangSampleQCresults,
+        jiangRecombinations                  = jiangRecombinations,
+        genotypeConcordance                  = genotypeConcordance,
+        medianBreakpointAccuracies           = medianBreakpointAccuracies
       )
     )
   }
