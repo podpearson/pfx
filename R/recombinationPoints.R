@@ -106,6 +106,9 @@ findRecombinations <- function(
           )
         }
         if(shouldCharacterise && length(gr) > 0) {
+          if("CDS" %in% names(gffGRL)) {
+            gffGRL[["exons"]] <- gffGRL[["CDS"]]
+          }
           values(gr)[["uncertainty"]] <- width(gr)
           values(gr)[["midpoint"]] <- start(gr) + round(width(gr)/2)
           startGR <- GRanges(seqnames=seqnames(gr), ranges=IRanges(start=start(gr), width=1))

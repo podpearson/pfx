@@ -11,6 +11,8 @@ recombinationPlotSeries <- function(
   vcf,
   filters                     = setdiff(unique(unlist(strsplit(filt(vcf), ";"))), c("PASS", ".")),
   chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
+  sampleIDcolumn              = "ox_code",
+  sampleDuplicates            = NULL,
   plotFilestem                = paste(meta(exptData(vcf)[["header"]])["DataSetName", "Value"], seqlevels(vcf), "chromosomePaintingSeries", sep="."),
   width                       = 14,
   height                      = 4,
@@ -44,6 +46,11 @@ recombinationPlotSeries <- function(
             )
             variantsToRemove <- apply(variantsToRemoveMatrix, 1, any)
             GTsCFparents <- convertGTsIntToParentBasedGTs(GTsInt[!variantsToRemove, ])
+            sampleIDmappings <- createSampleIDmappings(
+              sampleIDs=dimnames(GTsCFparents)[[2]],
+              sampleIDcolumn=sampleIDcolumn,
+              sampleDuplicates=sampleDuplicates
+            )
             if(verbose) {
               cat("recombinationPlotSeries: creating recombination plot", chromosome, filtersJoined, "\n")
             }

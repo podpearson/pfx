@@ -21,6 +21,10 @@
 #v3UG_3d7xHb3 <- pipeline("v3UG_3d7xHb3", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj2-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", discordanceThresholdMg=15000, plotFilestem="v3UG_3d7xHb3", parentalStrains=c("ERR019061", "ERR019054"), overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
 #v3UG_Hb3xDd2 <- pipeline("v3UG_Hb3xDd2", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj1-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", discordanceThresholdMg=28000, plotFilestem="v3UG_Hb3xDd2", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
 
+#v3UG_7g8xGb4 <- pipeline("v3UG_7g8xGb4", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj3-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", samplesToRemove = c("ERR045643", "ERR045644", "ERR045645", "ERR045646", "ERR045647", "ERR045625"), discordanceThresholdMg=28000, plotFilestem="v3UG_7g8xGb4", discordanceThresholdRawVsJia=300, overwriteExisting=FALSE, shouldUseSavedVersions=TRUE)
+#v3UG_3d7xHb3 <- pipeline("v3UG_3d7xHb3", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj2-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", discordanceThresholdMg=15000, plotFilestem="v3UG_3d7xHb3", parentalStrains=c("ERR019061", "ERR019054"), overwriteExisting=FALSE, shouldUseSavedVersions=TRUE)
+#v3UG_Hb3xDd2 <- pipeline("v3UG_Hb3xDd2", "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj1-unigen-snponly-BQ20.vcf.gz", chromosomes=sprintf("Pf3D7_%02d_v3", 1:14), filtersToRemove="LowQual", discordanceThresholdMg=28000, plotFilestem="v3UG_Hb3xDd2", overwriteExisting=FALSE, shouldUseSavedVersions=TRUE)
+
 pipeline <- function(
   cross                       = "7g8xGb4",
   vcfFilename                 = file.path("/data/galton/users/rpearson", "crossesTesting", "release", paste(cross, "-qcPlusSamples-0.1.vcf.gz", sep="")),
@@ -30,6 +34,7 @@ pipeline <- function(
   gffFilename                 = "/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/Pf3D7_v3.gatk.gff",
   gffGRL                      = readGffAsGRangesList(gffFilename, chromsomeNames=chromosomes),
   parentalStrains             = NULL,
+  sampleIDcolumn              = "ena_run_accession",
 #  chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
   filtersToRemove             = NULL,
   samplesToRemove             = NULL,
@@ -87,7 +92,7 @@ pipeline <- function(
     save(vcfInitialFiltered, file=vcfInitialFilteredRda)
   }
   initialSampleQCresults <- sampleQC(vcfInitialFiltered, discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "initital", sep="."), gffGRL=gffGRL)
-  initialSNPnumbersMatrix <- recombinationPlotSeries(vcfInitialFiltered, plotFilestem=paste(cross, "initital", sep="."))
+  initialSNPnumbersMatrix <- recombinationPlotSeries(vcfInitialFiltered, plotFilestem=paste(cross, "initital", sep="."), sampleIDcolumn=sampleIDcolumn, sampleDuplicates=initialSampleQCresults[["sampleDuplicates"]])
   if(file.exists(vcfFinalFilteredRda) & shouldUseSavedVersions) {
     load(vcfFinalFilteredRda)
   } else {
@@ -128,18 +133,19 @@ pipeline <- function(
 #  info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating")])
 #  stem(values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["MQ0"]])
 #  stem(values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["SB"]][values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["SB"]]>-Inf])
-  stem(values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["SB"]][values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["SB"]]>-5000])
+#  stem(values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["SB"]][values(info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")]))[["SB"]]>-5000])
 #  info(vcfFinalFiltered[filt(vcfFinalFiltered) %in% c("NonSegregating", "PASS")])
   finalSampleQCresults <- sampleQC(vcfFinalFiltered, discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "final", sep="."), gffGRL=gffGRL)
 #  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("LowQD", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
 #  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("LowQD", "HighSB", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
 #  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("LowQD", "HighSB", "HighMeanMAF", "HighMissingness", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
 #  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("HighMissingness", "HighSB", "HighMeanMAF", "HighMQ0", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
-  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final2", sep="."), filters=c("ExcessiveNoCalls", "HighMissingness", "HighMeanMAF", "HighSB", "HighMQ0", "InVarRegion", "MultiAllelic", "NonSegregating"))
+  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final2", sep="."), filters=c("ExcessiveNoCalls", "HighMissingness", "HighMeanMAF", "HighSB", "HighMQ0", "InVarRegion", "MultiAllelic", "NonSegregating"), sampleIDcolumn=sampleIDcolumn, sampleDuplicates=finalSampleQCresults[["sampleDuplicates"]])
 #  qcPlusUniqueSamples <- setdiff(initialSampleQCresults[["uniqueSamples"]], initialSampleQCresults[["qcFailedSamples"]])
-  qcPlusUniqueSamples <- setdiff(finalSampleQCresults[["uniqueSamples"]], finalSampleQCresults[["qcFailedSamples"]])
+#  qcPlusUniqueSamples <- setdiff(finalSampleQCresults[["uniqueSamples"]], finalSampleQCresults[["qcFailedSamples"]])
+  qcPlusUniqueSamples <- setdiff(initialSampleQCresults[["uniqueSamples"]], c(finalSampleQCresults[["qcFailedSamples"]], initialSampleQCresults[["qcFailedSamples"]]))
 #  finalSNPnumbersMatrix2 <- recombinationPlotSeries(vcfFinalFiltered[, qcPlusUniqueSamples], plotFilestem=paste(cross, "uniqueSamples", sep="."), filters=c("LowQD", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
-  finalSNPnumbersMatrix2 <- recombinationPlotSeries(vcfFinalFiltered[, qcPlusUniqueSamples], plotFilestem=paste(cross, "uniqueSamples", sep="."), filters=c("ExcessiveNoCalls", "HighMissingness", "HighMeanMAF", "HighSB", "HighMQ0", "InVarRegion", "MultiAllelic", "NonSegregating"))
+  finalSNPnumbersMatrix2 <- recombinationPlotSeries(vcfFinalFiltered[, qcPlusUniqueSamples], plotFilestem=paste(cross, "uniqueSamples", sep="."), filters=c("ExcessiveNoCalls", "HighMissingness", "HighMeanMAF", "HighSB", "HighMQ0", "InVarRegion", "MultiAllelic", "NonSegregating"), sampleIDcolumn=sampleIDcolumn, sampleDuplicates=finalSampleQCresults[["sampleDuplicates"]])
   finalUniqueSampleQCresults <- sampleQC(vcfFinalFiltered[, qcPlusUniqueSamples], discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "uniqueSamples", sep="."), gffGRL=gffGRL)
   vcfSegregating <- vcfFinalFiltered
   
@@ -180,7 +186,7 @@ pipeline <- function(
     genotypeConcordance <- compareCalls(vcfSegregating, jiangVcf, plotFilestem=paste(cross, "comparison", "filtered", sep="."), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
     gc()
     if(!file.exists(paste(cross, "mgRecombinations.rda", sep=".")) & shouldUseSavedVersions) {
-      mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS"], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
+      mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS", qcPlusUniqueSamples], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
       save(mgRecombinations, file=paste(cross, "mgRecombinations.rda", sep="."))
     } else {
       load(paste(cross, "mgRecombinations.rda", sep="."))

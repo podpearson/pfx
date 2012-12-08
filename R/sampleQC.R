@@ -242,16 +242,28 @@ sampleQC <- function(
   duplicateSamplePairs <- matrix(lowDiscordancePairs[lowDiscordancePairs[, 1] != lowDiscordancePairs[, 2]], ncol=2)
   uniqueSamplePairs <- unique(apply(duplicateSamplePairs, 1, function(x) paste(sort(x), collapse="_and_")))
   if(verbose) {
-    cat(paste(uniqueSamplePairs, collapse="\n"))
+    cat(paste(uniqueSamplePairs, collapse="\n"), "\n")
   }
   if(shouldCalcMissingnessAndHet) {
     lowDepthVariantsPerSample[parentalIDs] <- 0 # This is a fix to ensure parental strains are always selected (even if the quality of these is sometimes lower than that of a duplicate)
     heterozygosityPerSample[parentalIDs] <- 0   # This is a fix to ensure parental strains are always selected (even if the quality of these is sometimes lower than that of a duplicate)
-    duplicateSamplePairs <- cbind(duplicateSamplePairs, (lowDepthVariantsPerSample[duplicateSamplePairs[, 1]] <= lowDepthVariantsPerSample[duplicateSamplePairs[, 2]])+1)
-    duplicateSamplePairs <- cbind(duplicateSamplePairs, (heterozygosityPerSample[duplicateSamplePairs[, 1]] <= heterozygosityPerSample[duplicateSamplePairs[, 2]])+1)
+    duplicateSamplePairs <- cbind(
+      duplicateSamplePairs,
+      (
+        (lowDepthVariantsPerSample[duplicateSamplePairs[, 1]] < lowDepthVariantsPerSample[duplicateSamplePairs[, 2]]) |
+        (lowDepthVariantsPerSample[duplicateSamplePairs[, 1]] == lowDepthVariantsPerSample[duplicateSamplePairs[, 2]] & duplicateSamplePairs[, 1] < duplicateSamplePairs[, 2])
+      )+1
+    )
+    duplicateSamplePairs <- cbind(
+      duplicateSamplePairs,
+      (
+        (heterozygosityPerSample[duplicateSamplePairs[, 1]] < heterozygosityPerSample[duplicateSamplePairs[, 2]]) |
+        (heterozygosityPerSample[duplicateSamplePairs[, 1]] == heterozygosityPerSample[duplicateSamplePairs[, 2]] & duplicateSamplePairs[, 1] < duplicateSamplePairs[, 2])
+      )+1
+    )
   } else {
-    duplicateSamplePairs <- cbind(duplicateSamplePairs, (duplicateSamplePairs[, 1] <= duplicateSamplePairs[, 2])+1)
-    duplicateSamplePairs <- cbind(duplicateSamplePairs, (duplicateSamplePairs[, 1] <= duplicateSamplePairs[, 2])+1)
+    duplicateSamplePairs <- cbind(duplicateSamplePairs, (duplicateSamplePairs[, 1] < duplicateSamplePairs[, 2])+1)
+    duplicateSamplePairs <- cbind(duplicateSamplePairs, (duplicateSamplePairs[, 1] < duplicateSamplePairs[, 2])+1)
   }
   if(dim(duplicateSamplePairs)[1] > 0) {
     samplesToRemove <- unique(duplicateSamplePairs[cbind(as.integer(seq(length=dim(duplicateSamplePairs)[1])), as.integer(duplicateSamplePairs[, 3]))]) # remove duplicate samples that have non-lowest lowDepthVariants
@@ -260,6 +272,25 @@ sampleQC <- function(
   }
 #  samplesToRemove <- unique(duplicateSamplePairs[cbind(as.integer(seq(length=dim(duplicateSamplePairs)[1])), as.integer(duplicateSamplePairs[, 4]))])
   uniqueSamples <- setdiff(dimnames(GTsInt)[[2]], samplesToRemove)
+  sampleDuplicates <- sapply(
+    dimnames(duplicateSamplePairs)[[1]],
+    function(sampleID) {
+      paste(
+        sort(
+          unique(
+            c(
+              sampleID,
+              duplicateSamplePairs[duplicateSamplePairs[,1]==sampleID, 2],
+              duplicateSamplePairs[duplicateSamplePairs[,2]==sampleID, 1]
+            )
+          )
+        ),
+        collapse="_"
+      )
+    }
+  )
+      
+      
   
   if(shouldCalcRecombinations) {
     mgRecombinations <- recombinationPoints(vcf, gffGRL, shouldCharacterise=FALSE, GTsToIntMapping=GTsToIntMapping)
@@ -308,6 +339,7 @@ sampleQC <- function(
   return(
     list(
       uniqueSamples     = uniqueSamples,
+      sampleDuplicates  = sampleDuplicates,
       qcFailedSamples   = qcFailedSamples,
       mgRecombinations  = mgRecombinations,
       discordanceMatrix = GTsIntDiscordanceMatrix

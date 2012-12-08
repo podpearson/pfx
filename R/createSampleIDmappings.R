@@ -9,8 +9,10 @@
 
 createSampleIDmappings <- function(
   vcfFilename                 = "/data/galton/users/rpearson/crossesTesting/release/7g8xGb4-qcPlusSamples-0.1.vcf.gz",
+  sampleIDs                   = determineSampleIDsFromVcf(vcfFilename),
   shouldUseSampleAnnotation   = TRUE,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
+  sampleIDcolumn              = "ox_code",
   sampleDuplicates        = c(
     "JF6" = "JF6_KC2",
     "KC2" = "JF6_KC2",
@@ -25,9 +27,11 @@ createSampleIDmappings <- function(
     "JH6" = "7G8_JH6"
   )
 ) {
-  sampleIDs <- determineSampleIDsFromVcf(vcfFilename)
   if(shouldUseSampleAnnotation) {
-    sampleAnnotation <- readSampleAnnotation(sampleAnnotationFilename)
+    sampleAnnotation <- readSampleAnnotation(
+      sampleAnnotationFilename,
+      sampleIDcolumn=sampleIDcolumn
+    )
     sampleIDmappings <- sub(
       "^([^_]+)_.*$",
       "\\1",
