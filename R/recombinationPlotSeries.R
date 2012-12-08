@@ -51,11 +51,16 @@ recombinationPlotSeries <- function(
               sampleIDcolumn=sampleIDcolumn,
               sampleDuplicates=sampleDuplicates
             )
+            GTsReorderedResults <- reorderSamples(GTsCFparents, dimnames(GTsCFparents)[[2]][1:2], sampleIDmappings)
             if(verbose) {
               cat("recombinationPlotSeries: creating recombination plot", chromosome, filtersJoined, "\n")
             }
             pdf(paste(plotFilestem, chromosome, filtersJoined, "pdf", sep="."), height=height, width=width)
-            recombinationPlot(GTsCFparents)
+            recombinationPlot(
+              GTsReorderedResults[["GTsInt"]],
+              linePositions = GTsReorderedResults[["linePositions"]]
+            )
+#              GTsCFparents)
             dev.off()
             returnValue <- length(which(!variantsToRemove))
             names(returnValue) <- filtersJoined
