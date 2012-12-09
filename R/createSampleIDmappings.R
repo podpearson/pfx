@@ -13,6 +13,7 @@ createSampleIDmappings <- function(
   shouldUseSampleAnnotation   = TRUE,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
   sampleIDcolumn              = "ox_code",
+  sampleIDmappingsColumn      = "source_code",
   sampleDuplicates        = c(
     "JF6" = "JF6_KC2",
     "KC2" = "JF6_KC2",
@@ -35,7 +36,7 @@ createSampleIDmappings <- function(
     sampleIDmappings <- sub(
       "^([^_]+)_.*$",
       "\\1",
-      sampleAnnotation[sampleIDs, "source_code"]
+      sampleAnnotation[sampleIDs, sampleIDmappingsColumn]
     )
     names(sampleIDmappings) <- paste(
       sampleAnnotation[sampleIDs, "source_code"],

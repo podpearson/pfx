@@ -12,10 +12,11 @@ recombinationPlotSeries <- function(
   filters                     = setdiff(unique(unlist(strsplit(filt(vcf), ";"))), c("PASS", ".")),
   chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
   sampleIDcolumn              = "ox_code",
+  sampleIDmappingsColumn      = "source_code",
   sampleDuplicates            = NULL,
   plotFilestem                = paste(meta(exptData(vcf)[["header"]])["DataSetName", "Value"], seqlevels(vcf), "chromosomePaintingSeries", sep="."),
   width                       = 14,
-  height                      = 4,
+  height                      = 5,
   verbose                     = TRUE
 ) {
   returnMatrix <- sapply(
@@ -49,9 +50,11 @@ recombinationPlotSeries <- function(
             sampleIDmappings <- createSampleIDmappings(
               sampleIDs=dimnames(GTsCFparents)[[2]],
               sampleIDcolumn=sampleIDcolumn,
+              sampleIDmappingsColumn=sampleIDmappingsColumn,
               sampleDuplicates=sampleDuplicates
             )
-            GTsReorderedResults <- reorderSamples(GTsCFparents, dimnames(GTsCFparents)[[2]][1:2], sampleIDmappings)
+#            browser()
+            GTsReorderedResults <- reorderSamples(GTsCFparents, dimnames(GTsCFparents)[[2]][c(dim(GTsCFparents)[2]-1, dim(GTsCFparents)[2])], sampleIDmappings) # parents are last two columns as convertGTsIntToParentBasedGTs reverses the order
             if(verbose) {
               cat("recombinationPlotSeries: creating recombination plot", chromosome, filtersJoined, "\n")
             }

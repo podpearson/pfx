@@ -21,12 +21,12 @@ recombinationPlot = function(
 {
   layout(matrix(c(1,2),byrow = TRUE, ncol = 1),heights = c(4,2))
   num.samples = dim(genotypesMatrix)[2]
-  par(mar=c(0,7,1,2))
+  par(mar=c(0,9,1,2))
   par(cex.lab=1.3)
   if(is.null(main)) {
-    image(genotypesMatrix,col = col,breaks=breaks,axes=FALSE,ylab="Samples")
+    image(genotypesMatrix,col = col,breaks=breaks,axes=FALSE,ylab="")
   } else {
-    image(genotypesMatrix,col = col,breaks=breaks,axes=FALSE,ylab="Samples",main=main )
+    image(genotypesMatrix,col = col,breaks=breaks,axes=FALSE,ylab="",main=main )
   }
   lineYcoords <- 1 - (linePositions/(length(sampleIDs)-1)) + (0.5/length(sampleIDs))
   sapply(
@@ -40,7 +40,7 @@ recombinationPlot = function(
   box()
   max.val = max(positions,na.rm=TRUE);
   min.val = min(positions,na.rm=TRUE);
-  par(mar=c(3,7,0,2))
+  par(mar=c(3,9,0,2))
   plot(1,col="white", type="n", xlab= "SNP Position", axes=FALSE,xaxs="i",yaxs="i",ylim=c(0,1),xlim=c(min.val,max.val),ylab="")
   box();
   for (k in seq(1,num.snps,by = thin))

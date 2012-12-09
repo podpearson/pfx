@@ -10,7 +10,8 @@
 reorderSamples <- function(
   GTsInt,
   parentalIDs,
-  sampleIDmappings
+  sampleIDmappings,
+  reverseOrderOfSamples=TRUE
 ) {
   parentalSampleIndexes <- which(
     sampleIDmappings %in% sampleIDmappings[
@@ -42,6 +43,9 @@ reorderSamples <- function(
     order(sampleIDmappings[-(parentalSampleIndexes)])
   ]
   reorderedGTsInt <- cbind(parentalSampleGTsInt, progenySampleGTsInt)
+  if(reverseOrderOfSamples) {
+    reorderedGTsInt <- reorderedGTsInt[, rev(seq(dim(reorderedGTsInt)[2]))]
+  }
   uniqueSampleIDs <- c(
     sampleIDmappings[parentalSampleIndexes][
       order(sampleIDmappings[parentalSampleIndexes])
