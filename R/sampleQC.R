@@ -21,6 +21,7 @@ sampleQC <- function(
 #  GTsToIntMapping             = c("7"=1, "G"=2, "."=0), # values for jiangVcf
   parentalIDs                 = dimnames(vcf)[[2]][1:2],
   keepPASSvariantsOnly        = TRUE,
+  shouldRenameSamples         = TRUE,
   thresholdLowDepth           = "3sd",
   thresholdHeterozgosity      = "3sd",
   thresholdMendelianErrors    = "3sd",
@@ -36,6 +37,9 @@ sampleQC <- function(
 ) {
   require(ggplot2)
   require(reshape2)
+  if(shouldRenameSamples) {
+    vcf <- renameSamples(vcf)
+  }
   if(keepPASSvariantsOnly) {
     vcf <- vcf[filt(vcf) %in% c("PASS", ".")]
   }
@@ -56,10 +60,10 @@ sampleQC <- function(
       thresholdHeterozgosity <- meanValue + (numberOfSDs * sdValue)
     }
     if(shouldCreatePlots) {
-      pdf(paste(plotFilestem, "lowDepthVariantsPerSample.pdf", sep="."), height=5, width=8)
+      pdf(paste(plotFilestem, "lowDepthVariantsPerSample.pdf", sep="."), height=8, width=8)
       print(
         qplot(
-          x=names(lowDepthVariantsPerSample),
+          x=factor(names(lowDepthVariantsPerSample), levels=names(lowDepthVariantsPerSample)),
           y=lowDepthVariantsPerSample,
           xlab="Sample ID",
           ylab="Number of low depth SNPs",
@@ -70,10 +74,10 @@ sampleQC <- function(
         + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
       )
       dev.off()
-      pdf(paste(plotFilestem, "heterozygosityPerSample.pdf", sep="."), height=5, width=8)
+      pdf(paste(plotFilestem, "heterozygosityPerSample.pdf", sep="."), height=8, width=8)
       print(
         qplot(
-          x=names(heterozygosityPerSample),
+          x=factor(names(heterozygosityPerSample), levels=names(heterozygosityPerSample)),
           y=heterozygosityPerSample,
           xlab="Sample ID",
           ylab="Number of heterozygous SNPs (>=2 ref and alt reads)",
@@ -105,10 +109,10 @@ sampleQC <- function(
       numberOfSDs <- as.integer(sub("sd", "", thresholdNoCalls))
       thresholdNoCalls <- meanValue + (numberOfSDs * sdValue)
     }
-    pdf(paste(plotFilestem, "nocallGenotypesPerSample.pdf", sep="."), height=5, width=8)
+    pdf(paste(plotFilestem, "nocallGenotypesPerSample.pdf", sep="."), height=8, width=8)
     print(
       qplot(
-        x=names(nocallGenotypesPerSample),
+        x=factor(names(nocallGenotypesPerSample), levels=names(nocallGenotypesPerSample)),
         y=nocallGenotypesPerSample,
         xlab="Sample ID",
         ylab="Number of no call genotypes",
@@ -132,10 +136,10 @@ sampleQC <- function(
       numberOfSDs <- as.integer(sub("sd", "", thresholdThirdOrFourthAllele))
       thresholdThirdOrFourthAllele <- meanValue + (numberOfSDs * sdValue)
     }
-    pdf(paste(plotFilestem, "thirdOrFourthAllelesPerSample.pdf", sep="."), height=5, width=8)
+    pdf(paste(plotFilestem, "thirdOrFourthAllelesPerSample.pdf", sep="."), height=8, width=8)
     print(
       qplot(
-        x=names(thirdOrFourthAllelesPerSample),
+        x=factor(names(thirdOrFourthAllelesPerSample), levels=names(thirdOrFourthAllelesPerSample)),
         y=thirdOrFourthAllelesPerSample,
         xlab="Sample ID",
         ylab="Number of third or fourth allele genotypes",
@@ -170,10 +174,10 @@ sampleQC <- function(
       numberOfSDs <- as.integer(sub("sd", "", thresholdMendelianErrors))
       thresholdMendelianErrors <- meanValue + (numberOfSDs * sdValue)
     }
-    pdf(paste(plotFilestem, "mendelianErrorsPerSample.pdf", sep="."), height=5, width=8)
+    pdf(paste(plotFilestem, "mendelianErrorsPerSample.pdf", sep="."), height=8, width=8)
     print(
       qplot(
-        x=names(MendelianErrorsPerSample),
+        x=factor(names(MendelianErrorsPerSample), levels=names(MendelianErrorsPerSample)),
         y=MendelianErrorsPerSample,
         xlab="Sample ID",
         ylab="Number of SNPs with Mendelian errors",
@@ -221,7 +225,7 @@ sampleQC <- function(
       )
       dev.off()
     }
-    pdf(paste(plotFilestem, "concordanceHeatmapAll.pdf", sep="."), height=6, width=8)
+    pdf(paste(plotFilestem, "concordanceHeatmapAll.pdf", sep="."), height=10, width=12)
     print(
       ggplot(
         melt(GTsIntDiscordanceMatrix, value.name="Discordances"),
@@ -309,10 +313,10 @@ sampleQC <- function(
       thresholdRecombinations <- meanRecombinations + (numberOfSDs * sdRecombinations)
     }
     
-    pdf(paste(plotFilestem, "recombinationsPerSample.pdf", sep="."), height=5, width=8)
+    pdf(paste(plotFilestem, "recombinationsPerSample.pdf", sep="."), height=8, width=8)
     print(
       qplot(
-        x=names(recombinationsPerSample),
+        x=factor(names(recombinationsPerSample), levels=names(recombinationsPerSample)),
         y=recombinationsPerSample,
         xlab="Sample ID",
         ylab="Number of apparent recombinations",

@@ -13,8 +13,12 @@ compareCalls <- function(
   distanceThresholds          = c(0, 22),
   discordanceThreshold        = 100,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
-  plotFilestem                = paste(meta(exptData(subjectVcf)[["header"]])["DataSetName", "Value"], "comparison", sep=".")
+  plotFilestem                = paste(meta(exptData(subjectVcf)[["header"]])["DataSetName", "Value"], "comparison", sep="."),
+  shouldRenameSubjectSamples  = TRUE
 ) {
+  if(shouldRenameSubjectSamples) {
+    subjectVcf <- renameSamples(subjectVcf)
+  }
   sampleAnnotation <- readSampleAnnotation(sampleAnnotationFilename)
 #  sampleAnnotation <- read.delim(sampleAnnotationFilename)
 #  sampleAnnotation[["cross"]] <- ifelse(sampleAnnotation[["project_code"]]=="PFproj1", "Hb3xDd2", ifelse(sampleAnnotation[["project_code"]]=="PFproj2", "3d7xHb3", "7g8xGb4"))
@@ -72,7 +76,7 @@ compareCalls <- function(
   )
   dev.off()
 
-  pdf(paste(plotFilestem, "discordanceHeatmap.pdf", sep="."), height=6, width=10)
+  pdf(paste(plotFilestem, "discordanceHeatmap.pdf", sep="."), height=10, width=10)
   print(
     ggplot(
       melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances"),

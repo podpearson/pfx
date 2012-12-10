@@ -185,14 +185,15 @@ pipeline <- function(
     genotypeConcordanceRaw <- compareCalls(vcfVariantAnnotated, jiangVcf, plotFilestem=paste(cross, "comparison", "raw", sep="."), discordanceThreshold=discordanceThresholdRawVsJia)
 #    genotypeConcordanceRaw <- compareCalls(vcfFiltered, jiangVcf, plotFilestem=paste(cross, "comparison", "raw", sep="."), discordanceThreshold=discordanceThresholdRawVsJia)
     genotypeConcordance <- compareCalls(vcfSegregating, jiangVcf, plotFilestem=paste(cross, "comparison", "filtered", sep="."), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
+    genotypeConcordancePf3D7_02_v3 <- compareCalls(vcfSegregating[seqnames(vcfSegregating)=="Pf3D7_02_v3"], jiangVcf[seqnames(jiangVcf)=="Pf3D7_02_v3"], plotFilestem=paste(cross, "comparison", "Pf3D7_02_v3", sep="."), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
     gc()
-    if(!file.exists(paste(cross, "mgRecombinations.rda", sep=".")) & shouldUseSavedVersions) {
+    if(!file.exists(paste(cross, "mgRecombinations.rda", sep=".")) | !shouldUseSavedVersions) {
       mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS", qcPlusUniqueSamples], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
       save(mgRecombinations, file=paste(cross, "mgRecombinations.rda", sep="."))
     } else {
       load(paste(cross, "mgRecombinations.rda", sep="."))
     }
-    if(!file.exists("~/jiangRecombinations.rda") & shouldUseSavedVersions) {
+    if(!file.exists("~/jiangRecombinations.rda") | !shouldUseSavedVersions) {
       jiangRecombinations <- recombinationPoints(jiangVcf, gffGRL, GTsToIntMapping = c("7"=1, "G"=2, "."=0))
       save(jiangRecombinations, file="jiangRecombinations.rda")
     } else {
@@ -228,6 +229,7 @@ pipeline <- function(
         jiangSampleQCresults                 = jiangSampleQCresults,
         jiangRecombinations                  = jiangRecombinations,
         genotypeConcordance                  = genotypeConcordance,
+        genotypeConcordancePf3D7_02_v3       = genotypeConcordancePf3D7_02_v3,
         medianBreakpointAccuracies           = medianBreakpointAccuracies
       )
     )
