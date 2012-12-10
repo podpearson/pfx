@@ -12,7 +12,7 @@ renameSamples <- function(
   sampleIDmappings            = createSampleIDmappings(
     sampleIDs                   = dimnames(vcf)[[2]],
     sampleIDcolumn              = "ena_run_accession",
-    sampleIDmappingsColumn      = sampleIDcolumn
+    sampleIDmappingsColumn      = "ena_run_accession"
   )
 ) {
   dimnames(vcf)[[2]] <- names(sampleIDmappings)
