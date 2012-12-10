@@ -24,11 +24,22 @@ recombinationPlotSeries <- function(
     function(chromosome) {
       GTsInt <- genotypeCallsFromGTas012(vcf[seqnames(vcf)==chromosome])  
       GTsCFparents <- convertGTsIntToParentBasedGTs(GTsInt)
+      sampleIDmappings <- createSampleIDmappings(
+        sampleIDs=dimnames(GTsCFparents)[[2]],
+        sampleIDcolumn=sampleIDcolumn,
+        sampleIDmappingsColumn=sampleIDmappingsColumn,
+        sampleDuplicates=sampleDuplicates
+      )
+      GTsReorderedResults <- reorderSamples(GTsCFparents, dimnames(GTsCFparents)[[2]][c(dim(GTsCFparents)[2]-1, dim(GTsCFparents)[2])], sampleIDmappings) # parents are last two columns as convertGTsIntToParentBasedGTs reverses the order
       if(verbose) {
         cat("recombinationPlotSeries: creating recombination plot", chromosome, "raw", "\n")
       }
       pdf(paste(plotFilestem, chromosome, "raw", "pdf", sep="."), height=height, width=width)
-      recombinationPlot(GTsCFparents)
+      recombinationPlot(
+        GTsReorderedResults[["GTsInt"]],
+        linePositions = GTsReorderedResults[["linePositions"]]
+      )
+#      recombinationPlot(GTsCFparents)
       dev.off()
       returnValue <- dim(GTsCFparents)[1]
       names(returnValue) <- "raw"

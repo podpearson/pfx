@@ -48,7 +48,7 @@ pipeline <- function(
   discordanceThresholdSeg     = 100,
   discordanceThresholdJiang   = 100,
   discordanceThresholdRawVsJia= 100,
-  discordanceThresholdFltVsJia= 100,
+  discordanceThresholdFltVsJia= 50,
   shouldCompareWithJiang      = grepl("7g8xGb4", cross),
   overwriteExisting           = NULL,
   shouldUseSavedVersions      = TRUE,
@@ -92,7 +92,7 @@ pipeline <- function(
     )
     save(vcfInitialFiltered, file=vcfInitialFilteredRda)
   }
-  initialSampleQCresults <- sampleQC(vcfInitialFiltered, discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "initital", sep="."), gffGRL=gffGRL)
+  initialSampleQCresults <- sampleQC(vcfInitialFiltered, discordanceThreshold=discordanceThresholdInitial, plotFilestem=paste(cross, "initital", sep="."), gffGRL=gffGRL, sampleIDcolumn=sampleIDcolumn, sampleIDmappingsColumn=sampleIDmappingsColumn)
   initialSNPnumbersMatrix <- recombinationPlotSeries(vcfInitialFiltered, plotFilestem=paste(cross, "initital", sep="."), sampleIDcolumn=sampleIDcolumn, sampleIDmappingsColumn=sampleIDmappingsColumn, sampleDuplicates=initialSampleQCresults[["sampleDuplicates"]])
   if(file.exists(vcfFinalFilteredRda) & shouldUseSavedVersions) {
     load(vcfFinalFilteredRda)
@@ -141,7 +141,7 @@ pipeline <- function(
 #  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("LowQD", "HighSB", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
 #  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("LowQD", "HighSB", "HighMeanMAF", "HighMissingness", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
 #  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("HighMissingness", "HighSB", "HighMeanMAF", "HighMQ0", "InVarRegion", "NonSegregating", "ExcessiveNoCalls"))
-  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final2", sep="."), filters=c("ExcessiveNoCalls", "HighMissingness", "HighMeanMAF", "HighSB", "HighMQ0", "InVarRegion", "MultiAllelic", "NonSegregating"), sampleIDcolumn=sampleIDcolumn, sampleIDmappingsColumn=sampleIDmappingsColumn, sampleDuplicates=finalSampleQCresults[["sampleDuplicates"]])
+  finalSNPnumbersMatrix <- recombinationPlotSeries(vcfFinalFiltered, plotFilestem=paste(cross, "final", sep="."), filters=c("ExcessiveNoCalls", "HighMissingness", "HighMeanMAF", "HighSB", "HighMQ0", "InVarRegion", "MultiAllelic", "NonSegregating"), sampleIDcolumn=sampleIDcolumn, sampleIDmappingsColumn=sampleIDmappingsColumn, sampleDuplicates=finalSampleQCresults[["sampleDuplicates"]])
 #  qcPlusUniqueSamples <- setdiff(initialSampleQCresults[["uniqueSamples"]], initialSampleQCresults[["qcFailedSamples"]])
 #  qcPlusUniqueSamples <- setdiff(finalSampleQCresults[["uniqueSamples"]], finalSampleQCresults[["qcFailedSamples"]])
   qcPlusUniqueSamples <- setdiff(initialSampleQCresults[["uniqueSamples"]], c(finalSampleQCresults[["qcFailedSamples"]], initialSampleQCresults[["qcFailedSamples"]]))
@@ -177,7 +177,7 @@ pipeline <- function(
 #  uniqueSamples(vcfSegregating, discordanceThreshold=discordanceThresholdSeg, plotFilestem=paste(meta(exptData(vcf)[["header"]])["DataSetName", "Value"], "segregating", sep="."))
   if(shouldCompareWithJiang) {
     jiangVcf <- loadJiangGenotypesAsVcf() # make this return a VCF?
-    jiangSampleQCresults <- sampleQC(jiangVcf, discordanceThresholdJiang, plotFilestem="JiangEtAl", GTsToIntMapping = c("7"=1, "G"=2, "."=0), shouldCalcMissingnessAndHet=FALSE) # should output heatmap of discordances
+    jiangSampleQCresults <- sampleQC(jiangVcf, discordanceThresholdJiang, plotFilestem="JiangEtAl", GTsToIntMapping = c("7"=1, "G"=2, "."=0), shouldCalcMissingnessAndHet=FALSE, shouldRenameSamples=FALSE) # should output heatmap of discordances
 #    jiangUniqueSamples <- uniqueSamples(jiangVcf, discordanceThresholdJiang, plotFilestem="JiangEtAl", GTsToIntMapping = c("7"=1, "G"=2, "."=0)) # should output heatmap of discordances
     if(cross=="v3UG_7g8xGb4") {
       seqlevels(jiangVcf) <- sprintf("Pf3D7_%02d_v3", as.integer(sub("MAL", "", seqlevels(jiangVcf))))
@@ -186,6 +186,8 @@ pipeline <- function(
 #    genotypeConcordanceRaw <- compareCalls(vcfFiltered, jiangVcf, plotFilestem=paste(cross, "comparison", "raw", sep="."), discordanceThreshold=discordanceThresholdRawVsJia)
     genotypeConcordance <- compareCalls(vcfSegregating, jiangVcf, plotFilestem=paste(cross, "comparison", "filtered", sep="."), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
     genotypeConcordancePf3D7_02_v3 <- compareCalls(vcfSegregating[seqnames(vcfSegregating)=="Pf3D7_02_v3"], jiangVcf[seqnames(jiangVcf)=="Pf3D7_02_v3"], plotFilestem=paste(cross, "comparison", "Pf3D7_02_v3", sep="."), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
+    genotypeConcordance6chromosomes <- compareCalls(vcfSegregating[seqnames(vcfSegregating) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_09_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], jiangVcf[seqnames(jiangVcf) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_09_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], plotFilestem=paste(cross, "comparison", "6chromosomes", sep="."), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
+    genotypeConcordance5chromosomes <- compareCalls(vcfSegregating[seqnames(vcfSegregating) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], jiangVcf[seqnames(jiangVcf) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], plotFilestem=paste(cross, "comparison", "5chromosomes", sep="."), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
     gc()
     if(!file.exists(paste(cross, "mgRecombinations.rda", sep=".")) | !shouldUseSavedVersions) {
       mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS", qcPlusUniqueSamples], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
@@ -201,7 +203,7 @@ pipeline <- function(
     }
     medianBreakpointAccuracies <- compareRecombinations(mgRecombinations, jiangRecombinations) # to include slide 9 plot, slide 12 plot, median accuracies, Venn
   } else {
-    if(!file.exists(paste(cross, "mgRecombinations.rda", sep=".")) & shouldUseSavedVersions) {
+    if(!file.exists(paste(cross, "mgRecombinations.rda", sep=".")) | !shouldUseSavedVersions) {
       mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS"], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
       save(mgRecombinations, file=paste(cross, "mgRecombinations.rda", sep="."))
     } else {
@@ -234,6 +236,7 @@ pipeline <- function(
       )
     )
   }
+  save(returnList, file=paste(cross, "returnList.rda", sep="."))
   return(returnList)
 }
 

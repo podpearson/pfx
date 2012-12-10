@@ -29,7 +29,8 @@ compareCalls <- function(
 ##  row.names(sampleAnnotation) <- gsub("-", "\\.", sampleAnnotation[["ox_code"]])
   
   subjectGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(subjectVcf))
-  dimnames(subjectGTsCFparents)[[2]] <- paste(sampleAnnotation[dimnames(subjectGTsCFparents)[[2]], "source_code"], " (", dimnames(subjectGTsCFparents)[[2]], ")", sep="")
+#  browser()
+#  dimnames(subjectGTsCFparents)[[2]] <- paste(sampleAnnotation[dimnames(subjectGTsCFparents)[[2]], "source_code"], " (", dimnames(subjectGTsCFparents)[[2]], ")", sep="")
   comparisonGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(comparisonVcf, GTsToIntMapping = c("7"=1, "G"=2, "."=0)))
   comparisonNearestSubjectGR <- rowData(subjectVcf)[nearest(rowData(comparisonVcf), rowData(subjectVcf))]
   table(start(ranges(comparisonNearestSubjectGR)) - start(ranges(rowData(comparisonVcf))))
@@ -76,10 +77,14 @@ compareCalls <- function(
   )
   dev.off()
 
+  discordanceDF <- melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances")
+  discordanceDF[["putativeDuplicateSample"]] <- discordanceDF[["Discordances"]] <= discordanceThreshold
+  
   pdf(paste(plotFilestem, "discordanceHeatmap.pdf", sep="."), height=10, width=10)
   print(
     ggplot(
-      melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances"),
+      discordanceDF,
+#      melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances"),
       aes(x=Var1, y=Var2, fill=Discordances)
     )
     + geom_tile()
@@ -90,6 +95,21 @@ compareCalls <- function(
     + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 #    + theme(axis.title.x = text(labels="Jiang et al. sample ID"))
 #    + theme(axis.title.y = element_blank())
+  )
+  dev.off()
+
+  pdf(paste(plotFilestem, "putativeIdenticalSamples.pdf", sep="."), height=10, width=10)
+  print(
+    ggplot(
+      discordanceDF,
+      aes(x=Var1, y=Var2, fill=putativeDuplicateSample)
+    )
+    + geom_tile()
+    + scale_fill_grey()
+    + theme_bw()
+    + xlab("Jiang et al. sample ID")
+    + ylab("Malariagen sample ID")
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
   )
   dev.off()
 
