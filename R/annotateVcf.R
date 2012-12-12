@@ -39,6 +39,10 @@ annotateVcf <- function(
   MAF <- pmin(RefReads, FirstAltReads)/(RefReads+FirstAltReads)
 #  MAF <- pmin(ADsArray[1,,], ADsArray[2,,])/(ADsArray[1,,]+ADsArray[2,,])
   meanVariantMAFs <- rowMeans(MAF, na.rm = TRUE)
+  maxVariantMAFs <- apply(MAF, 1, function(x) max(x, na.rm=TRUE))
+  parent1MAF <- MAF[, parentalIDs[1]]
+  parent2MAF <- MAF[, parentalIDs[2]]
+  maxParentMAF <- pmax(parent1MAF, parent2MAF, na.rm=TRUE)
   
   missingness <- apply(GTsInt, 1, function(x) length(which(x==0)))
   
@@ -70,6 +74,10 @@ annotateVcf <- function(
     values(info(vcf)),
     DataFrame(
       meanMAF = meanVariantMAFs,
+      maxMAF = maxVariantMAFs,
+      parent1MAF = parent1MAF,
+      parent2MAF = parent2MAF,
+      maxParentMAF = maxParentMAF,
       missingness = missingness,
       missingness2 = missingnessPerVariant,
       heterozgosity = heterozygosityPerVariant,
@@ -106,6 +114,10 @@ annotateVcf <- function(
       INFO=rbind(
         info(exptData(vcf)[["header"]]),
         DataFrame(Number="1", Type="Float", Description="Mean across samples of proportion of minor allele reads (something like a heterozygosity score)", row.names="meanMAF"),
+        DataFrame(Number="1", Type="Float", Description="Maximum across samples of proportion of minor allele reads (something like a heterozygosity score)", row.names="maxMAF"),
+        DataFrame(Number="1", Type="Float", Description="Proportion of minor allele reads for first parent (something like a heterozygosity score)", row.names="parent1MAF"),
+        DataFrame(Number="1", Type="Float", Description="Proportion of minor allele reads for second parent (something like a heterozygosity score)", row.names="parent2MAF"),
+        DataFrame(Number="1", Type="Float", Description="Maximum proportion of minor allele reads in parents (something like a heterozygosity score)", row.names="maxParentMAF"),
         DataFrame(Number="1", Type="Integer", Description="Number of samples with a missing genotype call", row.names="missingness"),
         DataFrame(Number="0", Type="Flag", Description="Is this a segregating site (i.e. do parents have different genotypes", row.names="SEGREGATING"),
         DataFrame(Number="1", Type="Integer", Description="Number of Mendelian errors (parents have same genotype, progeny has differenet genotype) in progeny", row.names="MendelianErrors")

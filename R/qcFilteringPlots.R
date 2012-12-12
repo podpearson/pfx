@@ -12,7 +12,7 @@ qcFilteringPlots <- function(
   plotFilestem                = "7G8xGB4",
   variablesToPlot             = c(
 #    "AC"             = "highIsGood",
-    "BaseQRankSum"   = "highIsGood",
+#    "BaseQRankSum"   = "highIsGood",
 #    "DS"             = "lowIsGood",
 #    "Dels"           = "lowIsGood",
     "FS"             = "lowIsGood",
@@ -22,16 +22,18 @@ qcFilteringPlots <- function(
     "MQRankSum"      = "highIsGood",
     "QD"             = "highIsGood",
 #    "RPA"            = "lowIsGood",
-    "ReadPosRankSum" = "highIsGood",
+#    "ReadPosRankSum" = "highIsGood",
     "SB"             = "lowIsGood",
     "meanMAF"        = "lowIsGood",
+    "maxMAF"         = "lowIsGood",
+    "maxParentMAF"   = "lowIsGood",
 #    "missingness"    = "lowIsGood",
     "missingness2"   = "lowIsGood",
     "heterozgosity"  = "lowIsGood"
   ),
   variablesToPlotQuantiles = c(
 #    "AC"             = "highIsGood",
-    "BaseQRankSum"   = "highIsGood",
+#    "BaseQRankSum"   = "highIsGood",
 #    "DS"             = "lowIsGood",
 #    "Dels"           = "lowIsGood",
     "FS"             = "lowIsGood",
@@ -41,9 +43,11 @@ qcFilteringPlots <- function(
     "MQRankSum"      = "highIsGood",
     "QD"             = "highIsGood",
 #    "RPA"            = "lowIsGood",
-    "ReadPosRankSum" = "highIsGood",
+#    "ReadPosRankSum" = "highIsGood",
     "SB"             = "lowIsGood",
     "meanMAF"        = "lowIsGood",
+    "maxMAF"         = "lowIsGood",
+    "maxParentMAF"   = "lowIsGood",
 #    "missingness"    = "lowIsGood"
     "missingness2"   = "lowIsGood",
     "heterozgosity"  = "lowIsGood"
