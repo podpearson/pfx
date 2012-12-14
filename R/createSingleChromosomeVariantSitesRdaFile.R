@@ -8,8 +8,10 @@
 
 
 createSingleChromosomeVariantSitesRdaFile <- function(
-  vcfFilename                 = file.path("/data/galton/users/rpearson", "crossesTesting", "release", "7g8xGb4-qcPlusSamples-0.1.vcf.gz"),
-  chromosome                  = "MAL1",
+  vcfFilename                 = "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_default/snp_genotypes_analysis/PFproj1-unigen-snponly-BQ20.vcf.gz",
+  chromosome                  = "Pf3D7_01_v3",
+#  vcfFilename                 = file.path("/data/galton/users/rpearson", "crossesTesting", "release", "7g8xGb4-qcPlusSamples-0.1.vcf.gz"),
+#  chromosome                  = "MAL1",
   genoToLoad                  = c("GT", "AD"),
   shouldRemoveInvariant       = TRUE,
 #  regionsMask                 = varRegions_v2(), # will remove any variants in these regions. Set to NULL if you don't want to mask any variants out in this way
@@ -29,6 +31,10 @@ createSingleChromosomeVariantSitesRdaFile <- function(
 #    "SITE_CONF" = list(operator="<=", value=200)
 #  )
   possibleMissingValues       = c(".", "./.", ".|."),
+  externalFileDetails         = list(
+    list(fileFmt="data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.5.txt.gz", columnsInFile="prox", columnsInVcf="homopolymer5Proximity", chromColumn="chr", posColumn="pos")
+  ),
+  shouldAnnotateUsingExternal = !is.null(externalFileDetails),
   outputRdaFilename           = sub("\\.vcf[\\.gz]*$", paste("\\.variantSites\\.", chromosome,"\\.rda", sep=""), vcfFilename),
   overwriteExisting           = !(file.exists(outputRdaFilename)),
   saveAsRobjectFile           = TRUE,
@@ -62,6 +68,11 @@ createSingleChromosomeVariantSitesRdaFile <- function(
       additionalInfoFilters       = additionalInfoFilters,
       additionalGenotypeFilters   = additionalGenotypeFilters,
       possibleMissingValues       = possibleMissingValues
+    )
+    vcf <- annotateVcfFromExternal(
+      vcf,
+      chromosome                  = chromosome,
+      externalFileDetails         = externalFileDetails
     )
 #    if(!is.null(samplesToRemove)) {
 #      sampleToKeep <- setdiff(row.names(colData(vcf)), samplesToRemove)
