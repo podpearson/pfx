@@ -98,4 +98,4 @@ annotateVcfFromExternal <- function(
   }
   GC500 <- read.table(GC500filename, header=FALSE, sep="\t", as.is=TRUE)
   names(GC500) <- c("chrom", "pos", "GC500")
-
+}
