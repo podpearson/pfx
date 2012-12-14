@@ -32,7 +32,10 @@ createSingleChromosomeVariantSitesRdaFile <- function(
 #  )
   possibleMissingValues       = c(".", "./.", ".|."),
   externalFileDetails         = list(
-    list(fileFmt="data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.5.txt.gz", columnsInFile="prox", columnsInVcf="homopolymer5Proximity", chromColumn="chr", posColumn="pos")
+    list(fileFmt="/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.5.txt.gz", columnsInFile="prox", columnsInVcf="homopolymer5Proximity", chromColumn="chr", posColumn="pos"),
+    list(fileFmt="/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.10.txt.gz", columnsInFile="prox", columnsInVcf="homopolymer10Proximity", chromColumn="chr", posColumn="pos"),
+    list(fileFmt="/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.10.txt.gz", columnsInFile="prox", columnsInVcf="homopolymer15Proximity", chromColumn="chr", posColumn="pos")
+#    list(fileFmt="/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.10.txt.gz", columnsInFile="prox", columnsInVcf="homopolymer15Proximity", chromColumn="chr", posColumn="pos"),
   ),
   shouldAnnotateUsingExternal = !is.null(externalFileDetails),
   outputRdaFilename           = sub("\\.vcf[\\.gz]*$", paste("\\.variantSites\\.", chromosome,"\\.rda", sep=""), vcfFilename),
