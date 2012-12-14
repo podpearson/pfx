@@ -11,9 +11,10 @@ annotateVcfFromExternal <- function(
   vcf,
   chromosome                  = "Pf3D7_01_v3",
   externalFileDetails         = list(
-    list(fileFmt="data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.5.txt.gz", columnsInFile="prox", columnsInVcf="homopolymer5Proximity", chromColumn="chr", posColumn="pos")
-#    list(fileFmt="data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.10.txt.gz", columnInFile="prox", columnInVcf="homopolymer10Proximity"),
-#    list(fileFmt="data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.15.txt.gz", columnInFile="prox", columnInVcf="homopolymer15Proximity"),
+    list(fileFmt="/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.5.txt.gz", columnsInFile="prox", columnsInVcf="homopolymer5Proximity", chromColumn="chr", posColumn="pos"),
+    list(fileFmt="/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.10.txt.gz", columnsInFile="prox", columnsInVcf="homopolymer10Proximity", chromColumn="chr", posColumn="pos"),
+    list(fileFmt="/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.10.txt.gz", columnsInFile="prox", columnsInVcf="homopolymer15Proximity", chromColumn="chr", posColumn="pos")
+#    list(fileFmt="/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/homopolymers/%s.homopolymer_proximity.10.txt.gz", columnsInFile="prox", columnsInVcf="homopolymer15Proximity", chromColumn="chr", posColumn="pos"),
   ),
 #  regionsBedFilename          = "meta/regions_v3.bed",
 #  UQfilename                  = paste("data/genome/sanger/version3/September_2012/", chromosome, ".uniqueness_to500.txt", sep=""),
@@ -31,6 +32,9 @@ annotateVcfFromExternal <- function(
       values(valuesGR) <- DataFrame(valuesDF[, currentFile[["columnsInFile"]]])
       names(values(valuesGR)) <- currentFile[["columnsInVcf"]]
       newInfo <- values(valuesGR[rowData(vcf)])
+      if(verbose) {
+        cat("Merging", sprintf(currentFile[["fileFmt"]], chromosome), "\n")
+      }
       info(vcf) <- cbind(
         values(info(vcf)),
         newInfo
