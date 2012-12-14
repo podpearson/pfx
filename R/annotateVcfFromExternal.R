@@ -27,11 +27,14 @@ annotateVcfFromExternal <- function(
     externalFileDetails,
     function(currentFile) {
       hasHeader <- if(is.integer(currentFile[["chromColumn"]])) FALSE else TRUE
-      valuesDF <- read.table(sprintf(currentFile[["fileFmt"]], chromosome), header=hasHeader, as.is=TRUE)
-      valuesGR <- GRanges(valuesDF[[currentFile[["chromColumn"]]]], IRanges(currentFile[["posColumn"]], width=1))
+      if(verbose) {
+        cat("Reading", sprintf(currentFile[["fileFmt"]], chromosome), "\n")
+      }
+      valuesDF <- read.table(sprintf(currentFile[["fileFmt"]], chromosome), header=hasHeader, sep="\t", as.is=TRUE)
+      valuesGR <- GRanges(valuesDF[[currentFile[["chromColumn"]]]], IRanges(valuesDF[[currentFile[["posColumn"]]]], width=1))
       values(valuesGR) <- DataFrame(valuesDF[, currentFile[["columnsInFile"]]])
       names(values(valuesGR)) <- currentFile[["columnsInVcf"]]
-      newInfo <- values(valuesGR[rowData(vcf)])
+      newInfo <- values(valuesGR[valuesGR %in% rowData(vcf)])
       if(verbose) {
         cat("Merging", sprintf(currentFile[["fileFmt"]], chromosome), "\n")
       }
