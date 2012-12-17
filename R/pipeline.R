@@ -94,7 +94,9 @@ pipeline <- function(
         "HighMaxMAF" = list(column="maxMAF", operator=">=", value=0.1, filterOutNAs=TRUE),
 #        "HighMissingness" = list(column="missingness", operator=">=", value=1, filterOutNAs=TRUE),
         "LowDepth" = list(column="missingness2", operator=">=", value=1, filterOutNAs=TRUE)
-      )
+      ),
+      shouldSetMultiallelicFilter = TRUE,
+      shouldSetNonSegregatingFilt = TRUE
     )
     save(vcfInitialFiltered, file=vcfInitialFilteredRda)
   }
@@ -111,7 +113,7 @@ pipeline <- function(
     vcfInitialFiltered,
     plotFilestem=paste(cross, "allSamples", sep="."),
 #    filters=c("InVarRegion", "LowQD", "LowDepth")
-    filters=c("InVarRegion", "HighMaxMAF", "LowDepth"),
+    filters=c("InVarRegion", "HighMaxMAF", "LowDepth", "MultiAllelic", "NonSegregating"),
 #    filters=c("InVarRegion", "HighMaxMAF", "LowDepth", "HighMissingness")
     sampleIDcolumn=sampleIDcolumn,
     sampleIDmappingsColumn=sampleIDmappingsColumn,
@@ -119,6 +121,8 @@ pipeline <- function(
   )
   coreVcf <- filterVcf(vcfInitialFiltered, filtersToRemove = "InVarRegion")
   qcFilteringResults_core <- qcFilteringPlots(coreVcf, plotFilestem=paste(cross, "core", sep="."))
+#  naiveFilteringVcf <- filterVcf(vcfInitialFiltered, filtersToRemove = "InVarRegion", "HighMaxMAF")
+#  qcFilteringResults_core <- qcFilteringPlots(coreVcf, plotFilestem=paste(cross, "core", sep="."))
   
 #  if(file.exists(vcfFinalFilteredRda) & shouldUseSavedVersions) {
 #    load(vcfFinalFilteredRda)

@@ -14,7 +14,7 @@ recombinationPlot = function(
   col                         = c("white", "blue", "red", "lightblue", "pink", "lightgrey", "black"),
   breaks                      = c(-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5),
   main                        = NULL,
-  thin                        = round(length(positions)/200),
+  thin                        = ceiling(length(positions)/200),
   linePositions               = c(2),
   xaxisLabelQuantiles         = seq(0, 1, 0.1)
 )
