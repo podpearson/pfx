@@ -130,7 +130,6 @@ pipeline <- function(
   coreVcfFinalSamples <- annotateVcf(filterVcf(vcfInitialFiltered[, finalSamples], filtersToRemove = "InVarRegion"))
   qcFilteringResults_coreFinalSamples <- qcFilteringPlots(coreVcfFinalSamples, plotFilestem=paste(cross, "coreFinalSamples", sep="."))
   coreVcfPASS <- filterVcf(coreVcfFinalSamples, filtersToRemove="LowQD")
-  filt(coreVcfPASS) <- 
   qcFilteringResults_coreFinalSamples_LowQD <- qcFilteringPlots(coreVcfPASS, plotFilestem=paste(cross, "coreFinalSamples_LowQD", sep="."))
   coreVcfFinal <- setVcfFilters(
     coreVcfPASS,

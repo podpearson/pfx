@@ -26,6 +26,7 @@ sampleQC <- function(
   sampleIDmappingsColumn      = sampleIDcolumn,
   thresholdLowDepth           = "3sd",
   thresholdHeterozgosity      = "3sd",
+  thresholdMAF                = "3sd",
   thresholdMendelianErrors    = "3sd",
   thresholdNoCalls            = "3sd",
   thresholdThirdOrFourthAllele= "3sd",
@@ -71,6 +72,30 @@ sampleQC <- function(
       numberOfSDs <- as.integer(sub("sd", "", thresholdHeterozgosity))
       thresholdHeterozgosity <- meanValue + (numberOfSDs * sdValue)
     }
+    ADsArray <- array(
+    unlist(geno(vcf)[["AD"]]),
+    dim=c(2, dim(geno(vcf)[["AD"]])[1], dim(geno(vcf)[["AD"]])[2]),
+    dimnames=list(c("Ref", "Nonref"), dimnames(geno(vcf)[["AD"]])[[1]], dimnames(geno(vcf)[["AD"]])[[2]])
+    )
+    RefReads <- matrix(
+      sapply(geno(vcf)[["AD"]], function(x) x[1]),
+      ncol=dim(geno(vcf)[["AD"]])[2],
+      dimnames=dimnames(geno(vcf)[["AD"]])
+    )
+    FirstAltReads <- matrix(
+      sapply(geno(vcf)[["AD"]], function(x) x[2]),
+      ncol=dim(geno(vcf)[["AD"]])[2],
+      dimnames=dimnames(geno(vcf)[["AD"]])
+    )
+    MAF <- pmin(RefReads, FirstAltReads)/(RefReads+FirstAltReads)
+    meanMAFperSample <- colMeans(MAF, na.rm = TRUE)
+    if(is.character(thresholdMAF)) {
+      meanValue <- mean(meanMAFperSample)
+      sdValue <- sd(meanMAFperSample)
+      numberOfSDs <- as.integer(sub("sd", "", thresholdMAF))
+      thresholdMAF <- meanValue + (numberOfSDs * sdValue)
+    }
+
     if(shouldCreatePlots) {
       pdf(paste(plotFilestem, "lowDepthVariantsPerSample.pdf", sep="."), height=8, width=8)
       print(
@@ -96,6 +121,20 @@ sampleQC <- function(
           geom="bar", stat="identity"
         )
         + geom_hline(yintercept = thresholdHeterozgosity, colour="red")
+        + theme_bw()
+        + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+      )
+      dev.off()
+      pdf(paste(plotFilestem, "meanMAFperSample.pdf", sep="."), height=8, width=8)
+      print(
+        qplot(
+          x=factor(sampleNames[names(meanMAFperSample)], levels=sampleNames[names(meanMAFperSample)]),
+          y=meanMAFperSample,
+          xlab="Sample ID",
+          ylab="Number of heterozygous SNPs (>=2 ref and alt reads)",
+          geom="bar", stat="identity"
+        )
+        + geom_hline(yintercept = thresholdMAF, colour="red")
         + theme_bw()
         + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
       )
@@ -239,8 +278,8 @@ sampleQC <- function(
       dev.off()
     }
     discordanceDF <- melt(GTsIntDiscordanceMatrix, value.name="Discordances")
-    discordanceDF[["sample1"]] <- sampleNames[discordanceDF[["Var1"]]]
-    discordanceDF[["sample2"]] <- sampleNames[discordanceDF[["Var2"]]]
+    discordanceDF[["sample1"]] <- sampleNames[as.character(discordanceDF[["Var1"]])]
+    discordanceDF[["sample2"]] <- sampleNames[as.character(discordanceDF[["Var2"]])]
     pdf(paste(plotFilestem, "concordanceHeatmapAll.pdf", sep="."), height=10, width=12)
     print(
       ggplot(
