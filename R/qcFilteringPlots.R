@@ -31,32 +31,36 @@ qcFilteringPlots <- function(
     "missingness2"   = "lowIsGood",
     "heterozgosity"  = "lowIsGood"
   ),
-  variablesToPlotQuantiles = c(
-#    "AC"             = "highIsGood",
-#    "BaseQRankSum"   = "highIsGood",
-#    "DS"             = "lowIsGood",
-#    "Dels"           = "lowIsGood",
-    "FS"             = "lowIsGood",
-    "HaplotypeScore" = "lowIsGood",
-    "MQ"             = "highIsGood",
-    "MQ0"            = "lowIsGood",
-    "MQRankSum"      = "highIsGood",
-    "QD"             = "highIsGood",
-#    "RPA"            = "lowIsGood",
-#    "ReadPosRankSum" = "highIsGood",
-    "SB"             = "lowIsGood",
-    "meanMAF"        = "lowIsGood",
-    "maxMAF"         = "lowIsGood",
-    "maxParentMAF"   = "lowIsGood",
-#    "missingness"    = "lowIsGood"
-    "missingness2"   = "lowIsGood",
-    "heterozgosity"  = "lowIsGood"
-  ),
+  variablesToPlotQuantiles = variablesToPlot,
+#  variablesToPlotQuantiles = c(
+##    "AC"             = "highIsGood",
+##    "BaseQRankSum"   = "highIsGood",
+##    "DS"             = "lowIsGood",
+##    "Dels"           = "lowIsGood",
+#    "FS"             = "lowIsGood",
+#    "HaplotypeScore" = "lowIsGood",
+#    "MQ"             = "highIsGood",
+#    "MQ0"            = "lowIsGood",
+#    "MQRankSum"      = "highIsGood",
+#    "QD"             = "highIsGood",
+##    "RPA"            = "lowIsGood",
+##    "ReadPosRankSum" = "highIsGood",
+#    "SB"             = "lowIsGood",
+#    "meanMAF"        = "lowIsGood",
+#    "maxMAF"         = "lowIsGood",
+#    "maxParentMAF"   = "lowIsGood",
+##    "missingness"    = "lowIsGood"
+#    "missingness2"   = "lowIsGood",
+#    "heterozgosity"  = "lowIsGood"
+#  ),
+  errorVariable               = "MendelianErrors",
+  errorThreshold              = 0,
   subsetToBiallelic           = FALSE,
 #  subsetToBiallelic           = TRUE,
   regionsToMask               = NULL,
 #  regionsToMask               = varRegions_v3(),
   numberOfQuantiles           = 50,
+  ylim                        = c(-4,0),
   verbose                     = TRUE
 ) {
   if(!is.null(regionsToMask)) {
@@ -77,15 +81,15 @@ qcFilteringPlots <- function(
           Annotation     = variableToPlot,
           Log10ErrorRate = log10(
             cumsum(
-              values(info(vcf))[["MendelianErrors"]][
+              values(info(vcf))[[errorVariable]][
                 order(
                   values(info(vcf))[[variableToPlot]],
                   decreasing=variablesToPlot[variableToPlot]=="highIsGood"
                 )
-              ] > 0
-            ) / seq(along=values(info(vcf))[["MendelianErrors"]] > 0)
+              ] > errorThreshold
+            ) / seq(along=values(info(vcf))[[errorVariable]] > errorThreshold)
           ),
-          NumberOfSegregatingSites = seq(along=values(info(vcf))[["MendelianErrors"]] > 0)
+          NumberOfSegregatingSites = seq(along=values(info(vcf))[[errorVariable]] > errorThreshold)
         )
       }
     )
@@ -102,7 +106,7 @@ qcFilteringPlots <- function(
 #        quantiles <- ggplot2::cut_number(values(info(vcf))[[variableToPlot]], numberOfQuantiles)
         set.seed(12345)
         quantiles <- ceiling(rank(values(info(vcf))[[variableToPlot]], ties.method="random")/(dim(vcf)[1]/numberOfQuantiles))
-        proportions <- by(values(info(vcf))[["MendelianErrors"]], quantiles, function(x) length(which(x>0))/length(x))
+        proportions <- by(values(info(vcf))[[errorVariable]], quantiles, function(x) length(which(x>errorThreshold))/length(x))
         lowerBounds <- by(values(info(vcf))[[variableToPlot]], quantiles, function(x) min(x, na.rm=TRUE))
         upperBounds <- by(values(info(vcf))[[variableToPlot]], quantiles, function(x) max(x, na.rm=TRUE))
         xaxisLabels <- paste(seq(along=lowerBounds), ": [", format(lowerBounds, digits=3), ", ", format(upperBounds, digits=3), "]", sep="")
@@ -167,6 +171,7 @@ qcFilteringPlots <- function(
 #    + theme_bw()
 #  )
   dev.off()
+#  browser()
   pdf(paste(plotFilestem, "log10ErrorRates.pdf", sep="."), height=6, width=10)
   print(
     qplot(
@@ -176,7 +181,7 @@ qcFilteringPlots <- function(
       data=plotDF,
       xlab="# segregating sites",
       ylab="log10 (Mendelian/SingleSNPhaplotype error rate)",
-      ylim=c(-4,0)
+      ylim=ylim
     )
     + scale_colour_brewer(palette="Set3")
     + theme_bw()
