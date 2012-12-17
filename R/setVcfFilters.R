@@ -89,5 +89,8 @@ setVcfFilters <- function(
     filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & aboveMaxNoCalls] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & maskedVariants], "ExcessiveNoCalls", sep=";")
     filt(vcf)[filt(vcf) %in% c("PASS", ".") & aboveMaxNoCalls] <- "ExcessiveNoCalls"
   }
+  if(keepPASSvariantsOnly) {
+    vcf <- vcf[filt(vcf) == "PASS"]
+  }
   return(vcf)
 }

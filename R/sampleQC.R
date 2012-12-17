@@ -260,6 +260,7 @@ sampleQC <- function(
   }
   which(GTsIntDiscordanceMatrix < discordanceThreshold, arr.ind=TRUE)
   lowDiscordancePairs <- matrix(dimnames(GTsIntDiscordanceMatrix)[[1]][which(GTsIntDiscordanceMatrix < discordanceThreshold, arr.ind=TRUE)], ncol=2)
+  lowDiscordancePairsDF <- cbind(data.frame(lowDiscordancePairs), data.frame(discordantSNPs = GTsIntDiscordanceMatrix[lowDiscordancePairs]))
   duplicateSamplePairs <- matrix(lowDiscordancePairs[lowDiscordancePairs[, 1] != lowDiscordancePairs[, 2]], ncol=2)
   uniqueSamplePairs <- unique(apply(duplicateSamplePairs, 1, function(x) paste(sort(x), collapse="_and_")))
   if(verbose) {
@@ -359,11 +360,12 @@ sampleQC <- function(
   
   return(
     list(
-      uniqueSamples     = uniqueSamples,
-      sampleDuplicates  = sampleDuplicates,
-      qcFailedSamples   = qcFailedSamples,
-      mgRecombinations  = mgRecombinations,
-      discordanceMatrix = GTsIntDiscordanceMatrix
+      uniqueSamples         = uniqueSamples,
+      sampleDuplicates      = sampleDuplicates,
+      qcFailedSamples       = qcFailedSamples,
+      mgRecombinations      = mgRecombinations,
+      discordanceMatrix     = GTsIntDiscordanceMatrix,
+      lowDiscordancePairsDF = lowDiscordancePairsDF
     )
   )
 }
