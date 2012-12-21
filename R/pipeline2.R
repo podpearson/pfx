@@ -15,9 +15,10 @@
 pipeline2 <- function(
   cross                       = "3d7_hb3",
   variantType                 = "snps",
-  genotypesDirectory          = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes/gatk",
+  genotypesDirectory          = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis/gatk",
   chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
-  outputDirectory             = sub("genotypes", "genotypes_analysis", genotypesDirectory),
+  outputDirectory             = genotypesDirectory,
+#  outputDirectory             = sub("genotypes", "genotypes_analysis", genotypesDirectory),
   genotypesFileFmt            = "%s.raw.vcf",
   gffFilename                 = "/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/Pf3D7_v3.gatk.gff",
   gffGRL                      = readGffAsGRangesList(gffFilename, chromsomeNames=chromosomes),
