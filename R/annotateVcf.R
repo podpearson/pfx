@@ -50,6 +50,54 @@ annotateVcf <- function(
   missingnessPerVariant <- apply(ADas0123, 1, function(x) length(which(is.na(x) | x==0)))
   heterozygosityPerVariant <- apply(ADas0123, 1, function(x) length(which(x==3)))
   
+  AllReads <- RefReads + FirstAltReads
+  AllReads[is.na(AllReads)] <- 0
+#  depthsPerVariant <- rowSums(AllReads)
+#  
+#  GCbins <- round(values(info(vcf))[["GC500"]])
+#  GCbins[GCbins<10] <- 9
+#  GCbins[GCbins>40] <- 41
+#  
+#  medianDepthPerGCbin <- by(depthsPerVariant, GCbins, median)
+#  plotDF <- data.frame(
+#    GCbin = GCbins,
+#    log10depth = log10(depthsPerVariant)
+#  )
+#  require(ggplot2)
+#  pdf("~/log10depthByGCbin.pdf", height=12, width=8)
+#  print(qplot(log10depth, facets=GCbin~., fill=GCbin, data=plotDF) + theme_bw())
+#  dev.off()
+#  
+#  HighQD <- values(info(vcf))[["QD"]] > 36
+##  GCbins_HighQD <- round(values(info(vcf))[["GC500"]][HighQD])
+#  GCbins_HighQD <- GCbins[HighQD]
+#  depthsPerVariant_HighQD <- depthsPerVariant[HighQD]
+#  depthsPerVariant_HighQD <- values(info(vcf))[["DP"]][HighQD]
+#  plotDF_HighQD <- data.frame(
+#    GCbin = GCbins_HighQD,
+#    log10depth = log10(depthsPerVariant_HighQD)
+#  )
+#  require(ggplot2)
+#  pdf("~/log10depthByGCbin_HighQD.pdf", height=12, width=8)
+#  print(qplot(log10depth, facets=GCbin~., fill=GCbin, data=plotDF_HighQD) + theme_bw())
+#  dev.off()
+#  medianDepthPerGCbin_HighQD <- by(depthsPerVariant_HighQD, GCbins_HighQD, median)
+#  
+#  scaledDepths <- t(scale(t(AllReads)))
+  scaledDepths <- scale(AllReads)
+#  log10depthSDs <- log10(apply(scaledDepths, 1, sd))
+#  chr11 <- as.logical(seqnames(vcf)=="Pf3D7_11_v3" & HighQD)
+#  pdf("~/chr11_log10depthSDs_heatmap.pdf", height=8, width=12)
+#  print(qplot(start(rowData(vcf[chr11])), log10depthSDs[chr11]) + stat_bin2d() + theme_bw())
+#  dev.off()
+#  pdf("~/chr11_log10depthSDs.pdf", height=8, width=12)
+#  print(qplot(start(rowData(vcf[chr11])), log10depthSDs[chr11]) + theme_bw())
+#  dev.off()
+  
+  scaledDepthSD <- apply(scaledDepths, 1, sd)
+  
+  
+  
 # debugging stuff - ignore
 #  ADsArray[,1,2]
 #  geno(vcf)[["AD"]][1,2]
@@ -81,6 +129,7 @@ annotateVcf <- function(
       missingness = missingness,
       missingness2 = missingnessPerVariant,
       heterozgosity = heterozygosityPerVariant,
+      scaledDepthSD = scaledDepthSD,
       SEGREGATING=(
         (GTsInt[, parentalIDs[1]] == 1 & GTsInt[, parentalIDs[2]] == 2) |
         (GTsInt[, parentalIDs[1]] == 2 & GTsInt[, parentalIDs[2]] == 1)
@@ -119,6 +168,9 @@ annotateVcf <- function(
         DataFrame(Number="1", Type="Float", Description="Proportion of minor allele reads for second parent (something like a heterozygosity score)", row.names="parent2MAF"),
         DataFrame(Number="1", Type="Float", Description="Maximum proportion of minor allele reads in parents (something like a heterozygosity score)", row.names="maxParentMAF"),
         DataFrame(Number="1", Type="Integer", Description="Number of samples with a missing genotype call", row.names="missingness"),
+        DataFrame(Number="1", Type="Integer", Description="Number of samples with zero depth", row.names="missingness2"),
+        DataFrame(Number="1", Type="Integer", Description="Number of samples with at least 2 ref and 2 alt reads, and at least 5 reads in total", row.names="heterozgosity"),
+        DataFrame(Number="1", Type="Integer", Description="Standard deviation of the depth across samples after depths have been normalised (mean 0, sd 1) by sample. Higher values suggest copy number differences between samples.", row.names="scaledDepthSD"),
         DataFrame(Number="0", Type="Flag", Description="Is this a segregating site (i.e. do parents have different genotypes", row.names="SEGREGATING"),
         DataFrame(Number="1", Type="Integer", Description="Number of Mendelian errors (parents have same genotype, progeny has differenet genotype) in progeny", row.names="MendelianErrors")
       )

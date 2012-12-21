@@ -98,6 +98,18 @@ pipeline <- function(
 #      shouldSetMultiallelicFilter = TRUE,
 #      shouldSetNonSegregatingFilt = TRUE
     )
+#    vcfInitialFiltered <- setVcfFilters(
+#      vcfVariantAnnotated,
+#      regionsMask                 = varRegions_v3(),
+#      additionalInfoFilters = list(
+#        "LowQD" = list(column="QD", operator="<=", value=36)
+##        "HighMaxMAF" = list(column="maxMAF", operator=">=", value=0.1, filterOutNAs=TRUE),
+##        "HighMissingness" = list(column="missingness", operator=">=", value=1, filterOutNAs=TRUE),
+##        "LowDepth" = list(column="missingness2", operator=">=", value=1, filterOutNAs=TRUE)
+#      )
+##      shouldSetMultiallelicFilter = TRUE,
+##      shouldSetNonSegregatingFilt = TRUE
+#    )
     save(vcfInitialFiltered, file=vcfInitialFilteredRda)
   }
   vcfSegregating <- filterVcf(vcfInitialFiltered, keepPASSvariantsOnly=TRUE)
@@ -113,8 +125,8 @@ pipeline <- function(
     vcfInitialFiltered,
     plotFilestem=paste(cross, "allSamples", sep="."),
 #    filters=c("InVarRegion", "LowQD", "LowDepth")
-#    filters=c("InVarRegion", "LowQD"),
-    filters=c("LowQD", "InVarRegion"),
+    filters=c("InVarRegion", "LowQD"),
+#    filters=c("LowQD", "InVarRegion"),
 #    filters=c("InVarRegion", "NonSegregating", "LowQD", "MultiAllelic"),
 #    filters=c("InVarRegion", "HighMaxMAF", "LowDepth", "MultiAllelic", "NonSegregating"),
 #    filters=c("InVarRegion", "HighMaxMAF", "LowDepth", "HighMissingness")
@@ -123,12 +135,76 @@ pipeline <- function(
     sampleDuplicates=initialSampleQCresults[["sampleDuplicates"]]
   )
   coreVcf <- filterVcf(vcfInitialFiltered, filtersToRemove = "InVarRegion")
+  save(coreVcf, file=paste("~/coreVcf", cross, sep="."))
   qcFilteringResults_core <- qcFilteringPlots(coreVcf, plotFilestem=paste(cross, "core", sep="."))
 #  naiveFilteringVcf <- filterVcf(vcfInitialFiltered, filtersToRemove = "InVarRegion", "HighMaxMAF")
 #  qcFilteringResults_core <- qcFilteringPlots(coreVcf, plotFilestem=paste(cross, "core", sep="."))
   finalSamples <- setdiff(dimnames(vcfInitialFiltered)[[2]], initialSampleQCresults[["qcFailedSamples"]])
   coreVcfFinalSamples <- annotateVcf(filterVcf(vcfInitialFiltered[, finalSamples], filtersToRemove = "InVarRegion"))
   qcFilteringResults_coreFinalSamples <- qcFilteringPlots(coreVcfFinalSamples, plotFilestem=paste(cross, "coreFinalSamples", sep="."))
+  qcFilteringResults_coreFinalSamples <- qcFilteringPlots(coreVcfFinalSamples, plotFilestem=paste(cross, "coreFinalSamplesMaxMAF", sep="."), errorVariable="maxMAF", errorThreshold=0.1)
+    
+  qcFilteringResults_coreFinalSamples_HP5 <- qcFilteringPlots(
+    filterVcf(
+      setVcfFilters(
+        coreVcfFinalSamples,
+        regionsMask = varRegions_v3(),
+        additionalInfoFilters = list(
+          "homopolymer5Proximity" = list(column="homopolymer5Proximity", operator="%in%", value=1)
+        )
+      ),
+      filtersToRemove = c("InVarRegion", "homopolymer5Proximity")
+    ),
+    plotFilestem=paste(cross, "coreFinalSamplesHP5", sep=".")
+  )
+  qcFilteringResults_coreFinalSamples_HP5HP15 <- qcFilteringPlots(
+    filterVcf(
+      setVcfFilters(
+        coreVcfFinalSamples,
+        regionsMask = varRegions_v3(),
+        additionalInfoFilters = list(
+          "homopolymer5Proximity" = list(column="homopolymer5Proximity", operator="%in%", value=1),
+          "homopolymer15Proximity" = list(column="homopolymer15Proximity", operator="%in%", value=2:20)
+        )
+      ),
+      filtersToRemove = c("InVarRegion", "homopolymer5Proximity", "homopolymer15Proximity")
+    ),
+    plotFilestem=paste(cross, "coreFinalSamplesHP5HP15", sep=".")
+  )
+  qcFilteringResults_coreFinalSamples_HP5HP15 <- qcFilteringPlots(
+    filterVcf(
+      setVcfFilters(
+        coreVcfFinalSamples,
+        regionsMask = varRegions_v3(),
+        additionalInfoFilters = list(
+          "homopolymer5Proximity" = list(column="homopolymer5Proximity", operator="%in%", value=1),
+          "homopolymer15Proximity" = list(column="homopolymer15Proximity", operator="%in%", value=2:20)
+        )
+      ),
+      filtersToRemove = c("InVarRegion", "homopolymer5Proximity", "homopolymer15Proximity")
+    ),
+    plotFilestem=paste(cross, "coreFinalSamplesHP5HP15", sep=".")
+  )
+  qcFilteringResults_coreFinalSamples_HP5HP15SB <- qcFilteringPlots(
+    filterVcf(
+      setVcfFilters(
+        coreVcfFinalSamples,
+        regionsMask = varRegions_v3(),
+        additionalInfoFilters = list(
+          "homopolymer5Proximity" = list(column="homopolymer5Proximity", operator="%in%", value=1),
+          "homopolymer15Proximity" = list(column="homopolymer15Proximity", operator="%in%", value=2:20),
+          "SB" = list(column="SB", operator=">", value=-3000)
+        )
+      ),
+      filtersToRemove = c("InVarRegion", "homopolymer5Proximity", "homopolymer15Proximity", "SB")
+    ),
+    plotFilestem=paste(cross, "coreFinalSamplesHP5HP15SB", sep=".")
+  )
+  
+  coreVcfFinalSamplesUnfiltered <- annotateVcf(filterVcf(setVcfFilters(vcfVariantAnnotated, regionsMask = varRegions_v3(), additionalInfoFilters=NULL)[, finalSamples], filtersToRemove = "InVarRegion"))
+  qcFilteringResults_coreFinalSamples_LowQD20 <- qcFilteringPlots(filterVcf(setVcfFilters(coreVcfFinalSamplesUnfiltered, regionsMask = varRegions_v3(), additionalInfoFilters = list("LowQD" = list(column="QD", operator="<=", value=20))), filtersToRemove = c("InVarRegion", "LowQD20")), plotFilestem=paste(cross, "coreFinalSamplesLowQD", sep="."))
+  qcFilteringResults_coreFinalSamples_LowQD25 <- qcFilteringPlots(filterVcf(setVcfFilters(coreVcfFinalSamplesUnfiltered, regionsMask = varRegions_v3(), additionalInfoFilters = list("LowQD" = list(column="QD", operator="<=", value=25))), filtersToRemove = c("InVarRegion", "LowQD25")), plotFilestem=paste(cross, "coreFinalSamplesLowQD", sep="."))
+  
   coreVcfPASS <- filterVcf(coreVcfFinalSamples, filtersToRemove="LowQD")
   qcFilteringResults_coreFinalSamples_LowQD <- qcFilteringPlots(coreVcfPASS, plotFilestem=paste(cross, "coreFinalSamples_LowQD", sep="."))
   coreVcfFinal <- setVcfFilters(

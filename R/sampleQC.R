@@ -131,7 +131,7 @@ sampleQC <- function(
           x=factor(sampleNames[names(meanMAFperSample)], levels=sampleNames[names(meanMAFperSample)]),
           y=meanMAFperSample,
           xlab="Sample ID",
-          ylab="Number of heterozygous SNPs (>=2 ref and alt reads)",
+          ylab="Mean number of minor allele reads per SNP",
           geom="bar", stat="identity"
         )
         + geom_hline(yintercept = thresholdMAF, colour="red")

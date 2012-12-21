@@ -12,9 +12,10 @@ qcFilteringPlots <- function(
   plotFilestem                = "7G8xGB4",
   variablesToPlot             = c(
 #    "AC"             = "highIsGood",
-#    "BaseQRankSum"   = "highIsGood",
+    "BaseQRankSum"   = "highIsGood",
+    "DP"             = "highIsGood",
 #    "DS"             = "lowIsGood",
-#    "Dels"           = "lowIsGood",
+    "Dels"           = "lowIsGood",
     "FS"             = "lowIsGood",
     "HaplotypeScore" = "lowIsGood",
     "MQ"             = "highIsGood",
@@ -22,14 +23,20 @@ qcFilteringPlots <- function(
     "MQRankSum"      = "highIsGood",
     "QD"             = "highIsGood",
 #    "RPA"            = "lowIsGood",
-#    "ReadPosRankSum" = "highIsGood",
+    "ReadPosRankSum" = "highIsGood",
     "SB"             = "lowIsGood",
+    "scaledDepthSD"  = "lowIsGood",
     "meanMAF"        = "lowIsGood",
     "maxMAF"         = "lowIsGood",
     "maxParentMAF"   = "lowIsGood",
-#    "missingness"    = "lowIsGood",
+    "missingness"    = "lowIsGood",
     "missingness2"   = "lowIsGood",
-    "heterozgosity"  = "lowIsGood"
+    "heterozgosity"  = "lowIsGood",
+    "homopolymer5Proximity" = "highIsGood",
+    "homopolymer10Proximity" = "highIsGood",
+    "homopolymer15Proximity" = "highIsGood",
+    "UQ"                     = "lowIsGood",
+    "GC500"                  = "highIsGood"
   ),
   variablesToPlotQuantiles = variablesToPlot,
 #  variablesToPlotQuantiles = c(
@@ -61,6 +68,13 @@ qcFilteringPlots <- function(
 #  regionsToMask               = varRegions_v3(),
   numberOfQuantiles           = 50,
   ylim                        = c(-4,0),
+  col                         = if(length(variablesToPlot) <= 12) {
+    require(RColorBrewer)
+    brewer.pal(12, "Set3")
+  } else {
+    set.seed(12345)
+    randomColours(seq(along=variablesToPlot))
+  },
   verbose                     = TRUE
 ) {
   if(!is.null(regionsToMask)) {
@@ -138,9 +152,11 @@ qcFilteringPlots <- function(
         data=plotDFquantiles[[plotDFquantileIndex]],
         geom="bar",
         stat="identity",
-        fill=I(brewer.pal(12, "Set3")[plotDFquantileIndex]),
+        fill=I(col[plotDFquantileIndex]),
+#        fill=I(brewer.pal(12, "Set3")[plotDFquantileIndex]),
         main=names(plotDFquantiles)[plotDFquantileIndex],
-        ylim = c(0, maxHeight)
+        ylim = c(0, maxHeight),
+        ylab = paste("Proportion of", errorVariable, ">", errorThreshold)
       ) +
 #      scale_fill_brewer(palette="Set3")[plotDFquantileIndex] +
       theme_bw() +
@@ -151,7 +167,7 @@ qcFilteringPlots <- function(
   )
   print(
     do.call(
-      grid.arrange,  c(plots, ncol=4)
+      grid.arrange,  c(plots, ncol=ceiling(sqrt(length(plots))))
     )
   )
 #  print(
@@ -180,10 +196,11 @@ qcFilteringPlots <- function(
       colour=Annotation,
       data=plotDF,
       xlab="# segregating sites",
-      ylab="log10 (Mendelian/SingleSNPhaplotype error rate)",
+      ylab="log10 (Mendelian error rate)",
       ylim=ylim
     )
-    + scale_colour_brewer(palette="Set3")
+    + scale_colour_manual(values=col)
+#    + scale_colour_brewer(palette="Set3")
     + theme_bw()
   )
   dev.off()
