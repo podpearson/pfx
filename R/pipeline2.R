@@ -6,6 +6,8 @@
 #
 ###############################################################################
 
+# install_github("pfx")
+# library("pfx")
 # run20121221_3d7_hb3 <- pipeline2()
 # run20121221_7g8_gb4 <- pipeline2("7g8_gb4")
 # run20121221_3d7_hb3 <- pipeline2("hb3_dd2")

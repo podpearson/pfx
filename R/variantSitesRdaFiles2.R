@@ -28,12 +28,12 @@ variantSitesRdaFiles2 <- function(
       chromosomes,
       function(chromosome) {
         createSingleChromosomeVariantSitesRdaFile(
-          file.path(genotypesDirectory, cross, variantType, vcfFilename, sprintf(genotypesFileFmt, chromosome)),
+          file.path(genotypesDirectory, cross, variantType, sprintf(genotypesFileFmt, chromosome)),
           chromosome,
           filtersToRemove             = filtersToRemove,
           samplesToRemove             = samplesToRemove,
           parentalStrains             = parentalStrains,
-          outputRdaFilename           = file.path(outputDirectory, cross, variantType, vcfFilename, sub("\\.vcf[\\.gz]*$", paste("\\.variantSites\\.", chromosome,"\\.rda", sep=""), sprintf(genotypesFileFmt, chromosome)))
+          outputRdaFilename           = file.path(outputDirectory, cross, variantType, sub("\\.vcf[\\.gz]*$", paste("\\.variantSites\\.", chromosome,"\\.rda", sep=""), sprintf(genotypesFileFmt, chromosome)))
         )
       }
     )
@@ -42,13 +42,13 @@ variantSitesRdaFiles2 <- function(
       chromosomes,
       function(chromosome) {
         createSingleChromosomeVariantSitesRdaFile(
-          file.path(genotypesDirectory, cross, variantType, vcfFilename, sprintf(genotypesFileFmt, chromosome)),
+          file.path(genotypesDirectory, cross, variantType, sprintf(genotypesFileFmt, chromosome)),
           chromosome,
           filtersToRemove             = filtersToRemove,
           samplesToRemove             = samplesToRemove,
           overwriteExisting           = overwriteExisting,
           parentalStrains             = parentalStrains,
-          outputRdaFilename           = file.path(outputDirectory, cross, variantType, vcfFilename, sub("\\.vcf[\\.gz]*$", paste("\\.variantSites\\.", chromosome,"\\.rda", sep=""), sprintf(genotypesFileFmt, chromosome)))
+          outputRdaFilename           = file.path(outputDirectory, cross, variantType, sub("\\.vcf[\\.gz]*$", paste("\\.variantSites\\.", chromosome,"\\.rda", sep=""), sprintf(genotypesFileFmt, chromosome)))
         )
       }
     )
