@@ -128,7 +128,7 @@ pipeline2 <- function(
   coreVcfFinalSamples <- annotateVcf(
     filterVcf(
       setVcfFilters(
-        vcfVariantAnnotated,
+        vcfVariantAnnotated[, finalSamples],
         regionsMask                 = varRegions_v3(),
         additionalInfoFilters = list(
           "LowQD" = list(column="QD", operator="<=", value=36),
