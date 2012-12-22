@@ -41,7 +41,10 @@ annotateVcfFromExternal <- function(
         valuesGR <- c(temp, valuesGR)
         valuesGR <<- valuesGR[order(valuesGR)]
       }
-      newInfo <- values(valuesGR[valuesGR %in% rowData(vcf)])
+      vcfStartPos <- rowData(vcf)
+      end(vcfStartPos) <- start(vcfStartPos)
+      newInfo <- values(valuesGR[valuesGR %in% vcfStartPos])
+#      newInfo <- values(valuesGR[valuesGR %in% rowData(vcf)])
       if(length(temp) > 0) {
         newInfo[rowData(vcf) %in% temp, currentFile[["columnsInVcf"]]] <- NA
       }

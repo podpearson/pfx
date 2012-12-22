@@ -8,10 +8,10 @@
 
 # install_github("pfx")
 # library("pfx")
-# run20121221_3d7_hb3 <- pipeline2(parentalStrains=c("ERR019061", "ERR019054"))
-# run20121221_3d7_hb3 <- pipeline2(variantType="parentalStrains=c("ERR019061", "ERR019054"))
-# run20121221_7g8_gb4 <- pipeline2("7g8_gb4")
-# run20121221_3d7_hb3 <- pipeline2("hb3_dd2")
+# run20121221_3d7_hb3_snps <- pipeline2(parentalStrains=c("ERR019061", "ERR019054"))
+# run20121221_3d7_hb3_indels <- pipeline2(variantType="indels", parentalStrains=c("ERR019061", "ERR019054"))
+# run20121221_7g8_gb4_snps <- pipeline2("7g8_gb4")
+# run20121221_3d7_hb3_snps <- pipeline2("hb3_dd2")
 
 pipeline2 <- function(
   cross                       = "3d7_hb3",
