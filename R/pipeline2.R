@@ -9,6 +9,7 @@
 # install_github("pfx")
 # library("pfx")
 # run20121221_3d7_hb3 <- pipeline2(parentalStrains=c("ERR019061", "ERR019054"))
+# run20121221_3d7_hb3 <- pipeline2(variantType="parentalStrains=c("ERR019061", "ERR019054"))
 # run20121221_7g8_gb4 <- pipeline2("7g8_gb4")
 # run20121221_3d7_hb3 <- pipeline2("hb3_dd2")
 
@@ -201,7 +202,7 @@ pipeline2 <- function(
     initialSNPnumbersMatrix              = initialSNPnumbersMatrix,
 #    qcFilteringResultsFinalPostFiltering = qcFilteringResultsFinalPostFiltering,
 #    finalSampleQCresults                 = finalSampleQCresults,
-    finalSNPnumbersMatrix                = finalSNPnumbersMatrix,
+    finalSNPnumbersMatrix                = finalSNPnumbersMatrix
 #    uniqueSNPnumbersMatrix               = uniqueSNPnumbersMatrix,
 #    finalUniqueSampleQCresults           = finalUniqueSampleQCresults
   )
@@ -218,7 +219,7 @@ pipeline2 <- function(
     )
   }
   save(returnList, file=file.path(outputDirectory, cross, variantType, paste(cross, "returnList.rda", sep=".")))
-  writeVcf(vcfSegregating, filename=file.path(outputDirectory, cross, variantType, paste(cross, "filtered.vcf")), index=TRUE)
+  writeVcf(vcfSegregating, filename=file.path(outputDirectory, cross, variantType, paste(cross, "filtered.vcf", sep=".")), index=TRUE)
   return(returnList)
 }
 
