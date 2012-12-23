@@ -10,8 +10,10 @@
 # library("pfx")
 # run20121221_3d7_hb3_snps <- pipeline2(parentalStrains=c("ERR019061", "ERR019054"))
 # run20121221_3d7_hb3_indels <- pipeline2(variantType="indels", parentalStrains=c("ERR019061", "ERR019054"))
-# run20121221_7g8_gb4_snps <- pipeline2("7g8_gb4")
-# run20121221_3d7_hb3_snps <- pipeline2("hb3_dd2")
+# run20121221_7g8_gb4_snps <- pipeline2("7g8_gb4", parentalStrains=c("ERR027099", "ERR027100"))
+# run20121221_7g8_gb4_indels <- pipeline2("7g8_gb4", variantType="indels", parentalStrains=c("ERR027099", "ERR027100"))
+# run20121221_3d7_hb3_snps <- pipeline2("hb3_dd2", parentalStrains=c("ERR012788", "ERR012840"))
+# run20121221_3d7_hb3_indels <- pipeline2("hb3_dd2", variantType="indels", parentalStrains=c("ERR012788", "ERR012840"))
 
 pipeline2 <- function(
   cross                       = "3d7_hb3",

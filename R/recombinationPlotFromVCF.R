@@ -90,7 +90,8 @@ recombinationPlotFromVCF <- function(
   genoToLoad                  = c("GT", "AD", names(additionalGenotypeFilters)),
   GTsToIntMapping             = c("0"=1, "0/0"=1, "0|0"=1, "1"=2, "1/1"=2, "1|1"=2, "."=0, "./."=0, "./."=0, "2"=0, "3"=0, "0/1"=0, "1/0"=0, "0|1"=0, "1|0"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
 #  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0, "2"=0, "3"=0), # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
-  sampleIDmappings            = createSampleIDmappings(vcfFilename),
+  sampleIDmappings            = NULL,
+#  sampleIDmappings            = createSampleIDmappings(vcfFilename),
   linePositions               = c(2),
   parametersList              = list(
     "7g8xGb4" = list(
@@ -131,6 +132,7 @@ recombinationPlotFromVCF <- function(
           samplesToRemove             = parameters[["samplesToRemove"]],
           additionalInfoFilters       = parameters[["additionalInfoFilters"]],
           additionalGenotypeFilters   = parameters[["additionalGenotypeFilters"]],
+          shouldAnnotateUsingExternal = FALSE,
           overwriteExisting           = TRUE,
           saveAsRobjectFile           = FALSE
         ),
