@@ -73,11 +73,13 @@ createSingleChromosomeVariantSitesRdaFile <- function(
       additionalGenotypeFilters   = additionalGenotypeFilters,
       possibleMissingValues       = possibleMissingValues
     )
-    vcf <- annotateVcfFromExternal(
-      vcf,
-      chromosome                  = chromosome,
-      externalFileDetails         = externalFileDetails
-    )
+    if(shouldAnnotateUsingExternal) {
+      vcf <- annotateVcfFromExternal(
+        vcf,
+        chromosome                  = chromosome,
+        externalFileDetails         = externalFileDetails
+      )
+    }
 #    if(!is.null(samplesToRemove)) {
 #      sampleToKeep <- setdiff(row.names(colData(vcf)), samplesToRemove)
 #      vcf <- vcf[, sampleToKeep]
