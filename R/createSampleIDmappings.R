@@ -47,6 +47,11 @@ createSampleIDmappings <- function(
       ")",
       sep=""
     )
+    sampleIDsNotMatching <- which(is.na(sampleIDmappings))
+    if(length(sampleIDsNotMatching) > 0) {
+      sampleIDmappings[sampleIDsNotMatching] <- sampleIDs[sampleIDsNotMatching]
+      names(sampleIDmappings)[sampleIDsNotMatching] <- sampleIDs[sampleIDsNotMatching]
+    }
   } else {
     sampleIDmappings <- sampleIDs
     names(sampleIDmappings) <- sampleIDs

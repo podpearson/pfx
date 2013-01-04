@@ -12,31 +12,44 @@ qcFilteringPlots <- function(
   plotFilestem                = "7G8xGB4",
   variablesToPlot             = c(
 #    "AC"             = "highIsGood",
-    "BaseQRankSum"   = "highIsGood",
-    "DP"             = "highIsGood",
+    "BaseQRankSum"           = "highIsGood",
+    "DP"                     = "highIsGood",
 #    "DS"             = "lowIsGood",
-    "Dels"           = "lowIsGood",
-    "FS"             = "lowIsGood",
-    "HaplotypeScore" = "lowIsGood",
-    "MQ"             = "highIsGood",
-    "MQ0"            = "lowIsGood",
-    "MQRankSum"      = "highIsGood",
-    "QD"             = "highIsGood",
+    "Dels"                   = "lowIsGood",
+    "FS"                     = "lowIsGood",
+    "HaplotypeScore"         = "lowIsGood",
+    "MQ"                     = "highIsGood",
+    "MQ0"                    = "lowIsGood",
+    "MQRankSum"              = "highIsGood",
+    "QD"                     = "highIsGood",
 #    "RPA"            = "lowIsGood",
-    "ReadPosRankSum" = "highIsGood",
-    "SB"             = "lowIsGood",
-    "scaledDepthSD"  = "lowIsGood",
-    "meanMAF"        = "lowIsGood",
-    "maxMAF"         = "lowIsGood",
-    "maxParentMAF"   = "lowIsGood",
-    "missingness"    = "lowIsGood",
-    "missingness2"   = "lowIsGood",
-    "heterozgosity"  = "lowIsGood",
-    "homopolymer5Proximity" = "highIsGood",
+    "ReadPosRankSum"         = "highIsGood",
+    "SB"                     = "lowIsGood",
+    "scaledDepthSD"          = "lowIsGood",
+    "meanMAF"                = "lowIsGood",
+    "maxMAF"                 = "lowIsGood",
+    "maxParentMAF"           = "lowIsGood",
+    "missingness"            = "lowIsGood",
+    "missingness2"           = "lowIsGood",
+    "heterozgosity"          = "lowIsGood",
+    "homopolymer5Proximity"  = "highIsGood",
     "homopolymer10Proximity" = "highIsGood",
     "homopolymer15Proximity" = "highIsGood",
     "UQ"                     = "lowIsGood",
-    "GC500"                  = "highIsGood"
+    "GC500"                  = "highIsGood",
+    "DPProperPair"           = "highIsGood",
+    "DPMateUnmapped"         = "lowIsGood",
+    "DPMateOtherChrom"       = "lowIsGood",
+    "DPMateSameStrand"       = "lowIsGood",
+    "DPFaceAway"             = "lowIsGood",
+    "DPSoftClipped"          = "lowIsGood",
+    "ProperPair"             = "highIsGood",
+    "MateUnmapped"           = "lowIsGood",
+    "MateOtherChrom"         = "lowIsGood",
+    "MateSameStrand"         = "lowIsGood",
+    "FaceAway"               = "lowIsGood",
+    "SoftClipped"            = "lowIsGood",
+    "QUAL"                   = "highIsGood"
   ),
   variablesToPlotQuantiles = variablesToPlot,
 #  variablesToPlotQuantiles = c(
@@ -75,6 +88,8 @@ qcFilteringPlots <- function(
     set.seed(12345)
     randomColours(seq(along=variablesToPlot))
   },
+  errorRatesPlotHeight        = 30,
+  errorRatesPlotWidth         = 40,
   verbose                     = TRUE
 ) {
   if(!is.null(regionsToMask)) {
@@ -138,7 +153,11 @@ qcFilteringPlots <- function(
   require(ggplot2)
   require(gridExtra)
   require(RColorBrewer)
-  pdf(paste(plotFilestem, "binnedErrorRates.pdf", sep="."), height=20, width=30)
+  pdf(
+    paste(plotFilestem, "binnedErrorRates.pdf", sep="."),
+    height=errorRatesPlotHeight,
+    width=errorRatesPlotWidth
+  )
   maxHeight <- max(sapply(plotDFquantiles, function(x) max(x[["ProportionOfMendelianErrors"]])))
   plots <- lapply(
     seq(along = plotDFquantiles),

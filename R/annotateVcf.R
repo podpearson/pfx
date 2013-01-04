@@ -130,6 +130,13 @@ annotateVcf <- function(
       missingness2 = missingnessPerVariant,
       heterozgosity = heterozygosityPerVariant,
       scaledDepthSD = scaledDepthSD,
+      ProperPair = values(info(vcf))[["DPProperPair"]] / values(info(vcf))[["DPAll"]],
+      MateUnmapped = values(info(vcf))[["DPMateUnmapped"]] / values(info(vcf))[["DPAll"]],
+      MateOtherChrom = values(info(vcf))[["DPMateOtherChrom"]] / values(info(vcf))[["DPAll"]],
+      MateSameStrand = values(info(vcf))[["DPMateSameStrand"]] / values(info(vcf))[["DPAll"]],
+      FaceAway = values(info(vcf))[["DPFaceAway"]] / values(info(vcf))[["DPAll"]],
+      SoftClipped = values(info(vcf))[["DPSoftClipped"]] / values(info(vcf))[["DPAll"]],
+      QUAL = qual(vcf),
       SEGREGATING=(
         (GTsInt[, parentalIDs[1]] == 1 & GTsInt[, parentalIDs[2]] == 2) |
         (GTsInt[, parentalIDs[1]] == 2 & GTsInt[, parentalIDs[2]] == 1)
@@ -171,6 +178,13 @@ annotateVcf <- function(
         DataFrame(Number="1", Type="Integer", Description="Number of samples with zero depth", row.names="missingness2"),
         DataFrame(Number="1", Type="Integer", Description="Number of samples with at least 2 ref and 2 alt reads, and at least 5 reads in total", row.names="heterozgosity"),
         DataFrame(Number="1", Type="Integer", Description="Standard deviation of the depth across samples after depths have been normalised (mean 0, sd 1) by sample. Higher values suggest copy number differences between samples.", row.names="scaledDepthSD"),
+        DataFrame(Number="1", Type="Float", Description="Proportion of reads than are in a proper pair", row.names="ProperPair"),
+        DataFrame(Number="1", Type="Float", Description="Proportion of reads that have an unmapped mate", row.names="MateUnmapped"),
+        DataFrame(Number="1", Type="Float", Description="Proportion of reads that have a mate on another chromosome", row.names="MateOtherChrom"),
+        DataFrame(Number="1", Type="Float", Description="Proportion of reads that have a mate on the same strand", row.names="MateSameStrand"),
+        DataFrame(Number="1", Type="Float", Description="Proportion of reads that have a faceaway mate", row.names="FaceAway"),
+        DataFrame(Number="1", Type="Float", Description="Proportion of reads than are soft clipped", row.names="SoftClipped"),
+        DataFrame(Number="1", Type="Float", Description="Quality (same as value in QUAL column)", row.names="QUAL"),
         DataFrame(Number="0", Type="Flag", Description="Is this a segregating site (i.e. do parents have different genotypes", row.names="SEGREGATING"),
         DataFrame(Number="1", Type="Integer", Description="Number of Mendelian errors (parents have same genotype, progeny has differenet genotype) in progeny", row.names="MendelianErrors")
       )
