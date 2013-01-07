@@ -63,6 +63,7 @@ pipeline2 <- function(
   vcfVariantAnnotatedRda      = file.path(outputDirectory, cross, variantType, paste(cross, "vcfVariantAnnotated.rda", sep=".")),
   vcfInitialFilteredRda       = file.path(outputDirectory, cross, variantType, paste(cross, "vcfInitialFiltered.rda", sep=".")),
   vcfFinalFilteredRda         = file.path(outputDirectory, cross, variantType, paste(cross, "vcfFinalFiltered.rda", sep=".")),
+  vcfUnfilteredFinalSamplesRda = file.path(outputDirectory, cross, variantType, paste(cross, "vcfUnfilteredFinalSamples.rda", sep=".")),
   vcfUniqueFilteredRda        = file.path(outputDirectory, cross, variantType, paste(cross, "vcfUniqueFiltered.rda", sep="."))
 ) {
   if(file.exists(vcfListRda) & shouldUseSavedVersions) {
@@ -141,6 +142,8 @@ pipeline2 <- function(
     sampleDuplicates=initialSampleQCresults[["sampleDuplicates"]]
   )
   finalSamples <- setdiff(dimnames(vcfInitialFiltered)[[2]], initialSampleQCresults[["qcFailedSamples"]])
+  vcfUnfilteredFinalSamples <- annotateVcf(vcfVariant[, finalSamples])
+  save(vcfUnfilteredFinalSamples, file=vcfUnfilteredFinalSamplesRda)
   coreVcfFinalSamples <- annotateVcf(
     filterVcf(
       setVcfFilters(

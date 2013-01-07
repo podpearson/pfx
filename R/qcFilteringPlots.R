@@ -95,6 +95,8 @@ qcFilteringPlots <- function(
   },
   errorRatesPlotHeight        = 30,
   errorRatesPlotWidth         = 50,
+  shouldCreateErrorRateBySites= TRUE,
+  shouldCreateBinnedErrorRates= TRUE,
   verbose                     = TRUE
 ) {
   if(!is.null(regionsToMask)) {
@@ -103,131 +105,140 @@ qcFilteringPlots <- function(
   if(subsetToBiallelic) {
     vcf <- vcf[elementLengths(alt(vcf)) == 1]
   }
-  plotDF <- do.call(
-    rbind,
-    lapply(
-      names(variablesToPlot),
-      function(variableToPlot) {
-        if(verbose) {
-          cat(variableToPlot, "\n")
+  if(shouldCreateErrorRateBySites) {
+    plotDF <- do.call(
+      rbind,
+      lapply(
+        names(variablesToPlot),
+        function(variableToPlot) {
+          if(verbose) {
+            cat(variableToPlot, "\n")
+          }
+          data.frame(
+            Annotation     = variableToPlot,
+            Log10ErrorRate = log10(
+              cumsum(
+                values(info(vcf))[[errorVariable]][
+                  order(
+                    values(info(vcf))[[variableToPlot]],
+                    decreasing=variablesToPlot[variableToPlot]=="highIsGood"
+                  )
+                ] > errorThreshold
+              ) / seq(along=values(info(vcf))[[errorVariable]] > errorThreshold)
+            ),
+            NumberOfSegregatingSites = seq(along=values(info(vcf))[[errorVariable]] > errorThreshold)
+          )
         }
-        data.frame(
-          Annotation     = variableToPlot,
-          Log10ErrorRate = log10(
-            cumsum(
-              values(info(vcf))[[errorVariable]][
-                order(
-                  values(info(vcf))[[variableToPlot]],
-                  decreasing=variablesToPlot[variableToPlot]=="highIsGood"
-                )
-              ] > errorThreshold
-            ) / seq(along=values(info(vcf))[[errorVariable]] > errorThreshold)
-          ),
-          NumberOfSegregatingSites = seq(along=values(info(vcf))[[errorVariable]] > errorThreshold)
-        )
+      )
+    )
+  }
+  if(shouldCreateBinnedErrorRates) {
+    plotDFquantiles <- # do.call(
+  #    rbind,
+      sapply(
+        names(variablesToPlotQuantiles),
+        function(variableToPlot) {
+          if(verbose) {
+            cat(variableToPlot, "\n")
+          }
+  #        quantiles <- cut(values(info(vcf))[[variableToPlot]], quantile(values(info(vcf))[[variableToPlot]], probs=seq(0, 1, 1/100)))
+  #        quantiles <- ggplot2::cut_number(values(info(vcf))[[variableToPlot]], numberOfQuantiles)
+          set.seed(12345)
+          quantiles <- ceiling(rank(values(info(vcf))[[variableToPlot]], ties.method="random")/(dim(vcf)[1]/numberOfQuantiles))
+          proportions <- by(values(info(vcf))[[errorVariable]], quantiles, function(x) length(which(x>errorThreshold))/length(x))
+          lowerBounds <- by(values(info(vcf))[[variableToPlot]], quantiles, function(x) min(x, na.rm=TRUE))
+          upperBounds <- by(values(info(vcf))[[variableToPlot]], quantiles, function(x) max(x, na.rm=TRUE))
+          xaxisLabels <- paste(seq(along=lowerBounds), ": [", format(lowerBounds, digits=3), ", ", format(upperBounds, digits=3), "]", sep="")
+          data.frame(
+            Annotation                  = variableToPlot,
+            Quantile                    = factor(xaxisLabels, levels=xaxisLabels),
+  #          Quantile                    = factor(as.character(seq(along=proportions)), levels=as.character(seq(along=proportions))),
+            ProportionOfMendelianErrors = as.vector(proportions)
+          )
+        },
+        simplify=FALSE,
+        USE.NAMES=TRUE
+      )
+  #  )
+    require(ggplot2)
+    require(gridExtra)
+    require(RColorBrewer)
+    pdf(
+      paste(plotFilestem, "binnedErrorRates.pdf", sep="."),
+      height=errorRatesPlotHeight,
+      width=errorRatesPlotWidth
+    )
+    maxHeight <- max(sapply(plotDFquantiles, function(x) max(x[["ProportionOfMendelianErrors"]])))
+    plots <- lapply(
+      seq(along = plotDFquantiles),
+  #    names(plotDFquantiles),
+      function(plotDFquantileIndex) {
+        qplot(
+          Quantile,
+          ProportionOfMendelianErrors,
+  #        fill=Annotation,
+  #        facets=Annotation~.,
+          data=plotDFquantiles[[plotDFquantileIndex]],
+          geom="bar",
+          stat="identity",
+          fill=I(col[plotDFquantileIndex]),
+  #        fill=I(brewer.pal(12, "Set3")[plotDFquantileIndex]),
+          main=names(plotDFquantiles)[plotDFquantileIndex],
+          ylim = c(0, maxHeight),
+          ylab = paste("Proportion of", errorVariable, ">", errorThreshold)
+        ) +
+  #      scale_fill_brewer(palette="Set3")[plotDFquantileIndex] +
+        theme_bw() +
+        theme(legend.position = c(0.5, 1)) + 
+        theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
+        theme(axis.title.x = element_blank())
       }
     )
-  )
-  plotDFquantiles <- # do.call(
-#    rbind,
-    sapply(
-      names(variablesToPlotQuantiles),
-      function(variableToPlot) {
-        if(verbose) {
-          cat(variableToPlot, "\n")
-        }
-#        quantiles <- cut(values(info(vcf))[[variableToPlot]], quantile(values(info(vcf))[[variableToPlot]], probs=seq(0, 1, 1/100)))
-#        quantiles <- ggplot2::cut_number(values(info(vcf))[[variableToPlot]], numberOfQuantiles)
-        set.seed(12345)
-        quantiles <- ceiling(rank(values(info(vcf))[[variableToPlot]], ties.method="random")/(dim(vcf)[1]/numberOfQuantiles))
-        proportions <- by(values(info(vcf))[[errorVariable]], quantiles, function(x) length(which(x>errorThreshold))/length(x))
-        lowerBounds <- by(values(info(vcf))[[variableToPlot]], quantiles, function(x) min(x, na.rm=TRUE))
-        upperBounds <- by(values(info(vcf))[[variableToPlot]], quantiles, function(x) max(x, na.rm=TRUE))
-        xaxisLabels <- paste(seq(along=lowerBounds), ": [", format(lowerBounds, digits=3), ", ", format(upperBounds, digits=3), "]", sep="")
-        data.frame(
-          Annotation                  = variableToPlot,
-          Quantile                    = factor(xaxisLabels, levels=xaxisLabels),
-#          Quantile                    = factor(as.character(seq(along=proportions)), levels=as.character(seq(along=proportions))),
-          ProportionOfMendelianErrors = as.vector(proportions)
-        )
-      },
-      simplify=FALSE,
-      USE.NAMES=TRUE
+    print(
+      do.call(
+        grid.arrange,  c(plots, ncol=ceiling(sqrt(length(plots))))
+      )
     )
-#  )
-  require(ggplot2)
-  require(gridExtra)
-  require(RColorBrewer)
-  pdf(
-    paste(plotFilestem, "binnedErrorRates.pdf", sep="."),
-    height=errorRatesPlotHeight,
-    width=errorRatesPlotWidth
-  )
-  maxHeight <- max(sapply(plotDFquantiles, function(x) max(x[["ProportionOfMendelianErrors"]])))
-  plots <- lapply(
-    seq(along = plotDFquantiles),
-#    names(plotDFquantiles),
-    function(plotDFquantileIndex) {
-      qplot(
-        Quantile,
-        ProportionOfMendelianErrors,
-#        fill=Annotation,
-#        facets=Annotation~.,
-        data=plotDFquantiles[[plotDFquantileIndex]],
-        geom="bar",
-        stat="identity",
-        fill=I(col[plotDFquantileIndex]),
-#        fill=I(brewer.pal(12, "Set3")[plotDFquantileIndex]),
-        main=names(plotDFquantiles)[plotDFquantileIndex],
-        ylim = c(0, maxHeight),
-        ylab = paste("Proportion of", errorVariable, ">", errorThreshold)
-      ) +
-#      scale_fill_brewer(palette="Set3")[plotDFquantileIndex] +
-      theme_bw() +
-      theme(legend.position = c(0.5, 1)) + 
-      theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
-      theme(axis.title.x = element_blank())
-    }
-  )
-  print(
-    do.call(
-      grid.arrange,  c(plots, ncol=ceiling(sqrt(length(plots))))
-    )
-  )
-#  print(
-#    qplot(
-#      Quantile,
-#      ProportionOfMendelianErrors,
-#      fill=Annotation,
-#      facets=Annotation~.,
-#      data=plotDFquantiles,
-#      geom="bar"
-##      xlab="Quantile",
-##      ylab="log10 (Mendelian/SingleSNPhaplotype error rate)",
-##      ylim=c(-2,0)
-#    )
-##    + geom_bar()
-#    + scale_fill_brewer(palette="Set3")
-#    + theme_bw()
-#  )
-  dev.off()
+  #  print(
+  #    qplot(
+  #      Quantile,
+  #      ProportionOfMendelianErrors,
+  #      fill=Annotation,
+  #      facets=Annotation~.,
+  #      data=plotDFquantiles,
+  #      geom="bar"
+  ##      xlab="Quantile",
+  ##      ylab="log10 (Mendelian/SingleSNPhaplotype error rate)",
+  ##      ylim=c(-2,0)
+  #    )
+  ##    + geom_bar()
+  #    + scale_fill_brewer(palette="Set3")
+  #    + theme_bw()
+  #  )
+    dev.off()
+  }
 #  browser()
-  pdf(paste(plotFilestem, "log10ErrorRates.pdf", sep="."), height=6, width=10)
-  print(
-    qplot(
-      NumberOfSegregatingSites,
-      Log10ErrorRate,
-      colour=Annotation,
-      data=plotDF,
-      xlab="# segregating sites",
-      ylab="log10 (Mendelian error rate)",
-      ylim=ylim
+  if(shouldCreateErrorRateBySites) {
+    require(ggplot2)
+    require(gridExtra)
+    require(RColorBrewer)
+    pdf(paste(plotFilestem, "log10ErrorRates.pdf", sep="."), height=6, width=10)
+    print(
+      qplot(
+        NumberOfSegregatingSites,
+        Log10ErrorRate,
+        colour=Annotation,
+        data=plotDF,
+        xlab="# segregating sites",
+        ylab="log10 (Mendelian error rate)",
+        ylim=ylim
+      )
+      + scale_colour_manual(values=col)
+  #    + scale_colour_brewer(palette="Set3")
+      + theme_bw()
     )
-    + scale_colour_manual(values=col)
-#    + scale_colour_brewer(palette="Set3")
-    + theme_bw()
-  )
-  dev.off()
+    dev.off()
+  }
   
 #  some debuggined stuff - ignore
 #  head(subset(plotDF, Annotation=="HaplotypeScore"))
@@ -238,5 +249,13 @@ qcFilteringPlots <- function(
 #      251099+c(1, 10, 30, 50, 100, 200, 300, 500, 1000, 2000, 3000, 5000, 10000, 20000, 30000, 50000, 100000, 200000, 251099)
 #    ),
 #  ]
-  return(list(quantilesDF=plotDFquantiles, filteringDF=plotDF))
+  returnList <- list()
+  if(shouldCreateBinnedErrorRates) {
+    returnList <- c(returnList, list(quantilesDF=plotDFquantiles))
+  }
+  if(shouldCreateErrorRateBySites) {
+    returnList <- c(returnList, list(filteringDF=plotDF))
+  }
+  return(returnList)
+#  return(list(quantilesDF=plotDFquantiles, filteringDF=plotDF))
 }

@@ -9,7 +9,7 @@
 
 recombinationPoints <- function(
   vcf,
-  gffGRL                      = gffGRL,
+  gffGRL                      = NULL,
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0),
   shouldCharacterise          = TRUE
 ) {
@@ -20,7 +20,11 @@ recombinationPoints <- function(
       cat(".")
 #      GTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(vcf[seqnames(vcf)==chromosome]))
 #      recombinationsGRL <- findRecombinations(GTsCFparents, chromosome)
-      recombinationsGRL <- findRecombinations(vcf[seqnames(vcf)==chromosome], chromosome, gffGRL=gffGRL[seqnames(gffGRL)==chromosome], GTsToIntMapping=GTsToIntMapping, shouldCharacterise=shouldCharacterise)
+      if(is.null(gffGRL)) {
+        recombinationsGRL <- findRecombinations(vcf[seqnames(vcf)==chromosome], chromosome, gffGRL=NULL, GTsToIntMapping=GTsToIntMapping, shouldCharacterise=shouldCharacterise)
+      } else {
+        recombinationsGRL <- findRecombinations(vcf[seqnames(vcf)==chromosome], chromosome, gffGRL=gffGRL[seqnames(gffGRL)==chromosome], GTsToIntMapping=GTsToIntMapping, shouldCharacterise=shouldCharacterise)
+      }
       widthsList <- BiocGenerics::sapply(recombinationsGRL, width)
       list(recombinationsGRL=recombinationsGRL, widthsList=widthsList)
     },
