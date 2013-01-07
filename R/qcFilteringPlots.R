@@ -49,7 +49,12 @@ qcFilteringPlots <- function(
     "MateSameStrand"         = "lowIsGood",
     "FaceAway"               = "lowIsGood",
     "SoftClipped"            = "lowIsGood",
-    "QUAL"                   = "highIsGood"
+    "QUAL"                   = "highIsGood",
+    "RepeatCopies1"          = "lowIsGood",
+    "RepeatPeriod1"          = "highIsGood",
+    "RepeatScore1"           = "lowIsGood",
+    "RepeatSize1"            = "highIsGood",
+    "RepeatEntropy1"         = "highIsGood"
   ),
   variablesToPlotQuantiles = variablesToPlot,
 #  variablesToPlotQuantiles = c(
@@ -89,7 +94,7 @@ qcFilteringPlots <- function(
     randomColours(seq(along=variablesToPlot))
   },
   errorRatesPlotHeight        = 30,
-  errorRatesPlotWidth         = 40,
+  errorRatesPlotWidth         = 50,
   verbose                     = TRUE
 ) {
   if(!is.null(regionsToMask)) {

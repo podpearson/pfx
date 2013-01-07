@@ -136,6 +136,11 @@ annotateVcf <- function(
       MateSameStrand = values(info(vcf))[["DPMateSameStrand"]] / values(info(vcf))[["DPAll"]],
       FaceAway = values(info(vcf))[["DPFaceAway"]] / values(info(vcf))[["DPAll"]],
       SoftClipped = values(info(vcf))[["DPSoftClipped"]] / values(info(vcf))[["DPAll"]],
+      RepeatCopies1 = sapply(values(info(vcf))[["RepeatCopies"]], function(x) if(is.na(x)) 0 else x[1]),
+      RepeatPeriod1 = sapply(values(info(vcf))[["RepeatPeriod"]], function(x) if(is.na(x)) 0 else x[1]),
+      RepeatScore1 = sapply(values(info(vcf))[["RepeatScore"]], function(x) if(is.na(x)) 0 else x[1]),
+      RepeatSize1 = sapply(values(info(vcf))[["RepeatSize"]], function(x) if(is.na(x)) 0 else x[1]),
+      RepeatEntropy1 = sapply(values(info(vcf))[["RepeatEntropy"]], function(x) if(is.na(x)) 0 else x[1]),
       QUAL = qual(vcf),
       SEGREGATING=(
         (GTsInt[, parentalIDs[1]] == 1 & GTsInt[, parentalIDs[2]] == 2) |
@@ -184,6 +189,11 @@ annotateVcf <- function(
         DataFrame(Number="1", Type="Float", Description="Proportion of reads that have a mate on the same strand", row.names="MateSameStrand"),
         DataFrame(Number="1", Type="Float", Description="Proportion of reads that have a faceaway mate", row.names="FaceAway"),
         DataFrame(Number="1", Type="Float", Description="Proportion of reads than are soft clipped", row.names="SoftClipped"),
+        DataFrame(Number=".", Type="Float", Description="Number of copies aligned with the first consensus pattern", row.names="RepeatCopies1"),
+        DataFrame(Number=".", Type="Integer", Description="Period size of the first repeat", row.names="RepeatPeriod1"),
+        DataFrame(Number=".", Type="Integer", Description="Alignment score of the first repeat", row.names="RepeatScore1"),
+        DataFrame(Number=".", Type="Integer", Description="Size of consensus pattern of the first repeat (may differ slightly from the period size)", row.names="RepeatSize1"),
+        DataFrame(Number=".", Type="Float", Description="Entropy measure of first repeat based on percent composition", row.names="RepeatEntropy1"),
         DataFrame(Number="1", Type="Float", Description="Quality (same as value in QUAL column)", row.names="QUAL"),
         DataFrame(Number="0", Type="Flag", Description="Is this a segregating site (i.e. do parents have different genotypes", row.names="SEGREGATING"),
         DataFrame(Number="1", Type="Integer", Description="Number of Mendelian errors (parents have same genotype, progeny has differenet genotype) in progeny", row.names="MendelianErrors")

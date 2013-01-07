@@ -15,12 +15,19 @@
 # run20121221_3d7_hb3_snps <- pipeline2("hb3_dd2", parentalStrains=c("ERR012788", "ERR012840"))
 # run20121221_3d7_hb3_indels <- pipeline2("hb3_dd2", variantType="indels", parentalStrains=c("ERR012788", "ERR012840"))
 
-# run20130104_3d7_hb3_snps <- pipeline2(parentalStrains=c("ERR019061", "ERR019054"), overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesFileFmt="%s.annotated.vcf")
-# run20130104_3d7_hb3_indels <- pipeline2(variantType="indels", parentalStrains=c("ERR019061", "ERR019054"), genotypesFileFmt="%s.annotated.vcf")
-# run20130104_7g8_gb4_snps <- pipeline2("7g8_gb4", parentalStrains=c("ERR027099", "ERR027100"), genotypesFileFmt="%s.annotated.vcf")
-# run20130104_7g8_gb4_indels <- pipeline2("7g8_gb4", variantType="indels", parentalStrains=c("ERR027099", "ERR027100"), genotypesFileFmt="%s.annotated.vcf")
-# run20130104_hb3_dd2_snps <- pipeline2("hb3_dd2", parentalStrains=c("ERR012788", "ERR012840"), genotypesFileFmt="%s.annotated.vcf")
-# run20130104_hb3_dd2_indels <- pipeline2("hb3_dd2", variantType="indels", parentalStrains=c("ERR012788", "ERR012840"), genotypesFileFmt="%s.annotated.vcf")
+# run20130104_3d7_hb3_snps <- pipeline2(parentalStrains=c("ERR019061", "ERR019054"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+# run20130104_3d7_hb3_indels <- pipeline2(variantType="indels", parentalStrains=c("ERR019061", "ERR019054"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+# run20130104_7g8_gb4_snps <- pipeline2("7g8_gb4", parentalStrains=c("ERR027099", "ERR027100"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+# run20130104_7g8_gb4_indels <- pipeline2("7g8_gb4", variantType="indels", parentalStrains=c("ERR027099", "ERR027100"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+# run20130104_hb3_dd2_snps <- pipeline2("hb3_dd2", parentalStrains=c("ERR012788", "ERR012840"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+# run20130104_hb3_dd2_indels <- pipeline2("hb3_dd2", variantType="indels", parentalStrains=c("ERR012788", "ERR012840"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+
+# run20130107_3d7_hb3_snps <- pipeline2(parentalStrains=c("ERR019061", "ERR019054"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
+# run20130107_3d7_hb3_indels <- pipeline2(variantType="indels", parentalStrains=c("ERR019061", "ERR019054"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
+# run20130107_7g8_gb4_snps <- pipeline2("7g8_gb4", parentalStrains=c("ERR027099", "ERR027100"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
+# run20130107_7g8_gb4_indels <- pipeline2("7g8_gb4", variantType="indels", parentalStrains=c("ERR027099", "ERR027100"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
+# run20130107_hb3_dd2_snps <- pipeline2("hb3_dd2", parentalStrains=c("ERR012788", "ERR012840"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
+# run20130107_hb3_dd2_indels <- pipeline2("hb3_dd2", variantType="indels", parentalStrains=c("ERR012788", "ERR012840"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
 
 pipeline2 <- function(
   cross                       = "3d7_hb3",
