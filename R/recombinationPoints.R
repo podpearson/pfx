@@ -99,15 +99,25 @@ findRecombinations <- function(
         if(length(startIndicesOfHaplotypes) == 0) {
           gr <- GRanges()
         } else {
-          gr <- GRanges(
-            seqnames = chromosome,
-            ranges = IRanges(
-              start = markerPositions[endIndicesOfHaplotypes],
-              end = markerPositions[startIndicesOfHaplotypes]
-            ),
-            seqinfo = seqinfo(gffGRL)[chromosome]
-#            uncertinaty = markerPositions[startIndicesOfHaplotypes] - markerPositions[endIndicesOfHaplotypes]
-          )
+          if(is.null(gffGRL)) {
+            gr <- GRanges(
+              seqnames = chromosome,
+              ranges = IRanges(
+                start = markerPositions[endIndicesOfHaplotypes],
+                end = markerPositions[startIndicesOfHaplotypes]
+              )
+            )
+          } else {
+            gr <- GRanges(
+              seqnames = chromosome,
+              ranges = IRanges(
+                start = markerPositions[endIndicesOfHaplotypes],
+                end = markerPositions[startIndicesOfHaplotypes]
+              ),
+              seqinfo = seqinfo(gffGRL)[chromosome]
+  #            uncertinaty = markerPositions[startIndicesOfHaplotypes] - markerPositions[endIndicesOfHaplotypes]
+            )
+          }
         }
         if(shouldCharacterise && length(gr) > 0) {
           if("CDS" %in% names(gffGRL)) {

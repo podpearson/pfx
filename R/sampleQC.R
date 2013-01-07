@@ -370,20 +370,22 @@ sampleQC <- function(
       thresholdRecombinations <- meanRecombinations + (numberOfSDs * sdRecombinations)
     }
     
-    pdf(paste(plotFilestem, "recombinationsPerSample.pdf", sep="."), height=8, width=8)
-    print(
-      qplot(
-        x=factor(sampleNames[names(recombinationsPerSample)], levels=sampleNames[names(recombinationsPerSample)]),
-        y=recombinationsPerSample,
-        xlab="Sample ID",
-        ylab="Number of apparent recombinations",
-        geom="bar", stat="identity"
+    if(shouldCreatePlots) {
+      pdf(paste(plotFilestem, "recombinationsPerSample.pdf", sep="."), height=8, width=8)
+      print(
+        qplot(
+          x=factor(sampleNames[names(recombinationsPerSample)], levels=sampleNames[names(recombinationsPerSample)]),
+          y=recombinationsPerSample,
+          xlab="Sample ID",
+          ylab="Number of apparent recombinations",
+          geom="bar", stat="identity"
+        )
+        + geom_hline(yintercept = thresholdRecombinations, colour="red")
+        + theme_bw()
+        + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
       )
-      + geom_hline(yintercept = thresholdRecombinations, colour="red")
-      + theme_bw()
-      + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
-    )
-    dev.off()
+      dev.off()
+    }
     qcFailedSamples <- names(
       which(
 #      missingnessPerSample > thresholdMissingness |
