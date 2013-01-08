@@ -23,6 +23,7 @@ evaluateFilters <- function(
   shouldRecalculateDepthSD    = TRUE,
   shouldCalculateExtraQUAL    = TRUE
 ) {
+  filterColumns <- sapply(additionalInfoFilters, function(x) x[["column"]])
   vcfFiltered <- filterVcf(
     setVcfFilters(
       vcf,
@@ -35,12 +36,32 @@ evaluateFilters <- function(
     currentInfo <- values(info(vcfFiltered))
     currentInfo[["scaledDepthSD"]] <- calcuateScaledDepthSD(vcfFiltered)
     info(vcfFiltered) <- currentInfo
+    if("scaledDepthSD" %in% filterColumns) {
+      vcfFiltered <- filterVcf(
+        setVcfFilters(
+          vcfFiltered,
+          regionsMask                 = regionsMask,
+          additionalInfoFilters       = additionalInfoFilters
+        ),
+        filtersToRemove = c(regionsMaskFilterName, names(additionalInfoFilters))
+      )
+    }
   }
   if(shouldCalculateExtraQUAL) {
     currentInfo <- values(info(vcfFiltered))
     currentInfo[["QUALbyDP"]] = qual(vcfFiltered)/values(info(vcfFiltered))[["DP"]]
     currentInfo[["QUALperSample"]] = qual(vcfFiltered)/dim(vcfFiltered)[2]
     info(vcfFiltered) <- currentInfo
+    if("QUALbyDP" %in% filterColumns || "QUALperSample" %in% filterColumns) {
+      vcfFiltered <- filterVcf(
+        setVcfFilters(
+          vcfFiltered,
+          regionsMask                 = regionsMask,
+          additionalInfoFilters       = additionalInfoFilters
+        ),
+        filtersToRemove = c(regionsMaskFilterName, names(additionalInfoFilters))
+      )
+    }
   }
   qcFilteringPlots(vcfFiltered, plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."), shouldCreateErrorRateBySites=FALSE)
   mgRecombinations <- recombinationPoints(vcfFiltered, shouldCharacterise=FALSE, GTsToIntMapping=GTsToIntMapping)
