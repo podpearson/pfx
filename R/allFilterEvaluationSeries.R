@@ -75,6 +75,16 @@
 #      "QD30" = list(column="QD", operator="<=", value=30)
 #    )
 #  )
+#  filterEvaluations_snps_meanMAF0.01 <- allFilterEvaluationSeries(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    filters=list(
+#      "meanMAF0.01" = list(column="meanMAF", operator=">", value=0.01)
+#    )
+#  )
 #  filterEvaluations_snps_withoutHeterozygosity <- allFilterEvaluationSeries(
 #    callsets = list(
 #      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),

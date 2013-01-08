@@ -69,6 +69,7 @@ evaluateFilters <- function(
   titvRatioExcludingAT <- titv(vcfFiltered, FALSE)
 
   vcf_Pf3D7_01_v3 <- vcfFiltered[seqnames(vcfFiltered)=="Pf3D7_01_v3"]
+  seqlevels(vcf_Pf3D7_01_v3) <- "Pf3D7_01_v3"
   mgRecombinations_Pf3D7_01_v3 <- recombinationPoints(vcf_Pf3D7_01_v3, shouldCharacterise=FALSE, GTsToIntMapping=GTsToIntMapping)
   recombinationsPerSample_Pf3D7_01_v3 <- rev(
     sapply(
