@@ -19,7 +19,8 @@ evaluateFilters <- function(
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0),
   sampleIDcolumn              = "ena_run_accession",
   sampleIDmappingsColumn      = sampleIDcolumn,
-  sampleDuplicates            = NULL
+  sampleDuplicates            = NULL,
+  shouldRecalculateDepthSD    = TRUE
 ) {
   vcfFiltered <- filterVcf(
     setVcfFilters(
@@ -29,6 +30,9 @@ evaluateFilters <- function(
     ),
     filtersToRemove = c(regionsMaskFilterName, names(additionalInfoFilters))
   )
+  if(shouldRecalculateDepthSD) {
+    values(info(vcfFiltered))[["scaledDepthSD"]] <- calcuateScaledDepthSD(vcfFiltered)
+  }
   qcFilteringPlots(vcfFiltered, plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."), shouldCreateErrorRateBySites=FALSE)
   mgRecombinations <- recombinationPoints(vcfFiltered, shouldCharacterise=FALSE, GTsToIntMapping=GTsToIntMapping)
   recombinationsPerSample <- rev(
@@ -65,7 +69,7 @@ evaluateFilters <- function(
     titvRatioExcludingAT = titvRatioExcludingAT,
     row.names = paste(c(regionsMaskFilterName, names(additionalInfoFilters)), collapse=".")
   )
-  save(returnDF, file=paste(plotFilestem, "returnDF.rda", sep="."))
+  save(returnDF, file=paste(paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."), "returnDF.rda", sep="."))
   
   return(returnDF)
 }

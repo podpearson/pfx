@@ -17,6 +17,7 @@
 #      "MQ0" = list(column="MQ0", operator=">", value=0),
 #      "TRF" = list(column="RepeatPeriod1", operator=">", value=0),
 #      "ReadPosMinus2" = list(column="ReadPosRankSum", operator="<", value=-2, filterOutNAs=TRUE),
+#      "ProperPair0.95" = list(column="ProperPair", operator="<", value=0.95),
 #      "SoftClip0.1" = list(column="SoftClipped", operator=">", value=0.1),
 #      "UQ35" = list(column="UQ", operator=">", value=35),
 #      "QUAL12000" = list(column="QUAL", operator="<", value=12000)

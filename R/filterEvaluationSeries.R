@@ -56,5 +56,7 @@ filterEvaluationSeries <- function(
     simplify=FALSE
   )
   filterResultsDF <- do.call(rbind, filterResults)
+  filterResultsDFfilename <- file.path(analysisDirectory, cross, variantType, paste(cross, ".filterResultsDF.rda", sep=""))
+  save(filterResultsDF, file=filterResultsDFfilename)
   return(filterResultsDF)
 }
