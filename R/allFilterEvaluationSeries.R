@@ -96,6 +96,42 @@
 #      "meanMAF0.01" = list(column="meanMAF", operator=">", value=0.01)
 #    )
 #  )
+#  filterEvaluations_snps_QUALperSample300_maxMAF0.4 <- allFilterEvaluationSeries(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    filters=list(
+#      "QUALperSample300" = list(column="QUALperSample", operator="<", value=300),
+#      "maxMAF0.4" = list(column="maxMAF", operator=">", value=0.4)
+#    )
+#  )
+#  filterEvaluations_snps_QUALperSample300_maxMAF0.4_QUALbyDP40 <- allFilterEvaluationSeries(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    filters=list(
+#      "QUALperSample300" = list(column="QUALperSample", operator="<", value=300),
+#      "maxMAF0.4" = list(column="maxMAF", operator=">", value=0.4),
+#      "QUALbyDP40" = list(column="QUALbyDP", operator=">", value=40)
+#    )
+#  )
+#  filterEvaluations_snps_QUALperSample300_maxMAF0.4_QUALbyDP40_missingness1 <- allFilterEvaluationSeries(
+#    callsets = list(
+##      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    filters=list(
+#      "QUALperSample300" = list(column="QUALperSample", operator="<", value=300),
+#      "maxMAF0.4" = list(column="maxMAF", operator=">", value=0.4),
+#      "QUALbyDP40" = list(column="QUALbyDP", operator=">", value=40),
+#      "missingness1" = list(column="missingness", operator=">", value=1)
+#    )
+#  )
 #  filterEvaluations_snps_withoutHeterozygosity <- allFilterEvaluationSeries(
 #    callsets = list(
 #      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
