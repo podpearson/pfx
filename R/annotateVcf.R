@@ -142,6 +142,8 @@ annotateVcf <- function(
       RepeatSize1 = sapply(values(info(vcf))[["RepeatSize"]], function(x) if(is.na(x)) 0 else x[1]),
       RepeatEntropy1 = sapply(values(info(vcf))[["RepeatEntropy"]], function(x) if(is.na(x)) 0 else x[1]),
       QUAL = qual(vcf),
+      QUALbyDP = qual(vcf)/values(info(vcf))[["DP"]],
+      QUALperSample = qual(vcf)/dim(vcf)[2],
       SEGREGATING=(
         (GTsInt[, parentalIDs[1]] == 1 & GTsInt[, parentalIDs[2]] == 2) |
         (GTsInt[, parentalIDs[1]] == 2 & GTsInt[, parentalIDs[2]] == 1)

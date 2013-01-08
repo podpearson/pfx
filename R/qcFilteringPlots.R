@@ -50,6 +50,8 @@ qcFilteringPlots <- function(
     "FaceAway"               = "lowIsGood",
     "SoftClipped"            = "lowIsGood",
     "QUAL"                   = "highIsGood",
+    "QUALbyDP"               = "highIsGood",
+    "QUALperSample"          = "highIsGood",
     "RepeatCopies1"          = "lowIsGood",
     "RepeatPeriod1"          = "highIsGood",
     "RepeatScore1"           = "lowIsGood",

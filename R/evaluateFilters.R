@@ -20,7 +20,8 @@ evaluateFilters <- function(
   sampleIDcolumn              = "ena_run_accession",
   sampleIDmappingsColumn      = sampleIDcolumn,
   sampleDuplicates            = NULL,
-  shouldRecalculateDepthSD    = TRUE
+  shouldRecalculateDepthSD    = TRUE,
+  shouldCalculateExtraQUAL    = TRUE
 ) {
   vcfFiltered <- filterVcf(
     setVcfFilters(
@@ -33,6 +34,12 @@ evaluateFilters <- function(
   if(shouldRecalculateDepthSD) {
     currentInfo <- values(info(vcfFiltered))
     currentInfo[["scaledDepthSD"]] <- calcuateScaledDepthSD(vcfFiltered)
+    info(vcfFiltered) <- currentInfo
+  }
+  if(shouldCalculateExtraQUAL) {
+    currentInfo <- values(info(vcfFiltered))
+    currentInfo[["QUALbyDP"]] = qual(vcfFiltered)/values(info(vcfFiltered))[["DP"]]
+    currentInfo[["QUALperSample"]] = qual(vcfFiltered)/dim(vcfFiltered)[2]
     info(vcfFiltered) <- currentInfo
   }
   qcFilteringPlots(vcfFiltered, plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."), shouldCreateErrorRateBySites=FALSE)
@@ -61,6 +68,16 @@ evaluateFilters <- function(
   titvRatio <- titv(vcfFiltered)
   titvRatioExcludingAT <- titv(vcfFiltered, FALSE)
 
+  vcf_Pf3D7_01_v3 <- vcfFiltered[seqnames(vcfFiltered)=="Pf3D7_01_v3"]
+  mgRecombinations_Pf3D7_01_v3 <- recombinationPoints(vcf_Pf3D7_01_v3, shouldCharacterise=FALSE, GTsToIntMapping=GTsToIntMapping)
+  recombinationsPerSample_Pf3D7_01_v3 <- rev(
+    sapply(
+      mgRecombinations_Pf3D7_01_v3[["sampleLevelResults"]],
+      function(x) {
+        sum(sapply(x, length))
+      }
+    )
+  )
   returnDF <- data.frame(
     totalRecombinations = sum(recombinationsPerSample),
     medianRecombinationsPerSample = median(recombinationsPerSample),
@@ -69,6 +86,11 @@ evaluateFilters <- function(
     numberOfSegregatingSites = length(which(values(info(vcfFiltered))[["SEGREGATING"]])),
     titvRatio = titvRatio,
     titvRatioExcludingAT = titvRatioExcludingAT,
+    totalRecombinations_Pf3D7_01_v3 = sum(recombinationsPerSample_Pf3D7_01_v3),
+    medianRecombinationsPerSample_Pf3D7_01_v3 = median(recombinationsPerSample_Pf3D7_01_v3),
+    numberOfVariants_Pf3D7_01_v3 = dim(vcf_Pf3D7_01_v3)[1],
+    numberOfMendelianErrors_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["MendelianErrors"]] > 0)),
+    numberOfSegregatingSites_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["SEGREGATING"]])),
     row.names = paste(c(regionsMaskFilterName, names(additionalInfoFilters)), collapse=".")
   )
   save(returnDF, file=paste(paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."), "returnDF.rda", sep="."))
