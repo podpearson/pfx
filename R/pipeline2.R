@@ -62,6 +62,7 @@ pipeline2 <- function(
   vcfVariantRda               = file.path(outputDirectory, cross, variantType, paste(cross, "vcfVariant.rda", sep=".")),
   vcfVariantAnnotatedRda      = file.path(outputDirectory, cross, variantType, paste(cross, "vcfVariantAnnotated.rda", sep=".")),
   vcfInitialFilteredRda       = file.path(outputDirectory, cross, variantType, paste(cross, "vcfInitialFiltered.rda", sep=".")),
+  initialSampleQCresultsRda   = file.path(outputDirectory, cross, variantType, paste(cross, "initialSampleQCresults.rda", sep=".")),
   vcfFinalFilteredRda         = file.path(outputDirectory, cross, variantType, paste(cross, "vcfFinalFiltered.rda", sep=".")),
   vcfUnfilteredFinalSamplesRda = file.path(outputDirectory, cross, variantType, paste(cross, "vcfUnfilteredFinalSamples.rda", sep=".")),
   vcfCoreFinalSamplesRda      = file.path(outputDirectory, cross, variantType, paste(cross, "vcfCoreFinalSamples.rda", sep=".")),
@@ -134,6 +135,7 @@ pipeline2 <- function(
     sampleIDcolumn=sampleIDcolumn,
     sampleIDmappingsColumn=sampleIDmappingsColumn
   )
+  save(initialSampleQCresults, file=initialSampleQCresultsRda)
   initialSNPnumbersMatrix <- recombinationPlotSeries(
     vcfInitialFiltered,
     plotFilestem=file.path(outputDirectory, cross, variantType, paste(cross, "allSamples", sep=".")),
