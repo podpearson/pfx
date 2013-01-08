@@ -31,7 +31,9 @@ evaluateFilters <- function(
     filtersToRemove = c(regionsMaskFilterName, names(additionalInfoFilters))
   )
   if(shouldRecalculateDepthSD) {
-    values(info(vcfFiltered))[["scaledDepthSD"]] <- calcuateScaledDepthSD(vcfFiltered)
+    currentInfo <- values(info(vcfFiltered))
+    currentInfo[["scaledDepthSD"]] <- calcuateScaledDepthSD(vcfFiltered)
+    info(vcfFiltered) <- currentInfo
   }
   qcFilteringPlots(vcfFiltered, plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."), shouldCreateErrorRateBySites=FALSE)
   mgRecombinations <- recombinationPoints(vcfFiltered, shouldCharacterise=FALSE, GTsToIntMapping=GTsToIntMapping)
