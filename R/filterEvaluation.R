@@ -44,7 +44,7 @@ filterEvaluation <- function(
   
   filterResults <- evaluateFilters(
     vcfCoreFinalSamples,
-    plotFilestem=file.path(analysisDirectory, cross, variantType, "evaluateFilters"),
+    plotFilestem=file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateFilters", sep=".")),
     additionalInfoFilters = filters,
     sampleDuplicates=initialSampleQCresults[["sampleDuplicates"]]
   )
