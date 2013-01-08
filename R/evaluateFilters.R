@@ -55,16 +55,17 @@ evaluateFilters <- function(
   titvRatio <- titv(vcfFiltered)
   titvRatioExcludingAT <- titv(vcfFiltered, FALSE)
 
-  return(
-    data.frame(
-      totalRecombinations = sum(recombinationsPerSample),
-      medianRecombinationsPerSample = median(recombinationsPerSample),
-      numberOfVariants = dim(vcfFiltered)[1],
-      numberOfMendelianErrors = length(which(values(info(vcfFiltered))[["MendelianErrors"]] > 0)),
-      numberOfSegregatingSites = length(which(values(info(vcfFiltered))[["SEGREGATING"]])),
-      titvRatio = titvRatio,
-      titvRatioExcludingAT = titvRatioExcludingAT,
-      row.names = paste(c(regionsMaskFilterName, names(additionalInfoFilters)), collapse=".")
-    )
+  returnDF <- data.frame(
+    totalRecombinations = sum(recombinationsPerSample),
+    medianRecombinationsPerSample = median(recombinationsPerSample),
+    numberOfVariants = dim(vcfFiltered)[1],
+    numberOfMendelianErrors = length(which(values(info(vcfFiltered))[["MendelianErrors"]] > 0)),
+    numberOfSegregatingSites = length(which(values(info(vcfFiltered))[["SEGREGATING"]])),
+    titvRatio = titvRatio,
+    titvRatioExcludingAT = titvRatioExcludingAT,
+    row.names = paste(c(regionsMaskFilterName, names(additionalInfoFilters)), collapse=".")
   )
+  save(returnDF, file=paste(plotFilestem, "returnDF.rda", sep="."))
+  
+  return(returnDF)
 }

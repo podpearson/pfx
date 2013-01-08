@@ -6,6 +6,51 @@
 #
 ###############################################################################
 
+#  allFilterEvaluationSeriesResults <- allFilterEvaluationSeries()
+#  allFilterEvaluationSeriesResults_7g8_gb4_noSD <- allFilterEvaluationSeries(
+#    callsets = list(
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps")
+#    ),
+#    filters = list(
+#      "hp5prox1" = list(column="homopolymer5Proximity", operator="%in%", value=1),
+#      "hp15prox0to20" = list(column="homopolymer15Proximity", operator="%in%", value=0:20),
+#      "MQ0" = list(column="MQ0", operator=">", value=0),
+#      "TRF" = list(column="RepeatPeriod1", operator=">", value=0),
+#      "ReadPosMinus2" = list(column="ReadPosRankSum", operator="<", value=-2, filterOutNAs=TRUE),
+#      "SoftClip0.1" = list(column="SoftClipped", operator=">", value=0.1),
+#      "UQ35" = list(column="UQ", operator=">", value=35),
+#      "QUAL12000" = list(column="QUAL", operator="<", value=12000)
+#    )
+#  )
+#  allFilterEvaluationSeriesResultsQDandSB <- allFilterEvaluationSeries(
+#    filters=list(
+#      "depthSD0.5" = list(column="scaledDepthSD", operator=">", value=0.5),
+#      "QD36" = list(column="QD", operator="<=", value=36),
+#      "SBminus6000" = list(column="SB", operator=">=", value=-6000)
+#    )
+#  )
+#  allFilterEvaluationSeriesResultsQDandSB_3d7_hb3_SD1 <- allFilterEvaluationSeries(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps")
+#    ),
+#    filters=list(
+#      "depthSD1" = list(column="scaledDepthSD", operator=">", value=1),
+#      "QD36" = list(column="QD", operator="<=", value=36),
+#      "SBminus6000" = list(column="SB", operator=">=", value=-6000)
+#    )
+#  )
+#  filterEvaluations_snps_QD30 <- allFilterEvaluationSeries(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    filters=list(
+#      "unfiltered" = list(column="QUAL", operator="<", value=0),
+#      "QD30" = list(column="QD", operator="<=", value=30)
+#    )
+#  )
+
 
 allFilterEvaluationSeries <- function(
   callsets = list(
@@ -23,7 +68,7 @@ allFilterEvaluationSeries <- function(
     "MQ0" = list(column="MQ0", operator=">", value=0),
     "TRF" = list(column="RepeatPeriod1", operator=">", value=0),
     "ReadPosMinus2" = list(column="ReadPosRankSum", operator="<", value=-2, filterOutNAs=TRUE),
-    "depthSD0.5" = list(column="scaledDepthSD", operator=">", value=0.5),
+    "depthSD1" = list(column="scaledDepthSD", operator=">", value=1),
     "SoftClip0.1" = list(column="SoftClipped", operator=">", value=0.1),
     "UQ35" = list(column="UQ", operator=">", value=35),
     "QUAL12000" = list(column="QUAL", operator="<", value=12000)
