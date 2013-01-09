@@ -28,12 +28,12 @@ sampleQC <- function(
   thresholdHeterozgosity      = "3sd",
   thresholdMAF                = "3sd",
   thresholdMendelianErrors    = "3sd",
-  thresholdNoCalls            = "3sd",
+#  thresholdNoCalls            = "3sd",
   thresholdThirdOrFourthAllele= "3sd",
 #  thresholdMissingness        = 50,
 #  thresholdHeterozgosity      = 1000,
 #  thresholdMendelianErrors    = 25,
-#  thresholdNoCalls            = 500,
+  thresholdNoCalls            = 300,
 #  thresholdThirdOrFourthAllele= 50,
   thresholdRecombinations     = "3sd",
   verbose                     = TRUE
@@ -391,6 +391,7 @@ sampleQC <- function(
 #      missingnessPerSample > thresholdMissingness |
 #        heterozygosityPerSample > thresholdHeterozgosity |
 #        MendelianErrorsPerSample > thresholdMendelianErrors |
+        nocallGenotypesPerSample> thresholdNoCalls |
         recombinationsPerSample > thresholdRecombinations
       )
     )

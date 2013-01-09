@@ -29,6 +29,13 @@
 # run20130107_hb3_dd2_snps <- pipeline2("hb3_dd2", parentalStrains=c("ERR012788", "ERR012840"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
 # run20130107_hb3_dd2_indels <- pipeline2("hb3_dd2", variantType="indels", parentalStrains=c("ERR012788", "ERR012840"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
 
+# run20130109_3d7_hb3_snps <- pipeline2(parentalStrains=c("ERR019061", "ERR019054"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
+# run20130109_3d7_hb3_indels <- pipeline2(variantType="indels", parentalStrains=c("ERR019061", "ERR019054"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
+# run20130109_7g8_gb4_snps <- pipeline2("7g8_gb4", parentalStrains=c("ERR027099", "ERR027100"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
+# run20130109_7g8_gb4_indels <- pipeline2("7g8_gb4", variantType="indels", parentalStrains=c("ERR027099", "ERR027100"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
+# run20130109_hb3_dd2_snps <- pipeline2("hb3_dd2", parentalStrains=c("ERR012788", "ERR012840"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
+# run20130109_hb3_dd2_indels <- pipeline2("hb3_dd2", variantType="indels", parentalStrains=c("ERR012788", "ERR012840"), genotypesFileFmt="%s.annotated.vcf", overwriteExisting=TRUE, shouldUseSavedVersions=FALSE, genotypesDirectory="data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk")
+
 pipeline2 <- function(
   cross                       = "3d7_hb3",
   variantType                 = "snps",
@@ -155,101 +162,102 @@ pipeline2 <- function(
     filtersToRemove = "InVarRegion"
   )
   save(vcfCoreFinalSamples, file=vcfCoreFinalSamplesRda)
-  coreVcfFinalSamples <- annotateVcf(
-    filterVcf(
-      setVcfFilters(
-        vcfVariantAnnotated[, finalSamples],
-        regionsMask                 = varRegions_v3(),
-        additionalInfoFilters = list(
-          "LowQD" = list(column="QD", operator="<=", value=36),
-          "HighSB" = list(column="SB", operator=">=", value=-6000)
-        )
-  #      shouldSetMultiallelicFilter = TRUE,
-  #      shouldSetNonSegregatingFilt = TRUE
-      ),
-      filtersToRemove = "InVarRegion"
-    )
-  )
-  qcFilteringResults_coreFinalSamples <- qcFilteringPlots(coreVcfFinalSamples, plotFilestem=file.path(outputDirectory, cross, variantType, paste(cross, "coreFinalSamples", sep=".")))
-  qcFilteringResults_coreFinalSamplesMaxMAF <- qcFilteringPlots(coreVcfFinalSamples, plotFilestem=file.path(outputDirectory, cross, variantType, paste(cross, "coreFinalSamplesMaxMAF", sep=".")), errorVariable="maxMAF", errorThreshold=0.1)
-  finalSNPnumbersMatrix <- recombinationPlotSeries(
-    coreVcfFinalSamples,
-    plotFilestem=file.path(outputDirectory, cross, variantType, paste(cross, "coreFinalSamples", sep=".")),
-    filters=c("InVarRegion", "LowQD", "HighSB"),
-    sampleIDcolumn=sampleIDcolumn,
-    sampleIDmappingsColumn=sampleIDmappingsColumn,
-    sampleDuplicates=initialSampleQCresults[["sampleDuplicates"]]
-  )
-  vcfSegregating <- filterVcf(coreVcfFinalSamples, keepPASSvariantsOnly=TRUE)
-    
-  gc()
-  if(shouldCompareWithJiang) {
-    jiangVcf <- loadJiangGenotypesAsVcf() # make this return a VCF?
-    jiangSampleQCresults <- sampleQC(jiangVcf, discordanceThresholdJiang, plotFilestem="JiangEtAl", GTsToIntMapping = c("7"=1, "G"=2, "."=0), shouldCalcMissingnessAndHet=FALSE, shouldRenameSamples=FALSE) # should output heatmap of discordances
-#    jiangUniqueSamples <- uniqueSamples(jiangVcf, discordanceThresholdJiang, plotFilestem="JiangEtAl", GTsToIntMapping = c("7"=1, "G"=2, "."=0)) # should output heatmap of discordances
-    if(cross=="v3UG_7g8xGb4") {
-      seqlevels(jiangVcf) <- sprintf("Pf3D7_%02d_v3", as.integer(sub("MAL", "", seqlevels(jiangVcf))))
-    }
-    genotypeConcordanceRaw <- compareCalls(vcfVariantAnnotated, jiangVcf, plotFilestem=file.path(outputDirectory, cross, variantType, paste(cross, "comparison", "raw", sep=".")), discordanceThreshold=discordanceThresholdRawVsJia)
-#    genotypeConcordanceRaw <- compareCalls(vcfFiltered, jiangVcf, plotFilestem=paste(cross, "comparison", "raw", sep="."), discordanceThreshold=discordanceThresholdRawVsJia)
-    genotypeConcordance <- compareCalls(coreVcfFinal, jiangVcf, plotFilestem=file.path(outputDirectory, cross, variantType, paste(cross, "comparison", "filtered", sep=".")), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
-#    genotypeConcordance <- compareCalls(vcfSegregating, jiangVcf, plotFilestem=paste(cross, "comparison", "filtered", sep="."), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
-#    genotypeConcordancePf3D7_02_v3 <- compareCalls(vcfSegregating[seqnames(vcfSegregating)=="Pf3D7_02_v3"], jiangVcf[seqnames(jiangVcf)=="Pf3D7_02_v3"], plotFilestem=paste(cross, "comparison", "Pf3D7_02_v3", sep="."), discordanceThreshold=discordanceThreshold5ChVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
-#    genotypeConcordance6chromosomes <- compareCalls(vcfSegregating[seqnames(vcfSegregating) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_09_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], jiangVcf[seqnames(jiangVcf) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_09_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], plotFilestem=paste(cross, "comparison", "6chromosomes", sep="."), discordanceThreshold=discordanceThreshold5ChVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
-#    genotypeConcordance5chromosomes <- compareCalls(vcfSegregating[seqnames(vcfSegregating) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], jiangVcf[seqnames(jiangVcf) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], plotFilestem=paste(cross, "comparison", "5chromosomes", sep="."), discordanceThreshold=discordanceThreshold5ChVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
-    gc()
-    if(!file.exists(file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep="."))) | !shouldUseSavedVersions) {
-      mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS", qcPlusUniqueSamples], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
-      save(mgRecombinations, file=file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep=".")))
-    } else {
-      load(file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep=".")))
-    }
-    if(!file.exists("~/jiangRecombinations.rda") | !shouldUseSavedVersions) {
-      jiangRecombinations <- recombinationPoints(jiangVcf, gffGRL, GTsToIntMapping = c("7"=1, "G"=2, "."=0))
-      save(jiangRecombinations, file="jiangRecombinations.rda")
-    } else {
-      load("~/jiangRecombinations.rda")
-    }
-    medianBreakpointAccuracies <- compareRecombinations(mgRecombinations, jiangRecombinations) # to include slide 9 plot, slide 12 plot, median accuracies, Venn
-  } else {
-    if(!file.exists(file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep="."))) | !shouldUseSavedVersions) {
-      mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS"], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
-      save(mgRecombinations, file=file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep=".")))
-    } else {
-      load(file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep=".")))
-    }
-  }
-  recombinationRates <- analyseRecombinations(mgRecombinations, plotFilestem=file.path(outputDirectory, cross, variantType, cross)) # to include slide 13 plot, breakdown of CO and GC by progeny, chromosome and by cross, CO and GC rates
-  returnList <- list(
-    vcfVariantAnnotated                  = vcfVariantAnnotated,
-    vcfSegregating                       = vcfSegregating,
-    mgRecombinations                     = mgRecombinations,
-    recombinationRates                   = recombinationRates,
-    qcFilteringResults_coreFinalSamples  = qcFilteringResults_coreFinalSamples,
-    qcFilteringResults_coreFinalSamplesMaxMAF = qcFilteringResults_coreFinalSamplesMaxMAF,
-#    qcFilteringResults                   = qcFilteringResults,
-    initialSampleQCresults               = initialSampleQCresults,
-    initialSNPnumbersMatrix              = initialSNPnumbersMatrix,
-#    qcFilteringResultsFinalPostFiltering = qcFilteringResultsFinalPostFiltering,
-#    finalSampleQCresults                 = finalSampleQCresults,
-    finalSNPnumbersMatrix                = finalSNPnumbersMatrix
-#    uniqueSNPnumbersMatrix               = uniqueSNPnumbersMatrix,
-#    finalUniqueSampleQCresults           = finalUniqueSampleQCresults
-  )
-  if(shouldCompareWithJiang) {
-    returnList <- c(
-      returnList,
-      list(
-        jiangSampleQCresults                 = jiangSampleQCresults,
-        jiangRecombinations                  = jiangRecombinations,
-        genotypeConcordance                  = genotypeConcordance,
-#        genotypeConcordancePf3D7_02_v3       = genotypeConcordancePf3D7_02_v3,
-        medianBreakpointAccuracies           = medianBreakpointAccuracies
-      )
-    )
-  }
-  save(returnList, file=file.path(outputDirectory, cross, variantType, paste(cross, "returnList.rda", sep=".")))
-  writeVcf(vcfSegregating, filename=file.path(outputDirectory, cross, variantType, paste(cross, "filtered.vcf", sep=".")), index=TRUE)
-  return(returnList)
+#  coreVcfFinalSamples <- annotateVcf(
+#    filterVcf(
+#      setVcfFilters(
+#        vcfVariantAnnotated[, finalSamples],
+#        regionsMask                 = varRegions_v3(),
+#        additionalInfoFilters = list(
+#          "LowQD" = list(column="QD", operator="<=", value=36),
+#          "HighSB" = list(column="SB", operator=">=", value=-6000)
+#        )
+#  #      shouldSetMultiallelicFilter = TRUE,
+#  #      shouldSetNonSegregatingFilt = TRUE
+#      ),
+#      filtersToRemove = "InVarRegion"
+#    )
+#  )
+#  qcFilteringResults_coreFinalSamples <- qcFilteringPlots(coreVcfFinalSamples, plotFilestem=file.path(outputDirectory, cross, variantType, paste(cross, "coreFinalSamples", sep=".")))
+#  qcFilteringResults_coreFinalSamplesMaxMAF <- qcFilteringPlots(coreVcfFinalSamples, plotFilestem=file.path(outputDirectory, cross, variantType, paste(cross, "coreFinalSamplesMaxMAF", sep=".")), errorVariable="maxMAF", errorThreshold=0.1)
+#  finalSNPnumbersMatrix <- recombinationPlotSeries(
+#    coreVcfFinalSamples,
+#    plotFilestem=file.path(outputDirectory, cross, variantType, paste(cross, "coreFinalSamples", sep=".")),
+#    filters=c("InVarRegion", "LowQD", "HighSB"),
+#    sampleIDcolumn=sampleIDcolumn,
+#    sampleIDmappingsColumn=sampleIDmappingsColumn,
+#    sampleDuplicates=initialSampleQCresults[["sampleDuplicates"]]
+#  )
+#  vcfSegregating <- filterVcf(coreVcfFinalSamples, keepPASSvariantsOnly=TRUE)
+#    
+#  gc()
+#  if(shouldCompareWithJiang) {
+#    jiangVcf <- loadJiangGenotypesAsVcf() # make this return a VCF?
+#    jiangSampleQCresults <- sampleQC(jiangVcf, discordanceThresholdJiang, plotFilestem="JiangEtAl", GTsToIntMapping = c("7"=1, "G"=2, "."=0), shouldCalcMissingnessAndHet=FALSE, shouldRenameSamples=FALSE) # should output heatmap of discordances
+##    jiangUniqueSamples <- uniqueSamples(jiangVcf, discordanceThresholdJiang, plotFilestem="JiangEtAl", GTsToIntMapping = c("7"=1, "G"=2, "."=0)) # should output heatmap of discordances
+#    if(cross=="v3UG_7g8xGb4") {
+#      seqlevels(jiangVcf) <- sprintf("Pf3D7_%02d_v3", as.integer(sub("MAL", "", seqlevels(jiangVcf))))
+#    }
+#    genotypeConcordanceRaw <- compareCalls(vcfVariantAnnotated, jiangVcf, plotFilestem=file.path(outputDirectory, cross, variantType, paste(cross, "comparison", "raw", sep=".")), discordanceThreshold=discordanceThresholdRawVsJia)
+##    genotypeConcordanceRaw <- compareCalls(vcfFiltered, jiangVcf, plotFilestem=paste(cross, "comparison", "raw", sep="."), discordanceThreshold=discordanceThresholdRawVsJia)
+#    genotypeConcordance <- compareCalls(coreVcfFinal, jiangVcf, plotFilestem=file.path(outputDirectory, cross, variantType, paste(cross, "comparison", "filtered", sep=".")), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
+##    genotypeConcordance <- compareCalls(vcfSegregating, jiangVcf, plotFilestem=paste(cross, "comparison", "filtered", sep="."), discordanceThreshold=discordanceThresholdFltVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
+##    genotypeConcordancePf3D7_02_v3 <- compareCalls(vcfSegregating[seqnames(vcfSegregating)=="Pf3D7_02_v3"], jiangVcf[seqnames(jiangVcf)=="Pf3D7_02_v3"], plotFilestem=paste(cross, "comparison", "Pf3D7_02_v3", sep="."), discordanceThreshold=discordanceThreshold5ChVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
+##    genotypeConcordance6chromosomes <- compareCalls(vcfSegregating[seqnames(vcfSegregating) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_09_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], jiangVcf[seqnames(jiangVcf) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_09_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], plotFilestem=paste(cross, "comparison", "6chromosomes", sep="."), discordanceThreshold=discordanceThreshold5ChVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
+##    genotypeConcordance5chromosomes <- compareCalls(vcfSegregating[seqnames(vcfSegregating) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], jiangVcf[seqnames(jiangVcf) %in% c("Pf3D7_02_v3", "Pf3D7_05_v3", "Pf3D7_06_v3", "Pf3D7_10_v3", "Pf3D7_11_v3")], plotFilestem=paste(cross, "comparison", "5chromosomes", sep="."), discordanceThreshold=discordanceThreshold5ChVsJia) # Should give slide 3, histogram of pair-wise numbers of discordant, heatmap of sample discordances and heatmap for discordances for presumed identical, recombinationPlot of both together
+#    gc()
+#    if(!file.exists(file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep="."))) | !shouldUseSavedVersions) {
+#      mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS", qcPlusUniqueSamples], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
+#      save(mgRecombinations, file=file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep=".")))
+#    } else {
+#      load(file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep=".")))
+#    }
+#    if(!file.exists("~/jiangRecombinations.rda") | !shouldUseSavedVersions) {
+#      jiangRecombinations <- recombinationPoints(jiangVcf, gffGRL, GTsToIntMapping = c("7"=1, "G"=2, "."=0))
+#      save(jiangRecombinations, file="jiangRecombinations.rda")
+#    } else {
+#      load("~/jiangRecombinations.rda")
+#    }
+#    medianBreakpointAccuracies <- compareRecombinations(mgRecombinations, jiangRecombinations) # to include slide 9 plot, slide 12 plot, median accuracies, Venn
+#  } else {
+#    if(!file.exists(file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep="."))) | !shouldUseSavedVersions) {
+#      mgRecombinations <- recombinationPoints(vcfSegregating[filt(vcfSegregating)=="PASS"], gffGRL) # extend crossoversAnalysis to include classification as exonic, intronic, etc
+#      save(mgRecombinations, file=file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep=".")))
+#    } else {
+#      load(file.path(outputDirectory, cross, variantType, paste(cross, "mgRecombinations.rda", sep=".")))
+#    }
+#  }
+#  recombinationRates <- analyseRecombinations(mgRecombinations, plotFilestem=file.path(outputDirectory, cross, variantType, cross)) # to include slide 13 plot, breakdown of CO and GC by progeny, chromosome and by cross, CO and GC rates
+#  returnList <- list(
+#    vcfVariantAnnotated                  = vcfVariantAnnotated,
+#    vcfSegregating                       = vcfSegregating,
+#    mgRecombinations                     = mgRecombinations,
+#    recombinationRates                   = recombinationRates,
+#    qcFilteringResults_coreFinalSamples  = qcFilteringResults_coreFinalSamples,
+#    qcFilteringResults_coreFinalSamplesMaxMAF = qcFilteringResults_coreFinalSamplesMaxMAF,
+##    qcFilteringResults                   = qcFilteringResults,
+#    initialSampleQCresults               = initialSampleQCresults,
+#    initialSNPnumbersMatrix              = initialSNPnumbersMatrix,
+##    qcFilteringResultsFinalPostFiltering = qcFilteringResultsFinalPostFiltering,
+##    finalSampleQCresults                 = finalSampleQCresults,
+#    finalSNPnumbersMatrix                = finalSNPnumbersMatrix
+##    uniqueSNPnumbersMatrix               = uniqueSNPnumbersMatrix,
+##    finalUniqueSampleQCresults           = finalUniqueSampleQCresults
+#  )
+#  if(shouldCompareWithJiang) {
+#    returnList <- c(
+#      returnList,
+#      list(
+#        jiangSampleQCresults                 = jiangSampleQCresults,
+#        jiangRecombinations                  = jiangRecombinations,
+#        genotypeConcordance                  = genotypeConcordance,
+##        genotypeConcordancePf3D7_02_v3       = genotypeConcordancePf3D7_02_v3,
+#        medianBreakpointAccuracies           = medianBreakpointAccuracies
+#      )
+#    )
+#  }
+#  save(returnList, file=file.path(outputDirectory, cross, variantType, paste(cross, "returnList.rda", sep=".")))
+#  writeVcf(vcfSegregating, filename=file.path(outputDirectory, cross, variantType, paste(cross, "filtered.vcf", sep=".")), index=TRUE)
+#  return(returnList)
+  return(vcfCoreFinalSamples)
 }
 
