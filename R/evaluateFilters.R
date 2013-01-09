@@ -22,6 +22,7 @@ evaluateFilters <- function(
   sampleDuplicates            = NULL,
   shouldRecalculateDepthSD    = TRUE,
   shouldCalculateExtraQUAL    = TRUE,
+  shouldSetHaplotypeLengths   = TRUE,
   shouldReturnVcfOnly         = FALSE
 ) {
   filterColumns <- sapply(additionalInfoFilters, function(x) x[["column"]])
@@ -63,6 +64,9 @@ evaluateFilters <- function(
         filtersToRemove = c(regionsMaskFilterName, names(additionalInfoFilters))
       )
     }
+  }
+  if(shouldSetHaplotypeLengths) {
+    vcfFiltered <- setHaplotypeLengths(vcfFiltered)
   }
   if(shouldReturnVcfOnly) {
     return(vcfFiltered)
