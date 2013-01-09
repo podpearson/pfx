@@ -12,7 +12,7 @@ createSingleChromosomeVariantSitesRdaFile <- function(
   chromosome                  = "Pf3D7_01_v3",
 #  vcfFilename                 = file.path("/data/galton/users/rpearson", "crossesTesting", "release", "7g8xGb4-qcPlusSamples-0.1.vcf.gz"),
 #  chromosome                  = "MAL1",
-  genoToLoad                  = c("GT", "AD"),
+  genoToLoad                  = c("GT", "AD", "GQ", "MQ0"),
   shouldRemoveInvariant       = TRUE,
 #  regionsMask                 = varRegions_v2(), # will remove any variants in these regions. Set to NULL if you don't want to mask any variants out in this way
   regionsMask                 = NULL,
