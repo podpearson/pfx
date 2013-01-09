@@ -21,7 +21,8 @@ evaluateFilters <- function(
   sampleIDmappingsColumn      = sampleIDcolumn,
   sampleDuplicates            = NULL,
   shouldRecalculateDepthSD    = TRUE,
-  shouldCalculateExtraQUAL    = TRUE
+  shouldCalculateExtraQUAL    = TRUE,
+  shouldReturnVcfOnly         = FALSE
 ) {
   filterColumns <- sapply(additionalInfoFilters, function(x) x[["column"]])
   vcfFiltered <- filterVcf(
@@ -62,6 +63,9 @@ evaluateFilters <- function(
         filtersToRemove = c(regionsMaskFilterName, names(additionalInfoFilters))
       )
     }
+  }
+  if(shouldReturnVcfOnly) {
+    return(vcfFiltered)
   }
   qcFilteringPlots(vcfFiltered, plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."), shouldCreateErrorRateBySites=FALSE)
   mgRecombinations <- recombinationPoints(vcfFiltered, shouldCharacterise=FALSE, GTsToIntMapping=GTsToIntMapping)

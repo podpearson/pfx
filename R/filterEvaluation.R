@@ -22,7 +22,8 @@ filterEvaluation <- function(
     "SoftClipped" = list(column="SoftClipped", operator=">", value=0.1),
     "UQ35" = list(column="UQ", operator=">", value=35),
     "QUAL12000" = list(column="QUAL", operator="<", value=12000)
-  )
+  ),
+  shouldReturnVcfOnly         = FALSE
 )
 {
   initialSampleQCresultsFilename <- file.path(analysisDirectory, cross, variantType, paste(cross, ".initialSampleQCresults.rda", sep=""))
@@ -44,9 +45,10 @@ filterEvaluation <- function(
   
   filterResults <- evaluateFilters(
     vcfCoreFinalSamples,
-    plotFilestem=file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateFilters", sep=".")),
-    additionalInfoFilters = filters,
-    sampleDuplicates=initialSampleQCresults[["sampleDuplicates"]]
+    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateFilters", sep=".")),
+    additionalInfoFilters       = filters,
+    sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+    shouldReturnVcfOnly         = shouldReturnVcfOnly
   )
   return(filterResults)
 }

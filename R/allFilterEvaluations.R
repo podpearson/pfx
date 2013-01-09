@@ -19,6 +19,44 @@
 #      "missingness1" = list(column="missingness", operator=">", value=1)
 #    )
 #  )
+#  filterEvaluations_snps_QUALperSample300_maxMAF0.2_QUALbyDP40_missingness1 <- allFilterEvaluations(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    filters=list(
+#      "QUALperSample300" = list(column="QUALperSample", operator="<", value=300),
+#      "maxMAF0.2" = list(column="maxMAF", operator=">", value=0.2),
+#      "QUALbyDP40" = list(column="QUALbyDP", operator=">", value=40),
+#      "missingness1" = list(column="missingness", operator=">", value=1)
+#    )
+#  )
+#  filterEvaluations_snps_QUALperSample300_maxMAF0.2_QUALbyDP29_missingness1 <- allFilterEvaluations(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    filters=list(
+#      "QUALperSample300" = list(column="QUALperSample", operator="<", value=300),
+#      "maxMAF0.2" = list(column="maxMAF", operator=">", value=0.2),
+#      "QUALbyDP29" = list(column="QUALbyDP", operator=">", value=29),
+#      "missingness1" = list(column="missingness", operator=">", value=1)
+#    )
+#  )
+#  filterEvaluations_snps_QUALperSample300_maxMAF0.2_missingness1 <- allFilterEvaluations(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    filters=list(
+#      "QUALperSample300" = list(column="QUALperSample", operator="<", value=300),
+#      "maxMAF0.2" = list(column="maxMAF", operator=">", value=0.2),
+#      "missingness1" = list(column="missingness", operator=">", value=1)
+#    )
+#  )
 #  filterEvaluations_snps_withoutHeterozygosity <- allFilterEvaluationSeries(
 #    callsets = list(
 #      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
@@ -60,7 +98,8 @@ allFilterEvaluations <- function(
     "SoftClip0.1" = list(column="SoftClipped", operator=">", value=0.1),
     "UQ35" = list(column="UQ", operator=">", value=35),
     "QUAL12000" = list(column="QUAL", operator="<", value=12000)
-  )
+  ),
+  shouldReturnVcfOnly         = FALSE
 ) {
   resultsList <- sapply(
     callsets,
@@ -69,7 +108,8 @@ allFilterEvaluations <- function(
         cross                       = callset["cross"],
         variantType                 = callset["variantType"],
         analysisDirectory           = analysisDirectory,
-        filters = filters
+        filters                     = filters,
+        shouldReturnVcfOnly         = shouldReturnVcfOnly
       )
     },
     simplify=FALSE,
