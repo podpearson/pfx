@@ -115,7 +115,8 @@ filterGenotypes <- function(
     vcf <- setVcfFilters(vcf, additionalInfoFilters=additionalInfoFilters, shouldSetNonSegregatingFilt=shouldSetNonSegregatingFilt)
   }
   if(shouldRemoveFilteredSNPs) {
-    vcf <- filterVcf(vcf, filtersToRemove = names(additionalInfoFilters))
+    vcf <- filterVcf(vcf, keepPASSvariantsOnly=TRUE)
+#    vcf <- filterVcf(vcf, filtersToRemove = names(additionalInfoFilters))
   }
   return(vcf)
 }
