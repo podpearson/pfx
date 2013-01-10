@@ -23,10 +23,12 @@ evaluateFilters <- function(
   shouldRecalculateDepthSD    = TRUE,
   shouldCalculateExtraQUAL    = TRUE,
   shouldFilterGenotypes       = TRUE,
-  genotypeFilters = list(
+  genotypeFilters             = list(
     "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
-    "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE)
+    "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
+    "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
   ),
+  errorVariables              = c("MendelianErrors", "numSingleSNPhaplotypes"),
   shouldSetHaplotypeLengths   = TRUE,
   shouldReturnVcfOnly         = FALSE
 ) {
@@ -79,11 +81,21 @@ evaluateFilters <- function(
   if(shouldSetHaplotypeLengths) {
     vcfFiltered <- setHaplotypeLengths(vcfFiltered)
   }
-  browser()
+#  browser()
   if(shouldReturnVcfOnly) {
     return(vcfFiltered)
   }
-  qcFilteringPlots(vcfFiltered, plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."), shouldCreateErrorRateBySites=FALSE)
+  sapply(
+    errorVariables,
+    function(errorVariable) {
+      qcFilteringPlots(
+        vcfFiltered,
+        plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."),
+        shouldCreateErrorRateBySites=FALSE,
+        errorVariable=errorVariable
+      )
+    }
+  )
   mgRecombinations <- recombinationPoints(vcfFiltered, shouldCharacterise=FALSE, GTsToIntMapping=GTsToIntMapping)
   recombinationsPerSample <- rev(
     sapply(
@@ -125,6 +137,7 @@ evaluateFilters <- function(
     medianRecombinationsPerSample = median(recombinationsPerSample),
     numberOfVariants = dim(vcfFiltered)[1],
     numberOfMendelianErrors = length(which(values(info(vcfFiltered))[["MendelianErrors"]] > 0)),
+    numberOfSingleSNPhaplotypes = length(which(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]] > 0)),
     numberOfSegregatingSites = length(which(values(info(vcfFiltered))[["SEGREGATING"]])),
     titvRatio = titvRatio,
     titvRatioExcludingAT = titvRatioExcludingAT,
@@ -132,6 +145,7 @@ evaluateFilters <- function(
     medianRecombinationsPerSample_Pf3D7_01_v3 = median(recombinationsPerSample_Pf3D7_01_v3),
     numberOfVariants_Pf3D7_01_v3 = dim(vcf_Pf3D7_01_v3)[1],
     numberOfMendelianErrors_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["MendelianErrors"]] > 0)),
+    numberOfSingleSNPhaplotypes_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["numSingleSNPhaplotypes"]] > 0)),
     numberOfSegregatingSites_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["SEGREGATING"]])),
     row.names = paste(c(regionsMaskFilterName, names(additionalInfoFilters)), collapse=".")
   )

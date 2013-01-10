@@ -56,7 +56,10 @@ qcFilteringPlots <- function(
     "RepeatPeriod1"          = "highIsGood",
     "RepeatScore1"           = "lowIsGood",
     "RepeatSize1"            = "highIsGood",
-    "RepeatEntropy1"         = "highIsGood"
+    "RepeatEntropy1"         = "highIsGood",
+    "numFilteredGenotypes"   = "lowIsGood",
+    "numSingleSNPhaplotypes" = "lowIsGood",
+    "numShortHaplotypes"     = "lowIsGood"
   ),
   variablesToPlotQuantiles = variablesToPlot,
 #  variablesToPlotQuantiles = c(

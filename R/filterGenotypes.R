@@ -14,7 +14,7 @@ filterGenotypes <- function(
     "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
     "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
   ),
-  shouldSetFilteredGTtoMissing=FALSE,
+  shouldSetFilteredGTtoMissing=TRUE,
   missingGTValue              = ".",
   shouldSetINFOcolumn         = TRUE,
   shouldAlsoSetSNPfilters     = FALSE,

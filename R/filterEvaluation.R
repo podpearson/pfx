@@ -12,7 +12,7 @@ filterEvaluation <- function(
   cross                       = "3d7_hb3",
   variantType                 = "snps",
   analysisDirectory           = "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk",
-  filters = list(
+  filters                     = list(
     "homopolymer5Proximity" = list(column="homopolymer5Proximity", operator="%in%", value=1),
     "homopolymer15Proximity" = list(column="homopolymer15Proximity", operator="%in%", value=0:20),
     "MQ0" = list(column="MQ0", operator=">", value=0),
@@ -22,6 +22,11 @@ filterEvaluation <- function(
     "SoftClipped" = list(column="SoftClipped", operator=">", value=0.1),
     "UQ35" = list(column="UQ", operator=">", value=35),
     "QUAL12000" = list(column="QUAL", operator="<", value=12000)
+  ),
+  genotypeFilters             = list(
+    "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
+    "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
+    "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
   ),
   shouldReturnVcfOnly         = FALSE
 )
@@ -47,6 +52,7 @@ filterEvaluation <- function(
     vcfCoreFinalSamples,
     plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateFilters", sep=".")),
     additionalInfoFilters       = filters,
+    genotypeFilters             = genotypeFilters,
     sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
     shouldReturnVcfOnly         = shouldReturnVcfOnly
   )

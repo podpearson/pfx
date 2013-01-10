@@ -45,6 +45,26 @@
 #      "missingness1" = list(column="missingness", operator=">", value=1)
 #    )
 #  )
+  filterEvaluations_snps_QUALperSample300_maxMAF0.2_QUALbyDP29_missingness1_numFilteredGenotypes2 <- allFilterEvaluations(
+    callsets = list(
+      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+    ),
+    genotypeFilters = list(
+      "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
+      "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
+      "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
+    ),
+    filters=list(
+      "QUALperSample300" = list(column="QUALperSample", operator="<", value=300),
+      "maxMAF0.2" = list(column="maxMAF", operator=">", value=0.2),
+      "QUALbyDP29" = list(column="QUALbyDP", operator=">", value=29),
+      "missingness1" = list(column="missingness", operator=">", value=1),
+      "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2)
+    )
+  )
+
 #  filterEvaluations_snps_QUALperSample300_maxMAF0.2_missingness1 <- allFilterEvaluations(
 #    callsets = list(
 #      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
@@ -109,6 +129,7 @@ allFilterEvaluations <- function(
         variantType                 = callset["variantType"],
         analysisDirectory           = analysisDirectory,
         filters                     = filters,
+        genotypeFilters             = genotypeFilters,
         shouldReturnVcfOnly         = shouldReturnVcfOnly
       )
     },
