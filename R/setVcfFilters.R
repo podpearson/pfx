@@ -81,7 +81,7 @@ setVcfFilters <- function(
       geno(vcf)[["GT"]][, parentalIDs[2]] %in% possibleMissingValues |
       geno(vcf)[["GT"]][, parentalIDs[1]] == geno(vcf)[["GT"]][, parentalIDs[2]]
     )
-    filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & nonSegregatingVariants] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & maskedVariants], "NonSegregating", sep=";")
+    filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & nonSegregatingVariants] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & nonSegregatingVariants], "NonSegregating", sep=";")
     filt(vcf)[filt(vcf) %in% c("PASS", ".") & nonSegregatingVariants] <- "NonSegregating"
   }
   if(shouldSetMaxNoCallsFilter) {
