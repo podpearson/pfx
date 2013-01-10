@@ -15,6 +15,7 @@ evaluateFilters <- function(
   ),
   regionsMask                 = varRegions_v3(),
   regionsMaskFilterName       = "InVarRegion",
+  shouldSetNonSegregatingFilt = TRUE,
   plotFilestem                = "evaluateFilters",
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0),
   sampleIDcolumn              = "ena_run_accession",
@@ -37,7 +38,8 @@ evaluateFilters <- function(
     setVcfFilters(
       vcf,
       regionsMask                 = regionsMask,
-      additionalInfoFilters       = additionalInfoFilters
+      additionalInfoFilters       = additionalInfoFilters,
+      shouldSetNonSegregatingFilt = shouldSetNonSegregatingFilt
     ),
     filtersToRemove = c(regionsMaskFilterName, names(additionalInfoFilters))
   )
@@ -75,7 +77,8 @@ evaluateFilters <- function(
   if(shouldFilterGenotypes) {
     vcfFiltered <- filterGenotypes(
       vcfFiltered,
-      genotypeFilters             = genotypeFilters
+      genotypeFilters             = genotypeFilters,
+      shouldSetNonSegregatingFilt = shouldSetNonSegregatingFilt
     )
   }
   if(shouldSetHaplotypeLengths) {

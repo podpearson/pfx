@@ -18,6 +18,7 @@ filterGenotypes <- function(
   missingGTValue              = ".",
   shouldSetINFOcolumn         = TRUE,
   shouldAlsoSetSNPfilters     = TRUE,
+  shouldSetNonSegregatingFilt = TRUE,
   shouldRemoveFilteredSNPs    = TRUE,
   additionalInfoFilters       = list(
     "filteredGenotypes" = list(column="numFilteredGenotypes", operator=">", value=2)
@@ -111,7 +112,7 @@ filterGenotypes <- function(
     )
   }
   if(shouldAlsoSetSNPfilters) {
-    vcf <- setVcfFilters(vcf, additionalInfoFilters=additionalInfoFilters)
+    vcf <- setVcfFilters(vcf, additionalInfoFilters=additionalInfoFilters, shouldSetNonSegregatingFilt=shouldSetNonSegregatingFilt)
   }
   if(shouldRemoveFilteredSNPs) {
     vcf <- filterVcf(vcf, filtersToRemove = names(additionalInfoFilters))
