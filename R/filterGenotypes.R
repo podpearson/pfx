@@ -17,8 +17,8 @@ filterGenotypes <- function(
   shouldSetFilteredGTtoMissing=TRUE,
   missingGTValue              = ".",
   shouldSetINFOcolumn         = TRUE,
-  shouldAlsoSetSNPfilters     = FALSE,
-  shouldRemoveFilteredSNPs    = FALSE,
+  shouldAlsoSetSNPfilters     = TRUE,
+  shouldRemoveFilteredSNPs    = TRUE,
   additionalInfoFilters       = list(
     "filteredGenotypes" = list(column="numFilteredGenotypes", operator=">", value=2)
   )
