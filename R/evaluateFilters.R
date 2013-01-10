@@ -22,6 +22,11 @@ evaluateFilters <- function(
   sampleDuplicates            = NULL,
   shouldRecalculateDepthSD    = TRUE,
   shouldCalculateExtraQUAL    = TRUE,
+  shouldFilterGenotypes       = TRUE,
+  genotypeFilters = list(
+    "LowGQ" = list(column="GQ", operator="<", value=99),
+    "LowDP" = list(column="DP", operator="<", value=10)
+  ),
   shouldSetHaplotypeLengths   = TRUE,
   shouldReturnVcfOnly         = FALSE
 ) {
@@ -65,9 +70,16 @@ evaluateFilters <- function(
       )
     }
   }
+  if(shouldFilterGenotypes) {
+    vcfFiltered <- filterGenotypes(
+      vcfFiltered,
+      genotypeFilters             = genotypeFilters
+    )
+  }
   if(shouldSetHaplotypeLengths) {
     vcfFiltered <- setHaplotypeLengths(vcfFiltered)
   }
+  browser()
   if(shouldReturnVcfOnly) {
     return(vcfFiltered)
   }
