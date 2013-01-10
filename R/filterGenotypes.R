@@ -10,14 +10,21 @@
 filterGenotypes <- function(
   vcf,
   genotypeFilters = list(
-    "LowGQ" = list(column="GQ", operator="<", value=99),
-    "LowDP" = list(column="DP", operator="<", value=10)
+    "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
+    "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
+    "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
   ),
-  shouldSetFilteredGTtoMissing=TRUE,
-  missingGTValue              = "."
+  shouldSetFilteredGTtoMissing=FALSE,
+  missingGTValue              = ".",
+  shouldSetINFOcolumn         = TRUE,
+  shouldAlsoSetSNPfilters     = TRUE,
+  shouldRemovedFilteredSNPs   = TRUE,
+  additionalInfoFilters     = list(
+    "filteredGenotypes" = list(column="numFilteredGenotypes", operator=">", value=2)
+  )
 ) {
   if(!("FT" %in% names(geno(vcf)))) {
-    geno(vcf)[["FT"]] <<- matrix("PASS", nrow=nrow(geno(vcf)[["GT"]]), ncol=ncol(geno(vcf)[["GT"]]), dimnames=dimnames(geno(vcf)[["GT"]]))
+    geno(vcf)[["FT"]] <- matrix("PASS", nrow=nrow(geno(vcf)[["GT"]]), ncol=ncol(geno(vcf)[["GT"]]), dimnames=dimnames(geno(vcf)[["GT"]]))
   }
   if(!is.null(genotypeFilters)) {
     sapply(
@@ -37,6 +44,20 @@ filterGenotypes <- function(
           AllReads <- RefReads + FirstAltReads
           AllReads[is.na(AllReads)] <- 0
           geno(vcf)[["DP"]] <<- AllReads
+        }
+        if(genotypeFilters[[filterName]][["column"]] == "MAF" & !("MAF" %in% names(geno(vcf))) & ("AD" %in% names(geno(vcf)))) {
+          RefReads <- matrix(
+            sapply(geno(vcf)[["AD"]], function(x) x[1]),
+            ncol=dim(geno(vcf)[["AD"]])[2],
+            dimnames=dimnames(geno(vcf)[["AD"]])
+          )
+          FirstAltReads <- matrix(
+            sapply(geno(vcf)[["AD"]], function(x) x[2]),
+            ncol=dim(geno(vcf)[["AD"]])[2],
+            dimnames=dimnames(geno(vcf)[["AD"]])
+          )
+          MAF <- pmin(RefReads/(RefReads+FirstAltReads), FirstAltReads/(RefReads+FirstAltReads))
+          geno(vcf)[["MAF"]] <<- MAF
         }
         if(genotypeFilters[[filterName]][["operator"]] == "%in%") {
           filteredGenotypes <- geno(vcf)[[genotypeFilters[[filterName]][["column"]]]] %in% genotypeFilters[[filterName]][["value"]]
@@ -66,6 +87,34 @@ filterGenotypes <- function(
   }
   if(shouldSetFilteredGTtoMissing) {
     geno(vcf)[["GT"]][geno(vcf)[["FT"]] != "PASS"] <- missingGTValue
+  }
+  if(shouldSetINFOcolumn) {
+    numFilteredGenotypes <- apply(geno(vcf)[["FT"]], 1, function(x) length(which(x != "PASS" | is.na(x))))
+    info(vcf) <- cbind(
+      values(info(vcf)),
+      DataFrame(
+        numFilteredGenotypes = numFilteredGenotypes
+      )
+    )
+    exptData(vcf)[["header"]] <- VCFHeader(
+      reference=reference(exptData(vcf)[["header"]]),
+      samples=samples(exptData(vcf)[["header"]]),
+      header=DataFrameList(
+        META=meta(exptData(vcf)[["header"]]),
+        FILTER=fixed(exptData(vcf)[["header"]])[["FILTER"]],
+        FORMAT=geno(exptData(vcf)[["header"]]),
+        INFO=rbind(
+          info(exptData(vcf)[["header"]]),
+          DataFrame(Number="1", Type="Integer", Description="Number of samples that have a filtered genotype at this position", row.names="numFilteredGenotypes")
+        )
+      )
+    )
+  }
+  if(shouldAlsoSetSNPfilters) {
+    vcf <- setVcfFilters(vcf, additionalInfoFilters=additionalInfoFilters)
+  }
+  if(shouldRemovedFilteredSNPs) {
+    vcf <- filterVcf(vcf, filtersToRemove = names(additionalInfoFilters))
   }
   return(vcf)
 }

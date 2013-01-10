@@ -24,8 +24,8 @@ evaluateFilters <- function(
   shouldCalculateExtraQUAL    = TRUE,
   shouldFilterGenotypes       = TRUE,
   genotypeFilters = list(
-    "LowGQ" = list(column="GQ", operator="<", value=99),
-    "LowDP" = list(column="DP", operator="<", value=10)
+    "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
+    "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE)
   ),
   shouldSetHaplotypeLengths   = TRUE,
   shouldReturnVcfOnly         = FALSE
