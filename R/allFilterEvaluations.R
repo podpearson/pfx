@@ -110,6 +110,36 @@
 #    ),
 #    regionsMask                 = NULL,
 #  )
+#  filterEvaluations_snps_GT99_10_0.1 <- allFilterEvaluations(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    genotypeFilters = list(
+#      "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
+#      "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
+#      "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
+#    ),
+#    filters=list(
+#    ),
+#    regionsMask                 = NULL,
+#  )
+#  filterEvaluations_snps_GT99_10_0.1 <- allFilterEvaluations(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    genotypeFilters = list(
+#      "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
+#      "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
+#      "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
+#    ),
+#    filters=list(),
+#    maxNumFilteredGenotypes=3,
+#    regionsMask                 = NULL,
+#  )
 
 #  filterEvaluations_snps_QUALperSample300_maxMAF0.2_missingness1 <- allFilterEvaluations(
 #    callsets = list(
@@ -171,6 +201,7 @@ allFilterEvaluations <- function(
     "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
     "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
   ),
+  maxNumFilteredGenotypes     = 2,
   shouldReturnVcfOnly         = FALSE
 ) {
   resultsList <- sapply(
@@ -182,6 +213,7 @@ allFilterEvaluations <- function(
         analysisDirectory           = analysisDirectory,
         filters                     = filters,
         genotypeFilters             = genotypeFilters,
+        maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
         shouldReturnVcfOnly         = shouldReturnVcfOnly
       )
     },

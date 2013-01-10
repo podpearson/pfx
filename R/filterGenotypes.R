@@ -21,8 +21,9 @@ filterGenotypes <- function(
   shouldSetNonSegregatingFilt = TRUE,
   regionsMask                 = NULL,
   shouldRemoveFilteredSNPs    = TRUE,
+  maxNumFilteredGenotypes     = 2,
   additionalInfoFilters       = list(
-    "filteredGenotypes" = list(column="numFilteredGenotypes", operator=">", value=2)
+    "filteredGenotypes" = list(column="numFilteredGenotypes", operator=">", value=maxNumFilteredGenotypes)
   )
 ) {
   if(!("FT" %in% names(geno(vcf)))) {

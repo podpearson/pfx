@@ -29,6 +29,7 @@ evaluateFilters <- function(
     "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
     "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
   ),
+  maxNumFilteredGenotypes     = 2,
   errorVariables              = c("MendelianErrors", "numSingleSNPhaplotypes"),
   shouldSetHaplotypeLengths   = TRUE,
   shouldReturnVcfOnly         = FALSE
@@ -79,7 +80,8 @@ evaluateFilters <- function(
       vcfFiltered,
       genotypeFilters             = genotypeFilters,
       shouldSetNonSegregatingFilt = shouldSetNonSegregatingFilt,
-      regionsMask                 = regionsMask
+      regionsMask                 = regionsMask,
+      maxNumFilteredGenotypes     = maxNumFilteredGenotypes
     )
   }
   if(shouldSetHaplotypeLengths) {

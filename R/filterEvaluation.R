@@ -29,6 +29,7 @@ filterEvaluation <- function(
     "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
     "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
   ),
+  maxNumFilteredGenotypes     = 2,
   shouldReturnVcfOnly         = FALSE
 )
 {
@@ -64,6 +65,7 @@ filterEvaluation <- function(
     additionalInfoFilters       = filters,
     regionsMask                 = regionsMask,
     genotypeFilters             = genotypeFilters,
+    maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
     sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
     shouldReturnVcfOnly         = shouldReturnVcfOnly
   )
