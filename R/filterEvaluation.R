@@ -47,10 +47,19 @@ filterEvaluation <- function(
     )
     save(initialSampleQCresults, file=initialSampleQCresultsFilename)
   }
-  load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfCoreFinalSamples.rda", sep="")))
+  vcfAnnotatedFinalSamplesFilename <- file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfAnnotatedFinalSamples.rda", sep=""))
+  if(file.exists(vcfAnnotatedFinalSamplesFilename)) {
+    load(vcfAnnotatedFinalSamplesFilename)
+  } else {
+    load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfVariant.rda", sep="")))
+    finalSamples <- setdiff(dimnames(vcfVariant)[[2]], initialSampleQCresults[["qcFailedSamples"]])
+    vcfAnnotatedFinalSamples <-  annotateVcf(vcfVariant[, finalSamples])
+    save(vcfAnnotatedFinalSamples, file=vcfAnnotatedFinalSamplesFilename)
+  }
   
   filterResults <- evaluateFilters(
-    vcfCoreFinalSamples,
+    vcfAnnotatedFinalSamples,
+#    vcfCoreFinalSamples,
     plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateFilters", sep=".")),
     additionalInfoFilters       = filters,
     regionsMask                 = regionsMask,
