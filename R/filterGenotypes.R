@@ -19,6 +19,7 @@ filterGenotypes <- function(
   shouldSetINFOcolumn         = TRUE,
   shouldAlsoSetSNPfilters     = TRUE,
   shouldSetNonSegregatingFilt = TRUE,
+  regionsMask                 = NULL,
   shouldRemoveFilteredSNPs    = TRUE,
   additionalInfoFilters       = list(
     "filteredGenotypes" = list(column="numFilteredGenotypes", operator=">", value=2)
@@ -112,7 +113,7 @@ filterGenotypes <- function(
     )
   }
   if(shouldAlsoSetSNPfilters) {
-    vcf <- setVcfFilters(vcf, additionalInfoFilters=additionalInfoFilters, shouldSetNonSegregatingFilt=shouldSetNonSegregatingFilt)
+    vcf <- setVcfFilters(vcf, additionalInfoFilters=additionalInfoFilters, shouldSetNonSegregatingFilt=shouldSetNonSegregatingFilt, regionsMask=regionsMask)
   }
   if(shouldRemoveFilteredSNPs) {
     vcf <- filterVcf(vcf, keepPASSvariantsOnly=TRUE)

@@ -78,7 +78,8 @@ evaluateFilters <- function(
     vcfFiltered <- filterGenotypes(
       vcfFiltered,
       genotypeFilters             = genotypeFilters,
-      shouldSetNonSegregatingFilt = shouldSetNonSegregatingFilt
+      shouldSetNonSegregatingFilt = shouldSetNonSegregatingFilt,
+      regionsMask                 = regionsMask
     )
   }
   if(shouldSetHaplotypeLengths) {

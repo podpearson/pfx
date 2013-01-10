@@ -83,7 +83,7 @@
 #      "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2)
 #    )
 #  )
-#  filterEvaluations_alistair_20130110 <- allFilterEvaluations(
+#  filterEvaluations_alistair_20130110_2 <- allFilterEvaluations(
 #    callsets = list(
 #      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
 #      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
