@@ -90,7 +90,7 @@ evaluateFilters <- function(
     function(errorVariable) {
       qcFilteringPlots(
         vcfFiltered,
-        plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."),
+        plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters), errorVariable), collapse="."),
         shouldCreateErrorRateBySites=FALSE,
         errorVariable=errorVariable
       )
