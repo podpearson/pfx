@@ -119,6 +119,11 @@ allFilterEvaluations <- function(
     "UQ35" = list(column="UQ", operator=">", value=35),
     "QUAL12000" = list(column="QUAL", operator="<", value=12000)
   ),
+  genotypeFilters             = list(
+    "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
+    "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
+    "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
+  ),
   shouldReturnVcfOnly         = FALSE
 ) {
   resultsList <- sapply(
