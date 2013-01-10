@@ -64,6 +64,52 @@
 #      "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2)
 #    )
 #  )
+#  filterEvaluations_snps_QUALperSample300_maxMAF0.2_QUALbyDP29_missingness1_numFilteredGenotypes2_DP5 <- allFilterEvaluations(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    genotypeFilters = list(
+#      "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
+#      "LowDP" = list(column="DP", operator="<", value=5, filterOutNAs=TRUE),
+#      "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
+#    ),
+#    filters=list(
+#      "QUALperSample300" = list(column="QUALperSample", operator="<", value=300),
+#      "maxMAF0.2" = list(column="maxMAF", operator=">", value=0.2),
+#      "QUALbyDP29" = list(column="QUALbyDP", operator=">", value=29),
+#      "missingness1" = list(column="missingness", operator=">", value=1),
+#      "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2)
+#    )
+#  )
+#  filterEvaluations_alistair_20130110 <- allFilterEvaluations(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    genotypeFilters = list(
+#      "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
+#      "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
+#      "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
+#    ),
+#    filters=list(
+##      "biallelic" = list(column="biallelic", operator="==", value=TRUE),
+#      "meanMAF0.2" = list(column="meanMAF", operator=">", value=0.2),
+#      "QD" = list(column="QUALbyDP", operator=">", value=33),
+#      "missingness1" = list(column="missingness", operator=">", value=1),
+#      "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2),
+#      "MQ0Fraction" = list(column="MQ0Fraction", operator=">", value=0.01),
+#      "MateOtherChrom" = list(column="MateOtherChrom", operator=">", value=0.1),
+#      "SoftClipped" = list(column="MateOtherChrom", operator=">", value=0.2),
+#      "ProperPair" = list(column="ProperPair", operator="<", value=0.9),
+#      "MQ" = list(column="MQ", operator="<", value=38),
+#      "HRun" = list(column="HRun", operator=">", value=4, filterOutNAs=TRUE),
+#      "FS" = list(column="FS", operator=">", value=600)
+#    ),
+#    regionsMask                 = NULL,
+#  )
 
 #  filterEvaluations_snps_QUALperSample300_maxMAF0.2_missingness1 <- allFilterEvaluations(
 #    callsets = list(
@@ -119,6 +165,7 @@ allFilterEvaluations <- function(
     "UQ35" = list(column="UQ", operator=">", value=35),
     "QUAL12000" = list(column="QUAL", operator="<", value=12000)
   ),
+  regionsMask                 = varRegions_v3(),
   genotypeFilters             = list(
     "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
     "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),

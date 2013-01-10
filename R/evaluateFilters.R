@@ -138,6 +138,10 @@ evaluateFilters <- function(
   returnDF <- data.frame(
     totalRecombinations = sum(recombinationsPerSample),
     medianRecombinationsPerSample = median(recombinationsPerSample),
+    minRecombinationsPerSample = min(recombinationsPerSample),
+    maxRecombinationsPerSample = max(recombinationsPerSample),
+    whichMinRecombinationsPerSample = which.min(recombinationsPerSample),
+    whichMaxRecombinationsPerSample = which.max(recombinationsPerSample),
     numberOfVariants = dim(vcfFiltered)[1],
     numberOfMendelianErrors = length(which(values(info(vcfFiltered))[["MendelianErrors"]] > 0)),
     numberOfSingleSNPhaplotypes = length(which(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]] > 0)),

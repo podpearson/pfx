@@ -23,6 +23,7 @@ filterEvaluation <- function(
     "UQ35" = list(column="UQ", operator=">", value=35),
     "QUAL12000" = list(column="QUAL", operator="<", value=12000)
   ),
+  regionsMask                 = varRegions_v3(),
   genotypeFilters             = list(
     "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
     "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
@@ -52,6 +53,7 @@ filterEvaluation <- function(
     vcfCoreFinalSamples,
     plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateFilters", sep=".")),
     additionalInfoFilters       = filters,
+    regionsMask                 = regionsMask,
     genotypeFilters             = genotypeFilters,
     sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
     shouldReturnVcfOnly         = shouldReturnVcfOnly
