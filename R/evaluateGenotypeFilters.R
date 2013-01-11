@@ -18,6 +18,7 @@ evaluateGenotypeFilters <- function(
   regionsMaskFilterName       = "noMask",
 #  regionsMask                 = varRegions_v3(),
 #  regionsMaskFilterName       = "InVarRegion",
+  shouldSetMultiallelicFilter = TRUE,
   shouldSetNonSegregatingFilt = TRUE,
   setMonomorphicProgenyFilter = TRUE,
   plotFilestem                = "evaluateGenotypeFilters",
