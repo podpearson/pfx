@@ -16,7 +16,7 @@ genotypeFilterEvaluation <- function(
   regionsMask                 = NULL,
 #  regionsMask                 = varRegions_v3(),
   GQthresholds                = c(99, 50, 5),
-  DPthresholds                = seq(10, 5, 1),
+  DPthresholds                = c(10, 5, 1),
   MAFthresholds               = c(0, 0.02, 0.05, 0.1, 0.2),
 #  GQthresholds                = c(99, seq(95, 0, -5)),
 #  DPthresholds                = seq(20, 1, -1),
