@@ -140,21 +140,21 @@
 #    maxNumFilteredGenotypes=3,
 #    regionsMask                 = NULL,
 #  )
-  filterEvaluations_snps_GT99_10_0.1_max50 <- allFilterEvaluations(
-    callsets = list(
-      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
-      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
-      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
-    ),
-    genotypeFilters = list(
-      "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
-      "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
-      "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
-    ),
-    filters=list(),
-    maxNumFilteredGenotypes=50,
-    regionsMask                 = NULL,
-  )
+#  filterEvaluations_snps_GT99_10_0.1_max50 <- allFilterEvaluations(
+#    callsets = list(
+#      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
+#      snps_7g8_gb4 = c(cross = "7g8_gb4", variantType = "snps"),
+#      snps_hb3_dd2 = c(cross = "hb3_dd2", variantType = "snps")
+#    ),
+#    genotypeFilters = list(
+#      "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
+#      "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
+#      "HighMAF" = list(column="MAF", operator=">", value=0.1, filterOutNAs=TRUE)
+#    ),
+#    filters=list(),
+#    maxNumFilteredGenotypes=50,
+#    regionsMask                 = NULL,
+#  )
 #  filterEvaluations_snps_GT99_5_0.1_max2 <- allFilterEvaluations(
 #    callsets = list(
 #      snps_3d7_hb3 = c(cross = "3d7_hb3", variantType = "snps"),
