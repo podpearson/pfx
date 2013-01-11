@@ -161,7 +161,8 @@ evaluateFilters <- function(
     numberOfSegregatingSites_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["SEGREGATING"]])),
     row.names = paste(c(regionsMaskFilterName, names(additionalInfoFilters)), collapse=".")
   )
-  save(returnDF, file=paste(paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."), "returnDF.rda", sep="."))
+  save(returnDF, file=paste(paste(c(plotFilestem, maxNumFilteredGenotypes, genotypeFilters[["LowDP"]][["value"]], genotypeFilters[["HighMAF"]][["value"]]), collapse="."), "returnDF.rda", sep="."))
+#  save(returnDF, file=paste(paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."), "returnDF.rda", sep="."))
   
   return(returnDF)
 }

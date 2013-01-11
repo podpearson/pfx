@@ -17,14 +17,16 @@ filterGenotypes <- function(
   shouldSetFilteredGTtoMissing=TRUE,
   missingGTValue              = ".",
   shouldSetINFOcolumn         = TRUE,
-  shouldAlsoSetSNPfilters     = TRUE,
-  shouldSetNonSegregatingFilt = TRUE,
+  shouldAlsoSetSNPfilters     = FALSE,
+  shouldSetNonSegregatingFilt = FALSE,
   regionsMask                 = NULL,
-  shouldRemoveFilteredSNPs    = TRUE,
+  shouldRemoveFilteredSNPs    = FALSE,
+  removeMonomorphicProgeny    = FALSE,
   maxNumFilteredGenotypes     = 2,
-  additionalInfoFilters       = list(
-    "filteredGenotypes" = list(column="numFilteredGenotypes", operator=">", value=maxNumFilteredGenotypes)
-  )
+  additionalInfoFilters       = NULL
+#  additionalInfoFilters       = list(
+#    "filteredGenotypes" = list(column="numFilteredGenotypes", operator=">", value=maxNumFilteredGenotypes)
+#  )
 ) {
   if(!("FT" %in% names(geno(vcf)))) {
     geno(vcf)[["FT"]] <- matrix("PASS", nrow=nrow(geno(vcf)[["GT"]]), ncol=ncol(geno(vcf)[["GT"]]), dimnames=dimnames(geno(vcf)[["GT"]]))
@@ -114,8 +116,14 @@ filterGenotypes <- function(
     )
   }
   if(shouldAlsoSetSNPfilters) {
-    vcf <- setVcfFilters(vcf, additionalInfoFilters=additionalInfoFilters, shouldSetNonSegregatingFilt=shouldSetNonSegregatingFilt, regionsMask=regionsMask)
+    vcf <- setVcfFilters(
+      vcf,
+      additionalInfoFilters=additionalInfoFilters,
+      shouldSetNonSegregatingFilt=shouldSetNonSegregatingFilt,
+      regionsMask=regionsMask
+    )
   }
+#  browser()
   if(shouldRemoveFilteredSNPs) {
     vcf <- filterVcf(vcf, keepPASSvariantsOnly=TRUE)
 #    vcf <- filterVcf(vcf, filtersToRemove = names(additionalInfoFilters))
