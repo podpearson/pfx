@@ -30,7 +30,7 @@ evaluateGenotypeFilters <- function(
   shouldCalculateExtraQUAL    = FALSE,
   shouldFilterGenotypes       = TRUE,
   shouldCreateQCFilteringPlots= FALSE,
-  shouldCreateRecombPlots     = FALSE,
+  shouldCreateRecombPlots     = TRUE,
 #  genotypeFilters             = list(
 #    "LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE),
 #    "LowDP" = list(column="DP", operator="<", value=10, filterOutNAs=TRUE),
