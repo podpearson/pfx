@@ -15,6 +15,7 @@ genotypeFilterEvaluation <- function(
   filters                     = NULL,
   regionsMask                 = NULL,
 #  regionsMask                 = varRegions_v3(),
+  setMonomorphicProgenyFilter = TRUE,
   GQthresholds                = c(99, 50, 5),
   DPthresholds                = c(10, 5, 1),
   MAFthresholds               = c(0, 0.02, 0.05, 0.1, 0.2),
@@ -92,6 +93,7 @@ genotypeFilterEvaluation <- function(
     additionalInfoFilters       = filters,
     regionsMask                 = regionsMask,
     genotypeFiltersList         = genotypeFiltersList,
+    setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
     maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
     sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
     shouldReturnVcfOnly         = shouldReturnVcfOnly

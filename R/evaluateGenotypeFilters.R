@@ -19,8 +19,10 @@ evaluateGenotypeFilters <- function(
 #  regionsMask                 = varRegions_v3(),
 #  regionsMaskFilterName       = "InVarRegion",
   shouldSetNonSegregatingFilt = TRUE,
+  setMonomorphicProgenyFilter = TRUE,
   plotFilestem                = "evaluateGenotypeFilters",
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0),
+  possibleMissingValues       = c(".", "./.", ".|."),
   sampleIDcolumn              = "ena_run_accession",
   sampleIDmappingsColumn      = sampleIDcolumn,
   sampleDuplicates            = NULL,
@@ -86,7 +88,7 @@ evaluateGenotypeFilters <- function(
       cat("evaluateGenotypeFilters:", genotypeFilters[["LowGQ"]][["value"]], genotypeFilters[["LowDP"]][["value"]], genotypeFilters[["HighMAF"]][["value"]], "\n")
       if(shouldFilterGenotypes) {
         vcfFiltered <- filterGenotypes(
-          vcfFiltered,
+          vcf,
           genotypeFilters             = genotypeFilters
     #      shouldSetNonSegregatingFilt = shouldSetNonSegregatingFilt,
     #      regionsMask                 = regionsMask,
@@ -95,13 +97,14 @@ evaluateGenotypeFilters <- function(
       }
       vcfFiltered <- filterVcf(
         setVcfFilters(
-          vcf,
+          vcfFiltered,
           regionsMask                 = regionsMask,
           additionalInfoFilters       = additionalInfoFilters,
-          shouldSetNonSegregatingFilt = shouldSetNonSegregatingFilt
+          shouldSetMultiallelicFilter = shouldSetMultiallelicFilter,
+          shouldSetNonSegregatingFilt = shouldSetNonSegregatingFilt,
+          setMonomorphicProgenyFilter = setMonomorphicProgenyFilter
         ),
         keepPASSvariantsOnly = TRUE
-#        filtersToRemove = c(regionsMaskFilterName, names(additionalInfoFilters))
       )
       filterColumns <- sapply(additionalInfoFilters, function(x) x[["column"]])
       if(shouldRecalculateDepthSD) {
@@ -156,17 +159,29 @@ evaluateGenotypeFilters <- function(
           }
         )
       }
-      mgRecombinations <- recombinationPoints(vcfFiltered, shouldCharacterise=FALSE, GTsToIntMapping=GTsToIntMapping)
-      recombinationsPerSample <- rev(
-        sapply(
-          mgRecombinations[["sampleLevelResults"]],
-          function(x) {
-            sum(sapply(x, length))
-          }
-        )
-      )
+##      The following is buggy - not identify recombinations where there are missing genotypes
+#      mgRecombinations <- recombinationPoints(vcfFiltered, shouldCharacterise=FALSE, GTsToIntMapping=GTsToIntMapping)
+#      recombinationsPerSample <- rev(
+#        sapply(
+#          mgRecombinations[["sampleLevelResults"]],
+#          function(x) {
+#            sum(sapply(x, length))
+#          }
+#        )
+#      )
       haplotypesPerSampleAndChromosomeMatrix <- haplotypesPerSample(vcfFiltered)
       haplotypesPerSample <- rowSums(haplotypesPerSampleAndChromosomeMatrix)
+      singleSNPhaplotypesPerSampleAndChromosomeMatrix <- shortHaplotypesPerSample(vcfFiltered)
+      singleSNPhaplotypesPerSample <- rowSums(singleSNPhaplotypesPerSampleAndChromosomeMatrix)
+      putativeCrossoversPerSample <- haplotypesPerSample-14-(2*singleSNPhaplotypesPerSample)
+      
+      nonMissingGenotypesPerSample <- apply(
+        geno(vcfFiltered)[["GT"]],
+        2,
+        function(x) {
+          length(which(!(x %in% possibleMissingValues)))
+        }
+      )
       if(shouldCreateRecombPlots) {
         recombinationPlotSeries(
           vcfFiltered,
@@ -204,12 +219,28 @@ evaluateGenotypeFilters <- function(
         medianHaplotypesPerProgeny = median(haplotypesPerSample[-(1:2)]),
         minHaplotypesPerProgeny = min(haplotypesPerSample[-(1:2)]),
         maxHaplotypesPerProgeny = max(haplotypesPerSample[-(1:2)]),
-        totalRecombinations = sum(recombinationsPerSample),
-        medianRecombinationsPerSample = median(recombinationsPerSample),
-        minRecombinationsPerSample = min(recombinationsPerSample),
-        maxRecombinationsPerSample = max(recombinationsPerSample),
-        whichMinRecombinationsPerSample = which.min(recombinationsPerSample),
-        whichMaxRecombinationsPerSample = which.max(recombinationsPerSample),
+        totalGenotypesInProgeny = sum(nonMissingGenotypesPerSample[-(1:2)]),
+        medianGenotypesPerProgeny = median(nonMissingGenotypesPerSample[-(1:2)]),
+        minGenotypesPerProgeny = min(nonMissingGenotypesPerSample[-(1:2)]),
+        maxGenotypesPerProgeny = max(nonMissingGenotypesPerSample[-(1:2)]),
+        totalRecombinations = sum(haplotypesPerSample[-(1:2)] - 14),
+        medianRecombinationsPerSample = median(haplotypesPerSample[-(1:2)] - 14),
+        minRecombinationsPerSample = min(haplotypesPerSample[-(1:2)] - 14),
+        maxRecombinationsPerSample = max(haplotypesPerSample[-(1:2)] - 14),
+        whichMinRecombinationsPerSample = names(haplotypesPerSample[-(1:2)])[which.min(haplotypesPerSample[-(1:2)] - 14)],
+        whichMaxRecombinationsPerSample = names(haplotypesPerSample[-(1:2)])[which.max(haplotypesPerSample[-(1:2)] - 14)],
+        totalSingleSNPhaplotypes = sum(singleSNPhaplotypesPerSample[-(1:2)]),
+        medianSingleSNPhaplotypesPerSample = median(singleSNPhaplotypesPerSample[-(1:2)]),
+        minSingleSNPhaplotypesPerSample = min(singleSNPhaplotypesPerSample[-(1:2)]),
+        maxSingleSNPhaplotypesPerSample = max(singleSNPhaplotypesPerSample[-(1:2)]),
+        whichMinSingleSNPhaplotypesPerSample = names(singleSNPhaplotypesPerSample[-(1:2)])[which.min(singleSNPhaplotypesPerSample[-(1:2)])],
+        whichMaxSingleSNPhaplotypesPerSample = names(singleSNPhaplotypesPerSample[-(1:2)])[which.max(singleSNPhaplotypesPerSample[-(1:2)])],
+        totalPutativeCrossovers = sum(putativeCrossoversPerSample[-(1:2)]),
+        medianPutativeCrossoversPerSample = median(putativeCrossoversPerSample[-(1:2)]),
+        minPutativeCrossoversPerSample = min(putativeCrossoversPerSample[-(1:2)]),
+        maxPutativeCrossoversPerSample = max(putativeCrossoversPerSample[-(1:2)]),
+        whichMinPutativeCrossoversPerSample = names(putativeCrossoversPerSample[-(1:2)])[which.min(putativeCrossoversPerSample[-(1:2)])],
+        whichMaxPutativeCrossoversPerSample = names(putativeCrossoversPerSample[-(1:2)])[which.max(putativeCrossoversPerSample[-(1:2)])],
         numberOfVariants = dim(vcfFiltered)[1],
         numberOfMendelianErrors = length(which(values(info(vcfFiltered))[["MendelianErrors"]] > 0)),
         numberOfSingleSNPhaplotypes = length(which(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]] > 0)),

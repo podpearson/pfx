@@ -18,6 +18,7 @@ setVcfFilters <- function(
   shouldSetMultiallelicFilter = FALSE,
   shouldSetNonSegregatingFilt = FALSE,
   shouldSetMaxNoCallsFilter   = FALSE,
+  setMonomorphicProgenyFilter = FALSE,
   maxNoCallsAllowed           = 1,
   markDotsAsPass              = TRUE,
   keepPASSvariantsOnly        = FALSE,
@@ -83,6 +84,12 @@ setVcfFilters <- function(
     )
     filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & nonSegregatingVariants] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & nonSegregatingVariants], "NonSegregating", sep=";")
     filt(vcf)[filt(vcf) %in% c("PASS", ".") & nonSegregatingVariants] <- "NonSegregating"
+  }
+  if(setMonomorphicProgenyFilter) {
+    progenyIDs <- setdiff(dimnames(vcf)[[2]], parentalIDs)
+    invariantSNPs <- apply(geno(vcf)[["GT"]][, progenyIDs], 1, function(x) length(table(x[!(x %in% possibleMissingValues)], useNA="no"))<=1)
+    filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & invariantSNPs] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & invariantSNPs], "Invariant", sep=";")
+    filt(vcf)[filt(vcf) %in% c("PASS", ".") & invariantSNPs] <- "MonomorphicInProgeny"
   }
   if(shouldSetMaxNoCallsFilter) {
     aboveMaxNoCalls <- apply(geno(vcf)[["GT"]], 1, function(x) length(which(x %in% possibleMissingValues)) > maxNoCallsAllowed)
