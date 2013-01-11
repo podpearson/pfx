@@ -21,6 +21,7 @@ evaluateGenotypeFilters <- function(
   shouldSetMultiallelicFilter = TRUE,
   shouldSetNonSegregatingFilt = TRUE,
   setMonomorphicProgenyFilter = TRUE,
+  monomorphicSkipChromosomes  = NULL,
   plotFilestem                = "evaluateGenotypeFilters",
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0),
   possibleMissingValues       = c(".", "./.", ".|."),
@@ -87,6 +88,7 @@ evaluateGenotypeFilters <- function(
     genotypeFiltersList,
     function(genotypeFilters) {
       cat("evaluateGenotypeFilters:", genotypeFilters[["LowGQ"]][["value"]], genotypeFilters[["LowDP"]][["value"]], genotypeFilters[["HighMAF"]][["value"]], "\n")
+      theseFiltersPlotFilestem <- paste(c(plotFilestem, genotypeFilters[["LowGQ"]][["value"]], genotypeFilters[["LowDP"]][["value"]], genotypeFilters[["HighMAF"]][["value"]]), collapse=".")
       if(shouldFilterGenotypes) {
         vcfFiltered <- filterGenotypes(
           vcf,
@@ -103,7 +105,8 @@ evaluateGenotypeFilters <- function(
           additionalInfoFilters       = additionalInfoFilters,
           shouldSetMultiallelicFilter = shouldSetMultiallelicFilter,
           shouldSetNonSegregatingFilt = shouldSetNonSegregatingFilt,
-          setMonomorphicProgenyFilter = setMonomorphicProgenyFilter
+          setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+          monomorphicSkipChromosomes  = monomorphicSkipChromosomes
         ),
         keepPASSvariantsOnly = TRUE
       )
@@ -152,7 +155,7 @@ evaluateGenotypeFilters <- function(
           function(errorVariable) {
             qcFilteringPlots(
               vcfFiltered,
-              plotFilestem=paste(c(plotFilestem, maxNumFilteredGenotypes, genotypeFilters[["LowDP"]][["value"]], genotypeFilters[["HighMAF"]][["value"]], errorVariable), collapse="."),
+              plotFilestem=theseFiltersPlotFilestem,
       #        plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters), errorVariable), collapse="."),
               shouldCreateErrorRateBySites=FALSE,
               errorVariable=errorVariable
@@ -186,7 +189,7 @@ evaluateGenotypeFilters <- function(
       if(shouldCreateRecombPlots) {
         recombinationPlotSeries(
           vcfFiltered,
-          plotFilestem                = paste(c(plotFilestem, maxNumFilteredGenotypes, genotypeFilters[["LowDP"]][["value"]], genotypeFilters[["HighMAF"]][["value"]]), collapse="."),
+          plotFilestem                = theseFiltersPlotFilestem,
       #    plotFilestem                = paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."),
           filters                     = NULL,
           sampleIDcolumn              = sampleIDcolumn,
@@ -254,13 +257,15 @@ evaluateGenotypeFilters <- function(
 #        numberOfMendelianErrors_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["MendelianErrors"]] > 0)),
 #        numberOfSingleSNPhaplotypes_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["numSingleSNPhaplotypes"]] > 0)),
 #        numberOfSegregatingSites_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["SEGREGATING"]])),
-        row.names = paste(c(regionsMaskFilterName, names(additionalInfoFilters)), collapse=".")
+        row.names = theseFiltersPlotFilestem
+#        row.names = paste(c(regionsMaskFilterName, names(additionalInfoFilters)), collapse=".")
       )
-      save(returnDF, file=paste(paste(c(plotFilestem, genotypeFilters[["LowGQ"]][["value"]], genotypeFilters[["LowDP"]][["value"]], genotypeFilters[["HighMAF"]][["value"]]), collapse="."), "returnDF.rda", sep="."))
+      save(returnDF, file=paste(theseFiltersPlotFilestem, "returnDF.rda", sep="."))
     #  save(returnDF, file=paste(paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters)), collapse="."), "returnDF.rda", sep="."))
       returnDF
     }
   )
   fullReturnDF <- do.call(rbind, resultsList)
+  save(returnDF, file=paste(plotFilestem, "fullReturnDF.rda", sep="."))
   return(fullReturnDF)
 }

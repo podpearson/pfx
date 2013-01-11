@@ -19,6 +19,8 @@ setVcfFilters <- function(
   shouldSetNonSegregatingFilt = FALSE,
   shouldSetMaxNoCallsFilter   = FALSE,
   setMonomorphicProgenyFilter = FALSE,
+#  monomorphicSkipChromosomes  = "Pf3D7_13_v3", # This is necessary in 3d7_hb3 as all progeny clearly inherit from 3D7 for part of this chromosome 
+  monomorphicSkipChromosomes  = NULL,
   maxNoCallsAllowed           = 1,
   markDotsAsPass              = TRUE,
   keepPASSvariantsOnly        = FALSE,
@@ -88,6 +90,9 @@ setVcfFilters <- function(
   if(setMonomorphicProgenyFilter) {
     progenyIDs <- setdiff(dimnames(vcf)[[2]], parentalIDs)
     invariantSNPs <- apply(geno(vcf)[["GT"]][, progenyIDs], 1, function(x) length(table(x[!(x %in% possibleMissingValues)], useNA="no"))<=1)
+    if(!is.null(monomorphicSkipChromosomes)) {
+      invariantSNPs[as.character(seqnames(vcf)) %in% monomorphicSkipChromosomes] <- FALSE
+    }
     filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & invariantSNPs] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & invariantSNPs], "Invariant", sep=";")
     filt(vcf)[filt(vcf) %in% c("PASS", ".") & invariantSNPs] <- "MonomorphicInProgeny"
   }
