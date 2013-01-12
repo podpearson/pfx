@@ -266,6 +266,6 @@ evaluateGenotypeFilters <- function(
     }
   )
   fullReturnDF <- do.call(rbind, resultsList)
-  save(returnDF, file=paste(plotFilestem, "fullReturnDF.rda", sep="."))
+  save(fullReturnDF, file=paste(plotFilestem, "fullReturnDF.rda", sep="."))
   return(fullReturnDF)
 }
