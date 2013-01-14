@@ -99,7 +99,7 @@ genotypeFilterEvaluation <- function(
     bestReplicateSamples <- setdiff(dimnames(vcfVariant)[[2]], initialSampleQCresults[["uniqueSamples"]])
     vcfAnnotatedBestReplicateSamples <-  annotateVcf(vcfVariant[, bestReplicateSamples])
     save(vcfAnnotatedBestReplicateSamples, file=vcfAnnotatedBestReplicateSamplesFilename)
-    if(!exists(vcfInitialFiltered)) {
+    if(!exists("vcfInitialFiltered")) {
       load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfInitialFiltered.rda", sep="")))
     }
     RefReads <- matrix(
