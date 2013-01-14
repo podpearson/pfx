@@ -19,7 +19,8 @@ evaluateGenotypeFilters <- function(
 #  regionsMask                 = varRegions_v3(),
 #  regionsMaskFilterName       = "InVarRegion",
   shouldSetMultiallelicFilter = TRUE,
-  shouldSetNonSegregatingFilt = TRUE,
+  shouldSetNonSegregatingFilt = FALSE,
+  shouldSetMissingInParentFilt= TRUE,
   setMonomorphicProgenyFilter = TRUE,
   monomorphicSkipChromosomes  = NULL,
   plotFilestem                = "evaluateGenotypeFilters",
@@ -105,6 +106,7 @@ evaluateGenotypeFilters <- function(
           additionalInfoFilters       = additionalInfoFilters,
           shouldSetMultiallelicFilter = shouldSetMultiallelicFilter,
           shouldSetNonSegregatingFilt = shouldSetNonSegregatingFilt,
+          shouldSetMissingInParentFilt=shouldSetMissingInParentFilt,
           setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
           monomorphicSkipChromosomes  = monomorphicSkipChromosomes
         ),
@@ -204,6 +206,20 @@ evaluateGenotypeFilters <- function(
     #  titvRatio <- length(which(transitions)) / length(which(transversions))
       titvRatio <- titv(vcfFiltered)
       titvRatioExcludingAT <- titv(vcfFiltered, FALSE)
+      
+      sampleDuplicatesAsDF <- do.call(
+        rbind,
+        lapply(
+          names(sampleDuplicates),
+          function(sampleID) {
+            duplicateIDs <- strsplit(sampleDuplicates[sampleID], "_")[[1]]
+            duplicateIDs <- duplicateIDs[duplicateIDs != sampleID]
+            duplicatePairs <- do.call(rbind, lapply(duplicateIDs, function(x) if(x>sampleID) data.frame(sampleID1=sampleID, sampleID2=x, stringsAsFactors=FALSE) else data.frame(sampleID1=character(0), sampleID2=character(0))))
+          }
+        )
+      )
+      duplicateDiscordanceMatrix <- duplicateDiscordances(vcfFiltered, sampleDuplicatesAsDF, possibleMissingValues)
+      meanDuplicateDiscordanceRate <- mean(colSums(duplicateDiscordanceMatrix, na.rm=TRUE))
     
 #      vcf_Pf3D7_01_v3 <- vcfFiltered[seqnames(vcfFiltered)=="Pf3D7_01_v3"]
 #      seqlevels(vcf_Pf3D7_01_v3) <- "Pf3D7_01_v3"
@@ -248,16 +264,19 @@ evaluateGenotypeFilters <- function(
         numberOfVariants = dim(vcfFiltered)[1],
         numberOfMendelianErrors = length(which(values(info(vcfFiltered))[["MendelianErrors"]] > 0)),
         numberOfSingleSNPhaplotypes = length(which(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]] > 0)),
+        numberOfSingleSNPhaplotypesInMultipleSamples = length(which(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]] > 1)),
+        meanNumberOfSingleSNPhaplotypesPerSample = sum(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]], na.rm=TRUE) / dim(vcfFiltered)[2],
         numberOfSegregatingSites = length(which(values(info(vcfFiltered))[["SEGREGATING"]])),
         titvRatio = titvRatio,
         titvRatioExcludingAT = titvRatioExcludingAT,
+        meanDuplicateDiscordanceRate = meanDuplicateDiscordanceRate,
 #        totalRecombinations_Pf3D7_01_v3 = sum(recombinationsPerSample_Pf3D7_01_v3),
 #        medianRecombinationsPerSample_Pf3D7_01_v3 = median(recombinationsPerSample_Pf3D7_01_v3),
 #        numberOfVariants_Pf3D7_01_v3 = dim(vcf_Pf3D7_01_v3)[1],
 #        numberOfMendelianErrors_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["MendelianErrors"]] > 0)),
 #        numberOfSingleSNPhaplotypes_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["numSingleSNPhaplotypes"]] > 0)),
 #        numberOfSegregatingSites_Pf3D7_01_v3 = length(which(values(info(vcf_Pf3D7_01_v3))[["SEGREGATING"]])),
-        row.names = theseFiltersPlotFilestem
+        row.names = basename(theseFiltersPlotFilestem)
 #        row.names = paste(c(regionsMaskFilterName, names(additionalInfoFilters)), collapse=".")
       )
       save(returnDF, file=paste(theseFiltersPlotFilestem, "returnDF.rda", sep="."))

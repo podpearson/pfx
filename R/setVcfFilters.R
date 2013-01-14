@@ -17,6 +17,7 @@ setVcfFilters <- function(
   regionsMaskFilterName       = "InVarRegion",
   shouldSetMultiallelicFilter = FALSE,
   shouldSetNonSegregatingFilt = FALSE,
+  shouldSetMissingInParentFilt= FALSE,
   shouldSetMaxNoCallsFilter   = FALSE,
   setMonomorphicProgenyFilter = FALSE,
 #  monomorphicSkipChromosomes  = "Pf3D7_13_v3", # This is necessary in 3d7_hb3 as all progeny clearly inherit from 3D7 for part of this chromosome 
@@ -86,6 +87,14 @@ setVcfFilters <- function(
     )
     filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & nonSegregatingVariants] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & nonSegregatingVariants], "NonSegregating", sep=";")
     filt(vcf)[filt(vcf) %in% c("PASS", ".") & nonSegregatingVariants] <- "NonSegregating"
+  }
+  if(shouldSetMissingInParentFilt) {
+    missingInAtLeaseOneParentVariants <- (
+      geno(vcf)[["GT"]][, parentalIDs[1]] %in% possibleMissingValues |
+      geno(vcf)[["GT"]][, parentalIDs[2]] %in% possibleMissingValues
+    )
+    filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & missingInAtLeaseOneParentVariants] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & missingInAtLeaseOneParentVariants], "MissingInParent", sep=";")
+    filt(vcf)[filt(vcf) %in% c("PASS", ".") & missingInAtLeaseOneParentVariants] <- "MissingInParent"
   }
   if(setMonomorphicProgenyFilter) {
     progenyIDs <- setdiff(dimnames(vcf)[[2]], parentalIDs)
