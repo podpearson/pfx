@@ -14,7 +14,7 @@ duplicateDiscordances <- function(
 ) {
   pairsToUse <- which(duplicatesDF[["sampleID1"]] %in% dimnames(vcf)[[2]] & duplicatesDF[["sampleID2"]] %in% dimnames(vcf)[[2]])
   if(length(pairsToUse) == 0) {
-    return(0)
+    return(matrix(0))
   }
   GTsFirstSample <- geno(vcf)[["GT"]][, duplicatesDF[pairsToUse, "sampleID1"]]
   GTsSecondSample <- geno(vcf)[["GT"]][, duplicatesDF[pairsToUse, "sampleID2"]]

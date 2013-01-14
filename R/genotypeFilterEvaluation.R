@@ -25,7 +25,7 @@ genotypeFilterEvaluation <- function(
   monomorphicSkipChromosomes  = NULL,
   GQthresholds                = c(99, 50, 5),
   DPthresholds                = c(10, 5, 1),
-  MAFthresholds               = c(0, 0.02, 0.05, 0.1, 0.2),
+  MAFthresholds               = c(0.1, 0, 0.02, 0.05, 0.2),
 #  GQthresholds                = c(99, seq(95, 0, -5)),
 #  DPthresholds                = seq(20, 1, -1),
 #  MAFthresholds               = c(0, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.3, 0.5),
