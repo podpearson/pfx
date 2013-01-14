@@ -66,7 +66,8 @@ genotypeFilterEvaluation <- function(
   ),
   maxNumFilteredGenotypes     = 2,
   minMeanMAFtoConsiderContam  = 0.01,
-  shouldReturnVcfOnly         = FALSE
+  shouldReturnVcfOnly         = FALSE,
+  shouldUseExistingRda        = FALSE
 )
 {
   initialSampleQCresultsFilename <- file.path(analysisDirectory, cross, variantType, paste(cross, ".initialSampleQCresults.rda", sep=""))
@@ -87,7 +88,7 @@ genotypeFilterEvaluation <- function(
   vcfAnnotatedFinalSamplesFilename <- file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfAnnotatedFinalSamples.rda", sep=""))
   vcfAnnotatedBestReplicateSamplesFilename <- file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfAnnotatedBestReplicateSamples.rda", sep=""))
   vcfAnnotatedUncontaminatedSamplesFilename <- file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfAnnotatedUncontaminatedSamples.rda", sep=""))
-  if(file.exists(vcfAnnotatedFinalSamplesFilename) & file.exists(vcfAnnotatedBestReplicateSamplesFilename) & file.exists(vcfAnnotatedUncontaminatedSamplesFilename)) {
+  if(shouldUseExistingRda && file.exists(vcfAnnotatedFinalSamplesFilename) && file.exists(vcfAnnotatedBestReplicateSamplesFilename) && file.exists(vcfAnnotatedUncontaminatedSamplesFilename)) {
     load(vcfAnnotatedFinalSamplesFilename)
     load(vcfAnnotatedBestReplicateSamplesFilename)
     load(vcfAnnotatedUncontaminatedSamplesFilename)
@@ -96,7 +97,8 @@ genotypeFilterEvaluation <- function(
     finalSamples <- setdiff(dimnames(vcfVariant)[[2]], initialSampleQCresults[["qcFailedSamples"]])
     vcfAnnotatedFinalSamples <-  annotateVcf(vcfVariant[, finalSamples])
     save(vcfAnnotatedFinalSamples, file=vcfAnnotatedFinalSamplesFilename)
-    bestReplicateSamples <- setdiff(dimnames(vcfVariant)[[2]], initialSampleQCresults[["uniqueSamples"]])
+#    bestReplicateSamples <- setdiff(dimnames(vcfVariant)[[2]], initialSampleQCresults[["uniqueSamples"]])
+    bestReplicateSamples <- setdiff(initialSampleQCresults[["uniqueSamples"]], initialSampleQCresults[["qcFailedSamples"]])
     vcfAnnotatedBestReplicateSamples <-  annotateVcf(vcfVariant[, bestReplicateSamples])
     save(vcfAnnotatedBestReplicateSamples, file=vcfAnnotatedBestReplicateSamplesFilename)
     if(!exists("vcfInitialFiltered")) {
