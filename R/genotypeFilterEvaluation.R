@@ -138,7 +138,7 @@ genotypeFilterEvaluation <- function(
     )
     MAF <- pmin(RefReads, FirstAltReads)/(RefReads+FirstAltReads)
     meanMAFperSample <- colMeans(MAF, na.rm = TRUE)
-    uncontaminatedSamples <- which(meanMAFperSample < minMeanMAFtoConsiderContam)
+    uncontaminatedSamples <- intersect(names(which(meanMAFperSample < minMeanMAFtoConsiderContam)), dimnames(vcfVariant)[[2]])
     vcfAnnotatedUncontaminatedSamples <-  annotateVcf(vcfVariant[, uncontaminatedSamples])
     save(vcfAnnotatedUncontaminatedSamples, file=vcfAnnotatedUncontaminatedSamplesFilename)
   }
