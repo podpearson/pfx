@@ -138,7 +138,7 @@ genotypeFilterEvaluation <- function(
   filterResultsFinalSamples <- evaluateGenotypeFilters(
     vcfAnnotatedFinalSamples,
 #    vcfCoreFinalSamples,
-    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", sep=".")),
+    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", "final", sep=".")),
     additionalInfoFilters       = filters,
     regionsMask                 = regionsMask,
     genotypeFiltersList         = genotypeFiltersList,
@@ -152,7 +152,7 @@ genotypeFilterEvaluation <- function(
   filterResultsBestReplicateSamples <- evaluateGenotypeFilters(
     vcfAnnotatedBestReplicateSamples,
 #    vcfCoreFinalSamples,
-    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", sep=".")),
+    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", "bestReplicate", sep=".")),
     additionalInfoFilters       = filters,
     regionsMask                 = regionsMask,
     genotypeFiltersList         = genotypeFiltersList,
@@ -166,7 +166,7 @@ genotypeFilterEvaluation <- function(
   filterResultsUncontaminatedSamples <- evaluateGenotypeFilters(
     vcfAnnotatedUncontaminatedSamples,
 #    vcfCoreFinalSamples,
-    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", sep=".")),
+    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", "uncontaminated", sep=".")),
     additionalInfoFilters       = filters,
     regionsMask                 = regionsMask,
     genotypeFiltersList         = genotypeFiltersList,
