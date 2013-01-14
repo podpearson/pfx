@@ -107,7 +107,14 @@ genotypeFilterEvaluation <- function(
     load(vcfAnnotatedBestReplicateSamplesFilename)
     load(vcfAnnotatedUncontaminatedSamplesFilename)
   } else {
-    load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfVariant.rda", sep="")))
+    if(is.null(regionsMask)) {
+      load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfVariant.rda", sep="")))
+    } else {
+      load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfCoreFinalSamples.rda", sep="")))
+      vcfVariant <- vcfCoreFinalSamples
+      rm(vcfCoreFinalSamples)
+      gc()
+    }
     finalSamples <- setdiff(dimnames(vcfVariant)[[2]], initialSampleQCresults[["qcFailedSamples"]])
     vcfAnnotatedFinalSamples <-  annotateVcf(vcfVariant[, finalSamples])
     save(vcfAnnotatedFinalSamples, file=vcfAnnotatedFinalSamplesFilename)
