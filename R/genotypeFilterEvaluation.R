@@ -7,6 +7,13 @@
 ###############################################################################
 
 
+#  genotypeFilterEvaluation_3d7_hb3_snps <- genotypeFilterEvaluation("3d7_hb3", "snps")
+#  genotypeFilterEvaluation_7g8_gb4_snps <- genotypeFilterEvaluation("7g8_gb4", "snps")
+#  genotypeFilterEvaluation_hb3_dd2_snps <- genotypeFilterEvaluation("hb3_dd2", "snps")
+#  genotypeFilterEvaluation_3d7_hb3_indels <- genotypeFilterEvaluation("3d7_hb3", "indels", minMeanMAFtoConsiderContam=0.02)
+#  genotypeFilterEvaluation_7g8_gb4_indels <- genotypeFilterEvaluation("7g8_gb4", "indels", minMeanMAFtoConsiderContam=0.02)
+#  genotypeFilterEvaluation_hb3_dd2_indels <- genotypeFilterEvaluation("hb3_dd2", "indels", minMeanMAFtoConsiderContam=0.02)
+
 #  genotypeFilterEvaluation2_3d7_hb3_snps <- genotypeFilterEvaluation("3d7_hb3", "snps", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
 #  genotypeFilterEvaluation2_7g8_gb4_snps <- genotypeFilterEvaluation("7g8_gb4", "snps")
 #  genotypeFilterEvaluation2_hb3_dd2_snps <- genotypeFilterEvaluation("hb3_dd2", "snps")

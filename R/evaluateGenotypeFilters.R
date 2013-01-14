@@ -89,14 +89,13 @@ evaluateGenotypeFilters <- function(
     genotypeFiltersList,
     function(genotypeFilters) {
       cat("evaluateGenotypeFilters:", genotypeFilters[["LowGQ"]][["value"]], genotypeFilters[["LowDP"]][["value"]], genotypeFilters[["HighMAF"]][["value"]], "\n")
-      paste(sapply(filters, function(x) x[["value"]]), collapse=".")
       theseFiltersPlotFilestem <- paste(
         c(
           plotFilestem,
           genotypeFilters[["LowGQ"]][["value"]],
           genotypeFilters[["LowDP"]][["value"]],
           genotypeFilters[["HighMAF"]][["value"]],
-          sapply(NULL, function(x) x[["value"]])
+          sapply(additionalInfoFilters, function(x) x[["value"]])
         ),
         collapse="."
       )
