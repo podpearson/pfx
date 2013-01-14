@@ -21,7 +21,7 @@ genotypeFilterEvaluation <- function(
 #  filters                     = NULL,
   filters=list(
 #      "biallelic" = list(column="biallelic", operator="==", value=TRUE),
-    "meanMAF0.2" = list(column="meanMAF", operator=">", value=0.2),
+    "meanMAF0.2" = list(column="meanMAF", operator=">", value=0.2, filterOutNAs=TRUE),
     "QD" = list(column="QUALbyDP", operator=">", value=33),
     "missingness1" = list(column="missingness", operator=">", value=1),
     "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2),
@@ -33,8 +33,8 @@ genotypeFilterEvaluation <- function(
     "HRun" = list(column="HRun", operator=">", value=4, filterOutNAs=TRUE),
     "FS" = list(column="FS", operator=">", value=600)
   ),
-  regionsMask                 = NULL,
-#  regionsMask                 = varRegions_v3(),
+#  regionsMask                 = NULL,
+  regionsMask                 = varRegions_v3(),
   setMonomorphicProgenyFilter = FALSE,
   monomorphicSkipChromosomes  = NULL,
   GQthresholds                = c(99, 50, 5),
