@@ -10,9 +10,9 @@
 #  genotypeFilterEvaluation2_3d7_hb3_snps <- genotypeFilterEvaluation("3d7_hb3", "snps", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
 #  genotypeFilterEvaluation2_7g8_gb4_snps <- genotypeFilterEvaluation("7g8_gb4", "snps")
 #  genotypeFilterEvaluation2_hb3_dd2_snps <- genotypeFilterEvaluation("hb3_dd2", "snps")
-#  genotypeFilterEvaluation2_3d7_hb3_indels <- genotypeFilterEvaluation("3d7_hb3", "indels", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
-#  genotypeFilterEvaluation2_7g8_gb4_indels <- genotypeFilterEvaluation("7g8_gb4", "indels")
-#  genotypeFilterEvaluation2_hb3_dd2_indels <- genotypeFilterEvaluation("hb3_dd2", "indels")
+#  genotypeFilterEvaluation2_3d7_hb3_indels <- genotypeFilterEvaluation("3d7_hb3", "indels", monomorphicSkipChromosomes  = "Pf3D7_13_v3", minMeanMAFtoConsiderContam=0.02)
+#  genotypeFilterEvaluation2_7g8_gb4_indels <- genotypeFilterEvaluation("7g8_gb4", "indels", minMeanMAFtoConsiderContam=0.02)
+#  genotypeFilterEvaluation2_hb3_dd2_indels <- genotypeFilterEvaluation("hb3_dd2", "indels", minMeanMAFtoConsiderContam=0.02)
 
 genotypeFilterEvaluation <- function(
   cross                       = "3d7_hb3",
@@ -102,20 +102,20 @@ genotypeFilterEvaluation <- function(
     if(!exists("vcfInitialFiltered")) {
       load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfInitialFiltered.rda", sep="")))
     }
+    vcfInitialFilteredPASS <- vcfInitialFiltered[filt(vcfInitialFiltered)=="PASS"]
     RefReads <- matrix(
-      sapply(geno(vcfInitialFiltered)[["AD"]], function(x) x[1]),
-      ncol=dim(geno(vcfInitialFiltered)[["AD"]])[2],
-      dimnames=dimnames(geno(vcfInitialFiltered)[["AD"]])
+      sapply(geno(vcfInitialFilteredPASS)[["AD"]], function(x) x[1]),
+      ncol=dim(geno(vcfInitialFilteredPASS)[["AD"]])[2],
+      dimnames=dimnames(geno(vcfInitialFilteredPASS)[["AD"]])
     )
     FirstAltReads <- matrix(
-      sapply(geno(vcfInitialFiltered)[["AD"]], function(x) x[2]),
-      ncol=dim(geno(vcfInitialFiltered)[["AD"]])[2],
-      dimnames=dimnames(geno(vcfInitialFiltered)[["AD"]])
+      sapply(geno(vcfInitialFilteredPASS)[["AD"]], function(x) x[2]),
+      ncol=dim(geno(vcfInitialFilteredPASS)[["AD"]])[2],
+      dimnames=dimnames(geno(vcfInitialFilteredPASS)[["AD"]])
     )
     MAF <- pmin(RefReads, FirstAltReads)/(RefReads+FirstAltReads)
     meanMAFperSample <- colMeans(MAF, na.rm = TRUE)
-
-    uncontaminatedSamples <- which(meanMAFperSample) < minMeanMAFtoConsiderContam
+    uncontaminatedSamples <- which(meanMAFperSample < minMeanMAFtoConsiderContam)
     vcfAnnotatedUncontaminatedSamples <-  annotateVcf(vcfVariant[, uncontaminatedSamples])
     save(vcfAnnotatedUncontaminatedSamples, file=vcfAnnotatedUncontaminatedSamplesFilename)
   }
