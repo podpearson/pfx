@@ -35,7 +35,7 @@ genotypeFilterEvaluation <- function(
   ),
   regionsMask                 = NULL,
 #  regionsMask                 = varRegions_v3(),
-  setMonomorphicProgenyFilter = TRUE,
+  setMonomorphicProgenyFilter = FALSE,
   monomorphicSkipChromosomes  = NULL,
   GQthresholds                = c(99, 50, 5),
   DPthresholds                = c(10, 5, 1),
