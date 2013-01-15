@@ -190,6 +190,8 @@ evaluateGenotypeFilters <- function(
       singleSNPhaplotypesPerSample <- rowSums(singleSNPhaplotypesPerSampleAndChromosomeMatrix)
       putativeCrossoversPerSample <- haplotypesPerSample-14-(2*singleSNPhaplotypesPerSample)
       
+      browser()
+      
       nonMissingGenotypesPerSample <- apply(
         geno(vcfFiltered)[["GT"]],
         2,
@@ -295,6 +297,18 @@ evaluateGenotypeFilters <- function(
     }
   )
   fullReturnDF <- do.call(rbind, resultsList)
-  save(fullReturnDF, file=paste(plotFilestem, "fullReturnDF.rda", sep="."))
+  save(
+    fullReturnDF,
+    file=paste(
+      paste(
+        c(
+          plotFilestem,
+          sapply(additionalInfoFilters, function(x) x[["value"]])
+        ),
+        collapse="."
+      ),
+      "fullReturnDF.rda", sep="."
+    )
+  )
   return(fullReturnDF)
 }
