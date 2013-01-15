@@ -190,8 +190,6 @@ evaluateGenotypeFilters <- function(
       singleSNPhaplotypesPerSample <- rowSums(singleSNPhaplotypesPerSampleAndChromosomeMatrix)
       putativeCrossoversPerSample <- haplotypesPerSample-14-(2*singleSNPhaplotypesPerSample)
       
-      browser()
-      
       nonMissingGenotypesPerSample <- apply(
         geno(vcfFiltered)[["GT"]],
         2,
