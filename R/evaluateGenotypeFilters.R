@@ -28,6 +28,7 @@ evaluateGenotypeFilters <- function(
   possibleMissingValues       = c(".", "./.", ".|."),
   parentalIDs                 = dimnames(vcf)[[2]][1:2],
   parentalIDindexes           = which(dimnames(vcf)[[2]] %in% parentalIDs),
+  IDsToRemoveFromDuplicates   = "ERR027105",
   sampleIDcolumn              = "ena_run_accession",
   sampleIDmappingsColumn      = sampleIDcolumn,
   sampleDuplicates            = NULL,
@@ -221,7 +222,7 @@ evaluateGenotypeFilters <- function(
       sampleDuplicatesAsDF <- do.call(
         rbind,
         lapply(
-          names(sampleDuplicates),
+          intersect(dimnames(vcfFiltered)[[2]], setdiff(unique(names(sampleDuplicates)), IDsToRemoveFromDuplicates)),
           function(sampleID) {
             duplicateIDs <- strsplit(sampleDuplicates[sampleID], "_")[[1]]
             duplicateIDs <- duplicateIDs[duplicateIDs != sampleID]
@@ -229,8 +230,6 @@ evaluateGenotypeFilters <- function(
           }
         )
       )
-      browser()
-      
       duplicateDiscordanceMatrix <- duplicateDiscordances(vcfFiltered, sampleDuplicatesAsDF, possibleMissingValues)
       meanDuplicateDiscordanceRate <- mean(colSums(duplicateDiscordanceMatrix, na.rm=TRUE))
     

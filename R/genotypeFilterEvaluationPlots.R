@@ -75,7 +75,9 @@ genotypeFilterEvaluationPlots <- function(
         function(plotToCreate) {
           cat(".")
           qplotStatement <- paste(
-            "qplot(value,", plotToCreate, ", data=allResultsList[[variableToPlot]], geom=\"line\", group=crossVariantType, colour=crossVariantType) + theme_bw() + theme(legend.position=\"none\")"
+            "qplot(value,",
+            plotToCreate,
+            ", data=allResultsList[[variableToPlot]], geom=\"line\", group=crossVariantType, colour=crossVariantType) + theme_bw() + theme(legend.position=\"none\") + scale_colour_brewer(palette=\"Paired\")"
           )
           eval(parse(text=qplotStatement))
 #          qplot(
