@@ -275,7 +275,7 @@ evaluateGenotypeFilters <- function(
         numberOfVariants = dim(vcfFiltered)[1],
         numberOfMendelianErrorVariants = length(which(values(info(vcfFiltered))[["MendelianErrors"]] > 0)),
         numberOfMendelianErrorGenotypes = sum(values(info(vcfFiltered))[["MendelianErrors"]]),
-        numberOfSingleSNPhaplotypes = length(which(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]] > 0)),
+        numberOfSingleSNPhaplotypeVariants = length(which(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]] > 0)),
         numberOfSingleSNPhaplotypesInMultipleSamples = length(which(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]] > 1)),
         meanNumberOfSingleSNPhaplotypesPerSample = sum(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]], na.rm=TRUE) / dim(vcfFiltered)[2],
         numberOfSegregatingSites = length(which(values(info(vcfFiltered))[["SEGREGATING"]])),
