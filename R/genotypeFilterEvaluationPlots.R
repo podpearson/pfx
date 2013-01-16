@@ -10,6 +10,8 @@
 #  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", infoFilterString = x))
 #  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", variablesToPlot = list("DPforGQ99andMAF0.1" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9, "0"=10)), infoFilterString = paste(x, "0.2.33.1.2.0.01.0.1.0.2.0.9.38.4.600", sep=".")))
 #  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", variablesToPlot = list("DPforGQ99andMAF0.1" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9, "0"=10)), infoFilterString = x))
+#  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", plotFilestemExtra="GQ", variablesToPlot = list("QGforDP10andMAF0.1" = c("99"=1, "0"=2)), infoFilterString = paste(x, "0.2.33.1.2.0.01.0.1.0.2.0.9.38.4.600", sep=".")))
+#  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", plotFilestemExtra="GQ", variablesToPlot = list("QGforDP10andMAF0.1" = c("99"=1, "0"=2)), infoFilterString = x))
 
 genotypeFilterEvaluationPlots <- function(
   analysisDirectory           = "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk",
@@ -21,6 +23,7 @@ genotypeFilterEvaluationPlots <- function(
 #  sampleSet                   = c("FinalSamples", "BestReplicate", "Uncontaminated"),
   infoFilterString            = sampleSet[1],
 #  infoFilterString            = paste(sampleSet, "0.2.33.1.2.0.01.0.1.0.2.0.9.38.4.600", sep="."),
+  plotFilestemExtra           = "MAF",
   variablesToPlot             = list("MAFforGQ99andDP10" = c("0" = 2, "0.02"=3, "0.05"=4, "0.1"=1, "0.2"=5, "0.35"=6, "0.5"=7)),
   metricsToExclude            = c(
     "haplotypeParent1", "haplotypeParent2", "cross", "variantType", "value",
@@ -43,7 +46,7 @@ genotypeFilterEvaluationPlots <- function(
     rep(variantTypes, each=length(crosses)),
     sep="."
   )
-  fullReturnDFfilenames <- file.path(analysisDirectory, paste(crossesByVariantTypes, "evaluateGenotypeFilters", infoFilterString, "fullReturnDF.rda", sep="."))
+  fullReturnDFfilenames <- file.path(analysisDirectory, paste(crossesByVariantTypes, "evaluateGenotypeFilters", plotFilestemExtra, infoFilterString, "fullReturnDF.rda", sep="."))
   allResultsList <- sapply(
     names(variablesToPlot),
     function(variableToPlot) {
@@ -54,7 +57,7 @@ genotypeFilterEvaluationPlots <- function(
           function(crossVariantType) {
             cross <- strsplit(crossVariantType, "\\.")[[1]][1]
             variantType <- strsplit(crossVariantType, "\\.")[[1]][2]
-            load(file.path(analysisDirectory, cross, variantType, paste(crossVariantType, "evaluateGenotypeFilters", infoFilterString, "fullReturnDF.rda", sep=".")))
+            load(file.path(analysisDirectory, cross, variantType, paste(crossVariantType, "evaluateGenotypeFilters", plotFilestemExtra, infoFilterString, "fullReturnDF.rda", sep=".")))
             fullReturnDF[["cross"]] <- cross
             fullReturnDF[["variantType"]] <- variantType
             fullReturnDF[["crossVariantType"]] <- crossVariantType

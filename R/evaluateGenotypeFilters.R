@@ -111,6 +111,7 @@ evaluateGenotypeFilters <- function(
     #      maxNumFilteredGenotypes     = maxNumFilteredGenotypes
         )
       }
+#      browser()
       vcfFiltered <- filterVcf(
         setVcfFilters(
           vcfFiltered,

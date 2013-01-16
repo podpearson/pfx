@@ -25,10 +25,10 @@ setVcfFilters <- function(
   maxNoCallsAllowed           = 1,
   markDotsAsPass              = TRUE,
   keepPASSvariantsOnly        = FALSE,
-#  additionalInfoFilters       = NULL,
-  additionalInfoFilters     = list(
-    "LowQD" = list(column="QD", operator="<=", value=36)
-  ),
+  additionalInfoFilters       = NULL,
+#  additionalInfoFilters     = list(
+#    "LowQD" = list(column="QD", operator="<=", value=36)
+#  ),
   possibleMissingValues       = c(".", "./.", ".|."),
   parentalIDs                 = dimnames(vcf)[[2]][1:2]
 ) {

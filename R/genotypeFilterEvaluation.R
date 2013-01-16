@@ -137,6 +137,7 @@ genotypeFilterEvaluation <- function(
     } else {
       load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfCoreFinalSamples.rda", sep="")))
       vcfVariant <- vcfCoreFinalSamples
+      filt(vcfVariant) <- "."
       rm(vcfCoreFinalSamples)
       gc()
     }
