@@ -9,10 +9,24 @@
 
 #  MAF_genotypeFilterEvaluation_3d7_hb3_snps <- genotypeFilterEvaluation("3d7_hb3", "snps")
 #  MAF_genotypeFilterEvaluation_7g8_gb4_snps <- genotypeFilterEvaluation("7g8_gb4", "snps", parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"))
-#  MAF_genotypeFilterEvaluation_hb3_dd2_snps <- genotypeFilterEvaluation("hb3_dd2", "snps")
+#  MAF_genotypeFilterEvaluation_hb3_dd2_snps <- genotypeFilterEvaluation("hb3_dd2", "snps", parentalIDs = c("ERR012788", "ERR012840", "ERR022939"))
 #  MAF_genotypeFilterEvaluation_3d7_hb3_indels <- genotypeFilterEvaluation("3d7_hb3", "indels", minMeanMAFtoConsiderContam=0.02)
 #  MAF_genotypeFilterEvaluation_7g8_gb4_indels <- genotypeFilterEvaluation("7g8_gb4", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"))
-#  MAF_genotypeFilterEvaluation_hb3_dd2_indels <- genotypeFilterEvaluation("hb3_dd2", "indels", minMeanMAFtoConsiderContam=0.05)
+#  MAF_genotypeFilterEvaluation_hb3_dd2_indels <- genotypeFilterEvaluation("hb3_dd2", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR012788", "ERR012840", "ERR022939"))
+
+#  DP_genotypeFilterEvaluation_3d7_hb3_snps <- genotypeFilterEvaluation("3d7_hb3", "snps", MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1, 0))
+#  DP_genotypeFilterEvaluation_7g8_gb4_snps <- genotypeFilterEvaluation("7g8_gb4", "snps", parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1, 0))
+#  DP_genotypeFilterEvaluation_hb3_dd2_snps <- genotypeFilterEvaluation("hb3_dd2", "snps", parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1, 0))
+#  DP_genotypeFilterEvaluation_3d7_hb3_indels <- genotypeFilterEvaluation("3d7_hb3", "indels", minMeanMAFtoConsiderContam=0.02, MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1, 0))
+#  DP_genotypeFilterEvaluation_7g8_gb4_indels <- genotypeFilterEvaluation("7g8_gb4", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1, 0))
+#  DP_genotypeFilterEvaluation_hb3_dd2_indels <- genotypeFilterEvaluation("hb3_dd2", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1, 0))
+
+#  GQ_genotypeFilterEvaluation_3d7_hb3_snps <- genotypeFilterEvaluation("3d7_hb3", "snps", MAFthresholds=NULL, GQthresholds=c(99, 0), plotFilestemExtra="GQ")
+#  GQ_genotypeFilterEvaluation_7g8_gb4_snps <- genotypeFilterEvaluation("7g8_gb4", "snps", parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"), MAFthresholds=NULL, GQthresholds=c(99, 0), plotFilestemExtra="GQ")
+#  GQ_genotypeFilterEvaluation_hb3_dd2_snps <- genotypeFilterEvaluation("hb3_dd2", "snps", parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, GQthresholds=c(99, 0), plotFilestemExtra="GQ")
+#  GQ_genotypeFilterEvaluation_3d7_hb3_indels <- genotypeFilterEvaluation("3d7_hb3", "indels", minMeanMAFtoConsiderContam=0.02, MAFthresholds=NULL, GQthresholds=c(99, 0), plotFilestemExtra="GQ")
+#  GQ_genotypeFilterEvaluation_7g8_gb4_indels <- genotypeFilterEvaluation("7g8_gb4", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"), MAFthresholds=NULL, GQthresholds=c(99, 0), plotFilestemExtra="GQ")
+#  GQ_genotypeFilterEvaluation_hb3_dd2_indels <- genotypeFilterEvaluation("hb3_dd2", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, GQthresholds=c(99, 0), plotFilestemExtra="GQ")
 
 #  genotypeFilterEvaluation2_3d7_hb3_snps <- genotypeFilterEvaluation("3d7_hb3", "snps", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
 #  genotypeFilterEvaluation2_7g8_gb4_snps <- genotypeFilterEvaluation("7g8_gb4", "snps")
@@ -56,6 +70,7 @@ genotypeFilterEvaluation <- function(
   GQthresholdDefault          = 99,
   DPthresholdDefault          = 10,
   MAFthresholdDefault         = 0.1,
+  plotFilestemExtra           = "MAF",
   genotypeFiltersList         = c(
     lapply(
       MAFthresholds,
@@ -172,7 +187,7 @@ genotypeFilterEvaluation <- function(
     filterResultsFinalSamples <- evaluateGenotypeFilters(
       vcfAnnotatedFinalSamples,
   #    vcfCoreFinalSamples,
-      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", "final", sep=".")),
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "final", sep=".")),
       additionalInfoFilters       = filters,
       regionsMask                 = regionsMask,
       genotypeFiltersList         = genotypeFiltersList,
@@ -186,7 +201,7 @@ genotypeFilterEvaluation <- function(
     filterResultsFinalSamples <- evaluateGenotypeFilters(
       vcfAnnotatedFinalSamples,
   #    vcfCoreFinalSamples,
-      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", "final", sep=".")),
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "final", sep=".")),
       additionalInfoFilters       = filters,
       regionsMask                 = regionsMask,
       genotypeFiltersList         = genotypeFiltersList,
@@ -199,75 +214,160 @@ genotypeFilterEvaluation <- function(
     )
   }
   names(filterResultsFinalSamples) <- paste("FinalSamples", names(filterResultsFinalSamples))
-  filterResultsFinalSamplesGenotypeOnly <- evaluateGenotypeFilters(
-    vcfAnnotatedFinalSamples,
-#    vcfCoreFinalSamples,
-    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", "final", sep=".")),
-    additionalInfoFilters       = NULL,
-    regionsMask                 = regionsMask,
-    genotypeFiltersList         = genotypeFiltersList,
-    setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
-    monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
-    maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
-    sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
-    shouldReturnVcfOnly         = shouldReturnVcfOnly
-  )
+  if(is.null(parentalIDs)) {
+    filterResultsFinalSamplesGenotypeOnly <- evaluateGenotypeFilters(
+      vcfAnnotatedFinalSamples,
+  #    vcfCoreFinalSamples,
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "final", sep=".")),
+      additionalInfoFilters       = NULL,
+      regionsMask                 = regionsMask,
+      genotypeFiltersList         = genotypeFiltersList,
+      setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+      monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+      maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
+      sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+      shouldReturnVcfOnly         = shouldReturnVcfOnly
+    )
+  } else {
+    filterResultsFinalSamplesGenotypeOnly <- evaluateGenotypeFilters(
+      vcfAnnotatedFinalSamples,
+  #    vcfCoreFinalSamples,
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "final", sep=".")),
+      additionalInfoFilters       = NULL,
+      regionsMask                 = regionsMask,
+      genotypeFiltersList         = genotypeFiltersList,
+      setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+      monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+      maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
+      sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+      parentalIDs                 = parentalIDs,
+      shouldReturnVcfOnly         = shouldReturnVcfOnly
+    )
+  }
   names(filterResultsFinalSamplesGenotypeOnly) <- paste("FinalSamplesGenotypeOnly", names(filterResultsFinalSamplesGenotypeOnly))
-  filterResultsBestReplicateSamples <- evaluateGenotypeFilters(
-    vcfAnnotatedBestReplicateSamples,
-#    vcfCoreFinalSamples,
-    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", "bestReplicate", sep=".")),
-    additionalInfoFilters       = filters,
-    regionsMask                 = regionsMask,
-    genotypeFiltersList         = genotypeFiltersList,
-    setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
-    monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
-    maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
-    sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
-    shouldReturnVcfOnly         = shouldReturnVcfOnly
-  )
+  if(is.null(parentalIDs)) {
+    filterResultsBestReplicateSamples <- evaluateGenotypeFilters(
+      vcfAnnotatedBestReplicateSamples,
+  #    vcfCoreFinalSamples,
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "bestReplicate", sep=".")),
+      additionalInfoFilters       = filters,
+      regionsMask                 = regionsMask,
+      genotypeFiltersList         = genotypeFiltersList,
+      setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+      monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+      maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
+      sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+      shouldReturnVcfOnly         = shouldReturnVcfOnly
+    )
+  } else {
+    filterResultsBestReplicateSamples <- evaluateGenotypeFilters(
+      vcfAnnotatedBestReplicateSamples,
+  #    vcfCoreFinalSamples,
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "bestReplicate", sep=".")),
+      additionalInfoFilters       = filters,
+      regionsMask                 = regionsMask,
+      genotypeFiltersList         = genotypeFiltersList,
+      setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+      monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+      maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
+      sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+      parentalIDs                 = parentalIDs,
+      shouldReturnVcfOnly         = shouldReturnVcfOnly
+    )
+  }
   names(filterResultsBestReplicateSamples) <- paste("BestReplicate", names(filterResultsBestReplicateSamples))
-  filterResultsBestReplicateSamplesGenotypeOnly <- evaluateGenotypeFilters(
-    vcfAnnotatedBestReplicateSamples,
-#    vcfCoreFinalSamples,
-    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", "bestReplicate", sep=".")),
-    additionalInfoFilters       = NULL,
-    regionsMask                 = regionsMask,
-    genotypeFiltersList         = genotypeFiltersList,
-    setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
-    monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
-    maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
-    sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
-    shouldReturnVcfOnly         = shouldReturnVcfOnly
-  )
+  if(is.null(parentalIDs)) {
+    filterResultsBestReplicateSamplesGenotypeOnly <- evaluateGenotypeFilters(
+      vcfAnnotatedBestReplicateSamples,
+  #    vcfCoreFinalSamples,
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "bestReplicate", sep=".")),
+      additionalInfoFilters       = NULL,
+      regionsMask                 = regionsMask,
+      genotypeFiltersList         = genotypeFiltersList,
+      setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+      monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+      maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
+      sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+      shouldReturnVcfOnly         = shouldReturnVcfOnly
+    )
+  } else {
+    filterResultsBestReplicateSamplesGenotypeOnly <- evaluateGenotypeFilters(
+      vcfAnnotatedBestReplicateSamples,
+  #    vcfCoreFinalSamples,
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "bestReplicate", sep=".")),
+      additionalInfoFilters       = NULL,
+      regionsMask                 = regionsMask,
+      genotypeFiltersList         = genotypeFiltersList,
+      setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+      monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+      maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
+      sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+      parentalIDs                 = parentalIDs,
+      shouldReturnVcfOnly         = shouldReturnVcfOnly
+    )
+  }
   names(filterResultsBestReplicateSamplesGenotypeOnly) <- paste("BestReplicateGenotypeOnly", names(filterResultsBestReplicateSamplesGenotypeOnly))
-  filterResultsUncontaminatedSamples <- evaluateGenotypeFilters(
-    vcfAnnotatedUncontaminatedSamples,
-#    vcfCoreFinalSamples,
-    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", "uncontaminated", sep=".")),
-    additionalInfoFilters       = filters,
-    regionsMask                 = regionsMask,
-    genotypeFiltersList         = genotypeFiltersList,
-    setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
-    monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
-    maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
-    sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
-    shouldReturnVcfOnly         = shouldReturnVcfOnly
-  )
+  if(is.null(parentalIDs)) {
+    filterResultsUncontaminatedSamples <- evaluateGenotypeFilters(
+      vcfAnnotatedUncontaminatedSamples,
+  #    vcfCoreFinalSamples,
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "uncontaminated", sep=".")),
+      additionalInfoFilters       = filters,
+      regionsMask                 = regionsMask,
+      genotypeFiltersList         = genotypeFiltersList,
+      setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+      monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+      maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
+      sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+      shouldReturnVcfOnly         = shouldReturnVcfOnly
+    )
+  } else {
+    filterResultsUncontaminatedSamples <- evaluateGenotypeFilters(
+      vcfAnnotatedUncontaminatedSamples,
+  #    vcfCoreFinalSamples,
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "uncontaminated", sep=".")),
+      additionalInfoFilters       = filters,
+      regionsMask                 = regionsMask,
+      genotypeFiltersList         = genotypeFiltersList,
+      setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+      monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+      maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
+      sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+      parentalIDs                 = parentalIDs,
+      shouldReturnVcfOnly         = shouldReturnVcfOnly
+    )
+  }
   names(filterResultsUncontaminatedSamples) <- paste("UncontaminatedSamples", names(filterResultsUncontaminatedSamples))
-  filterResultsUncontaminatedSamplesGenotypeOnly <- evaluateGenotypeFilters(
-    vcfAnnotatedUncontaminatedSamples,
-#    vcfCoreFinalSamples,
-    plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", "uncontaminated", sep=".")),
-    additionalInfoFilters       = NULL,
-    regionsMask                 = regionsMask,
-    genotypeFiltersList         = genotypeFiltersList,
-    setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
-    monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
-    maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
-    sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
-    shouldReturnVcfOnly         = shouldReturnVcfOnly
-  )
+  if(is.null(parentalIDs)) {
+    filterResultsUncontaminatedSamplesGenotypeOnly <- evaluateGenotypeFilters(
+      vcfAnnotatedUncontaminatedSamples,
+  #    vcfCoreFinalSamples,
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "uncontaminated", sep=".")),
+      additionalInfoFilters       = NULL,
+      regionsMask                 = regionsMask,
+      genotypeFiltersList         = genotypeFiltersList,
+      setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+      monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+      maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
+      sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+      shouldReturnVcfOnly         = shouldReturnVcfOnly
+    )
+  } else {
+    filterResultsUncontaminatedSamplesGenotypeOnly <- evaluateGenotypeFilters(
+      vcfAnnotatedUncontaminatedSamples,
+  #    vcfCoreFinalSamples,
+      plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, "uncontaminated", sep=".")),
+      additionalInfoFilters       = NULL,
+      regionsMask                 = regionsMask,
+      genotypeFiltersList         = genotypeFiltersList,
+      setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+      monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+      maxNumFilteredGenotypes     = maxNumFilteredGenotypes,
+      sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+      parentalIDs                 = parentalIDs,
+      shouldReturnVcfOnly         = shouldReturnVcfOnly
+    )
+  }
   names(filterResultsUncontaminatedSamplesGenotypeOnly) <- paste("UncontaminatedSamplesGenotypeOnly", names(filterResultsUncontaminatedSamplesGenotypeOnly))
   filterResults <- cbind(
     filterResultsFinalSamples, filterResultsBestReplicateSamples, filterResultsUncontaminatedSamples,

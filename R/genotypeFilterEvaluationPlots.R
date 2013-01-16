@@ -8,6 +8,8 @@
 
 #  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", infoFilterString = paste(x, "0.2.33.1.2.0.01.0.1.0.2.0.9.38.4.600", sep=".")))
 #  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", infoFilterString = x))
+#  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", variablesToPlot = list("DPforGQ99andMAF0.1" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9, "0"=10)), infoFilterString = paste(x, "0.2.33.1.2.0.01.0.1.0.2.0.9.38.4.600", sep=".")))
+#  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", variablesToPlot = list("DPforGQ99andMAF0.1" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9, "0"=10)), infoFilterString = x))
 
 genotypeFilterEvaluationPlots <- function(
   analysisDirectory           = "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk",
@@ -56,7 +58,7 @@ genotypeFilterEvaluationPlots <- function(
             fullReturnDF[["cross"]] <- cross
             fullReturnDF[["variantType"]] <- variantType
             fullReturnDF[["crossVariantType"]] <- crossVariantType
-            fullReturnDF[variablesToPlot[[variableToPlot]], "value"] <- factor(names(variablesToPlot[[variableToPlot]]))
+            fullReturnDF[variablesToPlot[[variableToPlot]], "value"] <- factor(names(variablesToPlot[[variableToPlot]]), levels=names(variablesToPlot[[variableToPlot]]))
             fullReturnDF[variablesToPlot[[variableToPlot]], ]
           }
         )
