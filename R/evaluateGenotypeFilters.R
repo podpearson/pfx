@@ -16,7 +16,7 @@ evaluateGenotypeFilters <- function(
 #  ),
   regionsMask                 = NULL,
   regionsMaskFilterName       = "noMask",
-#  regionsMask                 = varRegions_v3(),
+#  regionsMask                 = varRegions_v3("/data/malariagen2/plasmodium/pf-crosses/meta/regions_v3_rdp.bed"),
 #  regionsMaskFilterName       = "InVarRegion",
   shouldSetMultiallelicFilter = TRUE,
   shouldSetNonSegregatingFilt = FALSE,
