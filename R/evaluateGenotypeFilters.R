@@ -124,7 +124,7 @@ evaluateGenotypeFilters <- function(
         ),
         keepPASSvariantsOnly = TRUE
       )
-      browser()
+#      browser()
       filterColumns <- sapply(additionalInfoFilters, function(x) x[["column"]])
       if(shouldRecalculateDepthSD) {
         currentInfo <- values(info(vcfFiltered))
