@@ -111,7 +111,6 @@ evaluateGenotypeFilters <- function(
     #      maxNumFilteredGenotypes     = maxNumFilteredGenotypes
         )
       }
-#      browser()
       vcfFiltered <- filterVcf(
         setVcfFilters(
           vcfFiltered,
@@ -125,6 +124,7 @@ evaluateGenotypeFilters <- function(
         ),
         keepPASSvariantsOnly = TRUE
       )
+      browser()
       filterColumns <- sapply(additionalInfoFilters, function(x) x[["column"]])
       if(shouldRecalculateDepthSD) {
         currentInfo <- values(info(vcfFiltered))
@@ -298,6 +298,9 @@ evaluateGenotypeFilters <- function(
       returnDF
     }
   )
+  if(shouldReturnVcfOnly) {
+    return(resultsList)
+  }
   fullReturnDF <- do.call(rbind, resultsList)
   save(
     fullReturnDF,
