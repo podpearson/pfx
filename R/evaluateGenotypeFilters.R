@@ -35,6 +35,7 @@ evaluateGenotypeFilters <- function(
   shouldRecalculateDepthSD    = FALSE,
   shouldCalculateExtraQUAL    = FALSE,
   shouldFilterGenotypes       = TRUE,
+  shouldReannotateVcf         = TRUE,
   shouldCreateQCFilteringPlots= FALSE,
   shouldCreateRecombPlots     = TRUE,
 #  genotypeFilters             = list(
@@ -159,6 +160,9 @@ evaluateGenotypeFilters <- function(
       }
       if(shouldSetHaplotypeLengths) {
         vcfFiltered <- setHaplotypeLengths(vcfFiltered)
+      }
+      if(shouldReannotateVcf) {
+        vcfFiltered <- annotateVcf(vcfFiltered)
       }
     #  browser()
       if(shouldReturnVcfOnly) {

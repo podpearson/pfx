@@ -9,7 +9,16 @@
 
 annotateVcf <- function(
   vcf,
-  parentalIDs                 = dimnames(vcf)[[2]][1:2]
+  parentalIDs                 = dimnames(vcf)[[2]][1:2],
+  shouldReplaceExisting       = TRUE,
+  newColumnNames              = c(
+    "meanMAF", "maxMAF", "parent1MAF", "parent2MAF", "maxParentMAF",
+    "missingness", "missingness2", "heterozgosity", "scaledDepthSD",
+    "ProperPair", "MateUnmapped", "MateOtherChrom", "MateSameStrand",
+    "FaceAway", "SoftClipped", "RepeatCopies1", "RepeatPeriod1", "RepeatScore1",
+    "RepeatSize1", "RepeatEntropy1", "QUAL", "QUALbyDP", "QUALperSample",
+    "SEGREGATING", "MendelianErrors"
+  )
 ) {
   GTsInt <- genotypeCallsFromGTas012(vcf)
   columnIndexesOfParents <- match(parentalIDs, dimnames(GTsInt)[[2]])
@@ -119,7 +128,11 @@ annotateVcf <- function(
 #  )
 #  browser()
   info(vcf) <- cbind(
-    values(info(vcf)),
+    if(shouldReplaceExisting) {
+      values(info(vcf))[, setdiff(names(values(info(vcf))), newColumnNames)]
+    } else {
+      values(info(vcf))
+    },
     DataFrame(
       meanMAF = meanVariantMAFs,
       maxMAF = maxVariantMAFs,
@@ -175,7 +188,11 @@ annotateVcf <- function(
 #      fixed=fixed(exptData(vcf)[["header"]]),
       FORMAT=geno(exptData(vcf)[["header"]]),
       INFO=rbind(
-        info(exptData(vcf)[["header"]]),
+        if(shouldReplaceExisting) {
+          info(exptData(vcf)[["header"]])[setdiff(row.names(info(exptData(vcf)[["header"]])), newColumnNames), ]
+        } else {
+          info(exptData(vcf)[["header"]])
+        },
         DataFrame(Number="1", Type="Float", Description="Mean across samples of proportion of minor allele reads (something like a heterozygosity score)", row.names="meanMAF"),
         DataFrame(Number="1", Type="Float", Description="Maximum across samples of proportion of minor allele reads (something like a heterozygosity score)", row.names="maxMAF"),
         DataFrame(Number="1", Type="Float", Description="Proportion of minor allele reads for first parent (something like a heterozygosity score)", row.names="parent1MAF"),
