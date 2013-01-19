@@ -235,6 +235,7 @@ evaluateGenotypeFilters <- function(
           }
         )
       )
+#      browser()
       duplicateDiscordanceMatrix <- duplicateDiscordances(vcfFiltered, sampleDuplicatesAsDF, possibleMissingValues)
       meanDuplicateDiscordanceRate <- mean(colSums(duplicateDiscordanceMatrix, na.rm=TRUE))
     
