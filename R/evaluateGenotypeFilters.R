@@ -174,7 +174,7 @@ evaluateGenotypeFilters <- function(
           function(errorVariable) {
             qcFilteringPlots(
               vcfFiltered,
-              plotFilestem=theseFiltersPlotFilestem,
+              plotFilestem=paste(theseFiltersPlotFilestem, errorVariable, sep="."),
       #        plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters), errorVariable), collapse="."),
               shouldCreateErrorRateBySites=FALSE,
               errorVariable=errorVariable
