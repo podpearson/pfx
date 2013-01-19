@@ -102,6 +102,7 @@ setVcfFilters <- function(
     if(!is.null(monomorphicSkipChromosomes)) {
       invariantSNPs[as.character(seqnames(vcf)) %in% monomorphicSkipChromosomes] <- FALSE
     }
+    browser()
     filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & invariantSNPs] <- paste(filt(vcf)[!(filt(vcf) %in% c("PASS", ".")) & invariantSNPs], "Invariant", sep=";")
     filt(vcf)[filt(vcf) %in% c("PASS", ".") & invariantSNPs] <- "MonomorphicInProgeny"
   }
