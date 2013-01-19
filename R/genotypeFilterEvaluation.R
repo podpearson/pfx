@@ -58,7 +58,26 @@
 #    shouldCreateQCFilteringPlots=TRUE
 ##    sampleSets=list("FinalSamples" = list(additionalInfoFilters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), sampleSetName="final"))
 #  )
+#  DP_QUALbyDP5_genotypeFilterEvaluation_hb3_dd2_indels_4 <- genotypeFilterEvaluation(
+#    "hb3_dd2",
+#    "indels",
+#    minMeanMAFtoConsiderContam=0.05,
+#    parentalIDs = c("ERR012788", "ERR012840", "ERR022939"),
+#    MAFthresholds=NULL,
+#    DPthresholds=c(5),
+#    filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)),
+#    plotFilestemExtra="DP_QUALbyDP5",
+#    shouldCreateQCFilteringPlots=TRUE
+##    sampleSets=list("FinalSamples" = list(additionalInfoFilters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), sampleSetName="final"))
+#  )
 #  DP_QUALbyDP5_genotypeFilterEvaluation_hb3_dd2_indels_4 <- genotypeFilterEvaluation("hb3_dd2", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5")
+
+#  DP_QUALbyDP5_genotypeFilterEvaluation_3d7_hb3_snps_3 <- genotypeFilterEvaluation("3d7_hb3", "snps", MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
+#  DP_QUALbyDP5_genotypeFilterEvaluation_7g8_gb4_snps_3 <- genotypeFilterEvaluation("7g8_gb4", "snps", parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5")
+#  DP_QUALbyDP5_genotypeFilterEvaluation_hb3_dd2_snps_3 <- genotypeFilterEvaluation("hb3_dd2", "snps", parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5")
+#  DP_QUALbyDP5_genotypeFilterEvaluation_3d7_hb3_indels_3 <- genotypeFilterEvaluation("3d7_hb3", "indels", minMeanMAFtoConsiderContam=0.02, MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
+#  DP_QUALbyDP5_genotypeFilterEvaluation_7g8_gb4_indels_3 <- genotypeFilterEvaluation("7g8_gb4", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5")
+#  DP_QUALbyDP5_genotypeFilterEvaluation_hb3_dd2_indels_3 <- genotypeFilterEvaluation("hb3_dd2", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5")
 
 #  genotypeFilterEvaluation2_3d7_hb3_snps <- genotypeFilterEvaluation("3d7_hb3", "snps", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
 #  genotypeFilterEvaluation2_7g8_gb4_snps <- genotypeFilterEvaluation("7g8_gb4", "snps")
@@ -73,19 +92,24 @@ genotypeFilterEvaluation <- function(
   analysisDirectory           = "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk",
 #  filters                     = NULL,
   filters=list(
-#      "biallelic" = list(column="biallelic", operator="==", value=TRUE),
-    "meanMAF0.2" = list(column="meanMAF", operator=">", value=0.2, filterOutNAs=TRUE),
-    "QD" = list(column="QUALbyDP", operator=">", value=33),
-    "missingness1" = list(column="missingness", operator=">", value=1),
-    "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2),
-    "MQ0Fraction" = list(column="MQ0Fraction", operator=">", value=0.01),
-    "MateOtherChrom" = list(column="MateOtherChrom", operator=">", value=0.1),
-    "SoftClipped" = list(column="MateOtherChrom", operator=">", value=0.2),
-    "ProperPair" = list(column="ProperPair", operator="<", value=0.9),
-    "MQ" = list(column="MQ", operator="<", value=38),
-    "HRun" = list(column="HRun", operator=">", value=4, filterOutNAs=TRUE),
-    "FS" = list(column="FS", operator=">", value=600)
+    "QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5),
+    "QD14" = list(column="QD", operator="<", value=14),
+    "numFilteredGenotypes10" = list(column="numFilteredGenotypes", operator=">", value=10)
   ),
+#  filters=list(
+##      "biallelic" = list(column="biallelic", operator="==", value=TRUE),
+#    "meanMAF0.2" = list(column="meanMAF", operator=">", value=0.2, filterOutNAs=TRUE),
+#    "QD" = list(column="QUALbyDP", operator=">", value=33),
+#    "missingness1" = list(column="missingness", operator=">", value=1),
+#    "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2),
+#    "MQ0Fraction" = list(column="MQ0Fraction", operator=">", value=0.01),
+#    "MateOtherChrom" = list(column="MateOtherChrom", operator=">", value=0.1),
+#    "SoftClipped" = list(column="MateOtherChrom", operator=">", value=0.2),
+#    "ProperPair" = list(column="ProperPair", operator="<", value=0.9),
+#    "MQ" = list(column="MQ", operator="<", value=38),
+#    "HRun" = list(column="HRun", operator=">", value=4, filterOutNAs=TRUE),
+#    "FS" = list(column="FS", operator=">", value=600)
+#  ),
 #  regionsMask                 = NULL,
   regionsMask                 = varRegions_v3("/data/malariagen2/plasmodium/pf-crosses/meta/regions_v3_rdp.bed"),
   parentalIDs                 = NULL,
@@ -103,7 +127,7 @@ genotypeFilterEvaluation <- function(
   DPthresholdDefault          = 10,
   MAFthresholdDefault         = 0.1,
   plotFilestemExtra           = "MAF",
-  shouldCreateQCFilteringPlots= FALSE,
+  shouldCreateQCFilteringPlots= TRUE,
   genotypeFiltersList         = c(
     lapply(
       MAFthresholds,
