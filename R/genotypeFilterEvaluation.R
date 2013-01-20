@@ -94,6 +94,7 @@ genotypeFilterEvaluation <- function(
   filters=list(
     "QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5),
     "QD14" = list(column="QD", operator="<", value=14),
+    "BaseQRankSum45" = list(column="BaseQRankSum", operator="<", value=-45),
     "numFilteredGenotypes10" = list(column="numFilteredGenotypes", operator=">", value=10)
   ),
 #  filters=list(
