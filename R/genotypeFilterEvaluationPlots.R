@@ -18,6 +18,8 @@
 #  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", plotFilestemExtra="DP_QUALbyDP5", variablesToPlot = list("DPforGQ99andMAF0.1_QUALbyDP5" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9, "0"=10)), infoFilterString = x))
 #  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", plotFilestemExtra="DP_QUALbyDP5", variablesToPlot = list("DPforGQ99andMAF0.1_QUALbyDP5" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9)), infoFilterString = paste(x, "5", sep=".")))
 #  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", plotFilestemExtra="DP_QUALbyDP5", variablesToPlot = list("DPforGQ99andMAF0.1_QUALbyDP5" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9)), infoFilterString = x))
+  lapply(c("final", "bestReplicate"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", plotFilestemExtra="DP_QUALbyDP5", variablesToPlot = list("DPforGQ99andMAF0.1_QUALbyDP5" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9)), infoFilterString = paste(x, "5.14.10", sep=".")))
+  lapply(c("final", "bestReplicate"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", plotFilestemExtra="DP_QUALbyDP5", variablesToPlot = list("DPforGQ99andMAF0.1_QUALbyDP5" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9)), infoFilterString = x))
 
 genotypeFilterEvaluationPlots <- function(
   analysisDirectory           = "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk",

@@ -72,12 +72,12 @@
 #  )
 #  DP_QUALbyDP5_genotypeFilterEvaluation_hb3_dd2_indels_4 <- genotypeFilterEvaluation("hb3_dd2", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5")
 
-#  DP_QUALbyDP5_genotypeFilterEvaluation_3d7_hb3_snps_3 <- genotypeFilterEvaluation("3d7_hb3", "snps", MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
-#  DP_QUALbyDP5_genotypeFilterEvaluation_7g8_gb4_snps_3 <- genotypeFilterEvaluation("7g8_gb4", "snps", parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5")
-#  DP_QUALbyDP5_genotypeFilterEvaluation_hb3_dd2_snps_3 <- genotypeFilterEvaluation("hb3_dd2", "snps", parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5")
-#  DP_QUALbyDP5_genotypeFilterEvaluation_3d7_hb3_indels_3 <- genotypeFilterEvaluation("3d7_hb3", "indels", minMeanMAFtoConsiderContam=0.02, MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
-#  DP_QUALbyDP5_genotypeFilterEvaluation_7g8_gb4_indels_3 <- genotypeFilterEvaluation("7g8_gb4", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5")
-#  DP_QUALbyDP5_genotypeFilterEvaluation_hb3_dd2_indels_3 <- genotypeFilterEvaluation("hb3_dd2", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), filters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), plotFilestemExtra="DP_QUALbyDP5")
+#  DP_QUALbyDP5_genotypeFilterEvaluation_3d7_hb3_snps_5 <- genotypeFilterEvaluation("3d7_hb3", "snps", MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), plotFilestemExtra="DP_QUALbyDP5", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
+#  DP_QUALbyDP5_genotypeFilterEvaluation_7g8_gb4_snps_5 <- genotypeFilterEvaluation("7g8_gb4", "snps", parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), plotFilestemExtra="DP_QUALbyDP5")
+#  DP_QUALbyDP5_genotypeFilterEvaluation_hb3_dd2_snps_5 <- genotypeFilterEvaluation("hb3_dd2", "snps", parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), plotFilestemExtra="DP_QUALbyDP5")
+#  DP_QUALbyDP5_genotypeFilterEvaluation_3d7_hb3_indels_5 <- genotypeFilterEvaluation("3d7_hb3", "indels", minMeanMAFtoConsiderContam=0.02, MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), plotFilestemExtra="DP_QUALbyDP5", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
+#  DP_QUALbyDP5_genotypeFilterEvaluation_7g8_gb4_indels_5 <- genotypeFilterEvaluation("7g8_gb4", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR027099", "ERR027100", "ERR029410", "ERR045626"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), plotFilestemExtra="DP_QUALbyDP5")
+#  DP_QUALbyDP5_genotypeFilterEvaluation_hb3_dd2_indels_5 <- genotypeFilterEvaluation("hb3_dd2", "indels", minMeanMAFtoConsiderContam=0.05, parentalIDs = c("ERR012788", "ERR012840", "ERR022939"), MAFthresholds=NULL, DPthresholds=c(15, 10, 8, 6, 5, 4, 3, 2, 1), plotFilestemExtra="DP_QUALbyDP5")
 
 #  genotypeFilterEvaluation2_3d7_hb3_snps <- genotypeFilterEvaluation("3d7_hb3", "snps", monomorphicSkipChromosomes  = "Pf3D7_13_v3")
 #  genotypeFilterEvaluation2_7g8_gb4_snps <- genotypeFilterEvaluation("7g8_gb4", "snps")
@@ -196,10 +196,15 @@ genotypeFilterEvaluation <- function(
   vcfAnnotatedFinalSamplesFilename <- file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfAnnotatedFinalSamples.rda", sep=""))
   vcfAnnotatedBestReplicateSamplesFilename <- file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfAnnotatedBestReplicateSamples.rda", sep=""))
   vcfAnnotatedUncontaminatedSamplesFilename <- file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfAnnotatedUncontaminatedSamples.rda", sep=""))
+  vcfList <- list()
+  sampleSetNames <- sapply(sampleSets, function(x) x[["sampleSetName"]])
   if(shouldUseExistingRda && file.exists(vcfAnnotatedFinalSamplesFilename) && file.exists(vcfAnnotatedBestReplicateSamplesFilename) && file.exists(vcfAnnotatedUncontaminatedSamplesFilename)) {
     load(vcfAnnotatedFinalSamplesFilename)
     load(vcfAnnotatedBestReplicateSamplesFilename)
     load(vcfAnnotatedUncontaminatedSamplesFilename)
+    vcfList[["final"]] <- vcfAnnotatedFinalSamples
+    vcfList[["bestReplicate"]] <- vcfAnnotatedBestReplicateSamples
+    vcfList[["uncontaminated"]] <- vcfAnnotatedUncontaminatedSamples
   } else {
     if(is.null(regionsMask)) {
       load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfVariant.rda", sep="")))
@@ -210,32 +215,38 @@ genotypeFilterEvaluation <- function(
       rm(vcfCoreFinalSamples)
       gc()
     }
-    finalSamples <- setdiff(dimnames(vcfVariant)[[2]], initialSampleQCresults[["qcFailedSamples"]])
-    vcfAnnotatedFinalSamples <-  annotateVcf(vcfVariant[, finalSamples])
-    save(vcfAnnotatedFinalSamples, file=vcfAnnotatedFinalSamplesFilename)
-#    bestReplicateSamples <- setdiff(dimnames(vcfVariant)[[2]], initialSampleQCresults[["uniqueSamples"]])
-    bestReplicateSamples <- setdiff(initialSampleQCresults[["uniqueSamples"]], initialSampleQCresults[["qcFailedSamples"]])
-    vcfAnnotatedBestReplicateSamples <-  annotateVcf(vcfVariant[, bestReplicateSamples])
-    save(vcfAnnotatedBestReplicateSamples, file=vcfAnnotatedBestReplicateSamplesFilename)
-    if(!exists("vcfInitialFiltered")) {
-      load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfInitialFiltered.rda", sep="")))
+    if("final" %in% sampleSetNames) {
+      finalSamples <- setdiff(dimnames(vcfVariant)[[2]], initialSampleQCresults[["qcFailedSamples"]])
+      vcfList[["final"]] <-  annotateVcf(vcfVariant[, finalSamples])
+      save(vcfList[["final"]], file=vcfAnnotatedFinalSamplesFilename)
     }
-    vcfInitialFilteredPASS <- vcfInitialFiltered[filt(vcfInitialFiltered)=="PASS"]
-    RefReads <- matrix(
-      sapply(geno(vcfInitialFilteredPASS)[["AD"]], function(x) x[1]),
-      ncol=dim(geno(vcfInitialFilteredPASS)[["AD"]])[2],
-      dimnames=dimnames(geno(vcfInitialFilteredPASS)[["AD"]])
-    )
-    FirstAltReads <- matrix(
-      sapply(geno(vcfInitialFilteredPASS)[["AD"]], function(x) x[2]),
-      ncol=dim(geno(vcfInitialFilteredPASS)[["AD"]])[2],
-      dimnames=dimnames(geno(vcfInitialFilteredPASS)[["AD"]])
-    )
-    MAF <- pmin(RefReads, FirstAltReads)/(RefReads+FirstAltReads)
-    meanMAFperSample <- colMeans(MAF, na.rm = TRUE)
-    uncontaminatedSamples <- intersect(names(which(meanMAFperSample < minMeanMAFtoConsiderContam)), dimnames(vcfVariant)[[2]])
-    vcfAnnotatedUncontaminatedSamples <-  annotateVcf(vcfVariant[, uncontaminatedSamples])
-    save(vcfAnnotatedUncontaminatedSamples, file=vcfAnnotatedUncontaminatedSamplesFilename)
+    if("bestReplicate" %in% sampleSetNames) {
+  #    bestReplicateSamples <- setdiff(dimnames(vcfVariant)[[2]], initialSampleQCresults[["uniqueSamples"]])
+      bestReplicateSamples <- setdiff(initialSampleQCresults[["uniqueSamples"]], initialSampleQCresults[["qcFailedSamples"]])
+      vcfList[["bestReplicate"]] <-  annotateVcf(vcfVariant[, bestReplicateSamples])
+      save(vcfList[["bestReplicate"]], file=vcfAnnotatedBestReplicateSamplesFilename)
+    }
+    if("uncontaminated" %in% sampleSetNames) {
+      if(!exists("vcfInitialFiltered")) {
+        load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfInitialFiltered.rda", sep="")))
+      }
+      vcfInitialFilteredPASS <- vcfInitialFiltered[filt(vcfInitialFiltered)=="PASS"]
+      RefReads <- matrix(
+        sapply(geno(vcfInitialFilteredPASS)[["AD"]], function(x) x[1]),
+        ncol=dim(geno(vcfInitialFilteredPASS)[["AD"]])[2],
+        dimnames=dimnames(geno(vcfInitialFilteredPASS)[["AD"]])
+      )
+      FirstAltReads <- matrix(
+        sapply(geno(vcfInitialFilteredPASS)[["AD"]], function(x) x[2]),
+        ncol=dim(geno(vcfInitialFilteredPASS)[["AD"]])[2],
+        dimnames=dimnames(geno(vcfInitialFilteredPASS)[["AD"]])
+      )
+      MAF <- pmin(RefReads, FirstAltReads)/(RefReads+FirstAltReads)
+      meanMAFperSample <- colMeans(MAF, na.rm = TRUE)
+      uncontaminatedSamples <- intersect(names(which(meanMAFperSample < minMeanMAFtoConsiderContam)), dimnames(vcfVariant)[[2]])
+      vcfList[["uncontaminated"]] <-  annotateVcf(vcfVariant[, uncontaminatedSamples])
+      save(vcfList[["uncontaminated"]], file=vcfAnnotatedUncontaminatedSamplesFilename)
+    }
   }
   
 #  browser()
@@ -258,7 +269,8 @@ genotypeFilterEvaluation <- function(
     function(sampleSet) {
       if(is.null(parentalIDs)) {
         filterResults <- evaluateGenotypeFilters(
-          vcfAnnotatedFinalSamples,
+          vcfList[[sampleSets[[sampleSet]][["sampleSetName"]]]],
+#          vcfAnnotatedFinalSamples,
       #    vcfCoreFinalSamples,
           plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, sampleSets[[sampleSet]][["sampleSetName"]], sep=".")),
           additionalInfoFilters       = sampleSets[[sampleSet]][["additionalInfoFilters"]],
@@ -273,7 +285,8 @@ genotypeFilterEvaluation <- function(
         )
       } else {
         filterResults <- evaluateGenotypeFilters(
-          vcfAnnotatedFinalSamples,
+          vcfList[[sampleSets[[sampleSet]][["sampleSetName"]]]],
+#          vcfAnnotatedFinalSamples,
       #    vcfCoreFinalSamples,
           plotFilestem                = file.path(analysisDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, sampleSets[[sampleSet]][["sampleSetName"]], sep=".")),
           additionalInfoFilters       = sampleSets[[sampleSet]][["additionalInfoFilters"]],
