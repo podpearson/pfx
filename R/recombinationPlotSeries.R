@@ -32,7 +32,7 @@ recombinationPlotSeries <- function(
           sampleDuplicates=sampleDuplicates
         )
         GTsReorderedResults <- reorderSamples(GTsCFparents, dimnames(GTsCFparents)[[2]][c(dim(GTsCFparents)[2]-1, dim(GTsCFparents)[2])], sampleIDmappings) # parents are last two columns as convertGTsIntToParentBasedGTs reverses the order
-        browser()
+#        browser()
         if(verbose) {
           cat("recombinationPlotSeries: creating recombination plot", chromosome, "raw", "\n")
         }

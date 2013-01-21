@@ -23,7 +23,7 @@ readSingleChromosomeWithRegionsMask <- function(
   if(overwriteExisting) {
     rng <- nonVarRegions[seqnames(nonVarRegions)==chromosome]
 #    rng <- GRanges(seqnames=chromosome, ranges=nonVarRegions[seqnames(nonVarRegions)==chromosome])
-    param <- ScanVcfParam(which=rng, geno=c(genoToLoad))
+    param <- ScanVcfParam(which=range(rng), geno=c(genoToLoad))
     if(grepl("\\.vcf$", vcfFilename)) {
       if(!file.exists(paste(vcfFilename, "gz", sep="."))) {
         bgzip(vcfFilename)
@@ -34,6 +34,7 @@ readSingleChromosomeWithRegionsMask <- function(
       indexTabix(vcfFilename, "vcf4")
     }
     vcf <- readVcf(vcfFilename, "Pf", param)
+    vcf <- vcf[rowData(vcf) %in% rng]
     if(saveAsRobjectFile) {
       save(vcf, file=outputRdaFilename)
     }
