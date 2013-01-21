@@ -17,6 +17,13 @@
 #pipelineFilterEvaluation("7g8_gb4", "indels")
 #pipelineFilterEvaluation("hb3_dd2", "indels")
 
+#pipelineFilterEvaluation("3d7_hb3", "snps", variantFilters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5))
+#pipelineFilterEvaluation("7g8_gb4", "snps")
+#pipelineFilterEvaluation("hb3_dd2", "snps")
+#pipelineFilterEvaluation("3d7_hb3", "indels")
+#pipelineFilterEvaluation("7g8_gb4", "indels", variantFilters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5))
+#pipelineFilterEvaluation("hb3_dd2", "indels", variantFilters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5))
+
 pipelineFilterEvaluation <- function(
   cross                       = "3d7_hb3",
   variantType                 = "snps",
@@ -26,14 +33,14 @@ pipelineFilterEvaluation <- function(
   genotypesFileFmt            = "%s.annotated.vcf",
   initialSampleQCresultsFile  = file.path(outputDirectory, cross, variantType, paste(cross, ".initialSampleQCresults.rda", sep="")),
   variantFilters              = NULL,
-#  filters=list(
+#  variantFilters=list(
 #    "QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5),
 #    "QD14" = list(column="QD", operator="<", value=14),
 #    "BaseQRankSum45" = list(column="BaseQRankSum", operator="<", value=-45, filterOutNAs=FALSE),
 #    "numFilteredGenotypes10" = list(column="numFilteredGenotypes", operator=">", value=10)
 #  ),
   sampleSets                  = list(
-    "FinalSamples"              = list(additionalInfoFilters=variantFilters, sampleSetName="final"),
+#    "FinalSamples"              = list(additionalInfoFilters=variantFilters, sampleSetName="final"),
     "BestReplicate"             = list(additionalInfoFilters=variantFilters, sampleSetName="bestReplicate")
   ),
   parentalStrains             = if(cross=="3d7_hb3") {

@@ -85,7 +85,11 @@ evaluateGenotypeFilters <- function(
     )
   ),
 #  maxNumFilteredGenotypes     = 2,
-  errorVariables              = c("MendelianErrors"=0, "numSingleSNPhaplotypes"=1),
+  errorVariablesList          = list(
+    "MendelianErrors0"        = c(errorVariable="MendelianErrors",        errorThreshold=0),
+    "numSingleSNPhaplotypes1" = c(errorVariable="numSingleSNPhaplotypes", errorThreshold=1),
+    "MendelianErrors1"        = c(errorVariable="MendelianErrors",        errorThreshold=1)
+  ),
   shouldSetHaplotypeLengths   = TRUE,
   shouldReturnVcfOnly         = FALSE
 ) {
@@ -170,15 +174,15 @@ evaluateGenotypeFilters <- function(
       }
       if(shouldCreateQCFilteringPlots) {
         sapply(
-          names(errorVariables),
-          function(errorVariable) {
+          names(errorVariablesList),
+          function(errorVariableName) {
             qcFilteringPlots(
               vcfFiltered,
-              plotFilestem=paste(theseFiltersPlotFilestem, errorVariable, sep="."),
+              plotFilestem=paste(theseFiltersPlotFilestem, errorVariablesList[[errorVariableName]]["errorVariable"], errorVariablesList[[errorVariableName]]["errorThreshold"], sep="."),
       #        plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters), errorVariable), collapse="."),
               shouldCreateErrorRateBySites=FALSE,
-              errorVariable=errorVariable,
-              errorThreshold=errorVariables[errorVariable]
+              errorVariable=errorVariablesList[[errorVariableName]]["errorVariable"],
+              errorThreshold=errorVariablesList[[errorVariableName]]["errorThreshold"]
             )
           }
         )
