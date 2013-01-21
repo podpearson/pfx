@@ -7,7 +7,7 @@
 ###############################################################################
 
 
-# pipelineFilterEvaluation(chromosomes = sprintf("Pf3D7_%02d_v3", 1))
+# pipelineFilterEvaluation(chromosomes = sprintf("Pf3D7_%02d_v3", 1), DPthresholds=5)
 
 pipelineFilterEvaluation <- function(
   cross                       = "3d7_hb3",
