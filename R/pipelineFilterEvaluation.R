@@ -7,7 +7,7 @@
 ###############################################################################
 
 
-# pipelineFilterEvaluation()
+# pipelineFilterEvaluation(chromosomes = sprintf("Pf3D7_%02d_v3", 1))
 
 pipelineFilterEvaluation <- function(
   cross                       = "3d7_hb3",
@@ -172,7 +172,7 @@ pipelineFilterEvaluation <- function(
   filterResultsList <- sapply(
     names(sampleSets),
     function(sampleSet) {
-      if(is.null(parentalIDs)) {
+      if(is.null(parentalStrains)) {
         filterResults <- evaluateGenotypeFilters(
           vcfList[[sampleSets[[sampleSet]][["sampleSetName"]]]],
           plotFilestem                = file.path(outputDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, sampleSets[[sampleSet]][["sampleSetName"]], sep=".")),
@@ -196,7 +196,7 @@ pipelineFilterEvaluation <- function(
           setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
           monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
           sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
-          parentalIDs                 = parentalIDs,
+          parentalIDs                 = parentalStrains,
           shouldReturnVcfOnly         = shouldReturnVcfOnly
         )
       }
