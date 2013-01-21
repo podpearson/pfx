@@ -66,8 +66,6 @@ pipelineFilterEvaluation <- function(
         chromosomes                 = chromosomes,
         outputDirectory             = outputDirectory,
         genotypesFileFmt            = genotypesFileFmt,
-        filtersToRemove             = filtersToRemove,
-        samplesToRemove             = samplesToRemove,
         parentalStrains             = parentalStrains
       )
     } else {
@@ -78,8 +76,6 @@ pipelineFilterEvaluation <- function(
         chromosomes                 = chromosomes,
         outputDirectory             = outputDirectory,
         genotypesFileFmt            = genotypesFileFmt,
-        filtersToRemove             = filtersToRemove,
-        samplesToRemove             = samplesToRemove,
         overwriteExisting           = overwriteExisting,
         parentalStrains             = parentalStrains
       )
