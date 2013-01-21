@@ -7,7 +7,7 @@
 ###############################################################################
 
 
-# pipelineFilterEvaluation(chromosomes = sprintf("Pf3D7_%02d_v3", 1), DPthresholds=5, shouldCreateQCFilteringPlots=FALSE)
+# pipelineFilterEvaluation(chromosomes = sprintf("Pf3D7_%02d_v3", 1), DPthresholds=5, shouldCreateQCFilteringPlots=TRUE)
 
 pipelineFilterEvaluation <- function(
   cross                       = "3d7_hb3",
@@ -76,8 +76,8 @@ pipelineFilterEvaluation <- function(
       }
     )
   ),
-  overwriteExisting           = TRUE,
-#  overwriteExisting           = NULL,
+#  overwriteExisting           = TRUE,
+  overwriteExisting           = NULL,
   shouldUseSavedVersions      = FALSE,
   shouldUseExistingRda        = FALSE,
   minMeanMAFtoConsiderContam  = 0.01,

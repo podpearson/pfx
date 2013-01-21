@@ -85,7 +85,7 @@ evaluateGenotypeFilters <- function(
     )
   ),
 #  maxNumFilteredGenotypes     = 2,
-  errorVariables              = c("MendelianErrors", "numSingleSNPhaplotypes"),
+  errorVariables              = c("MendelianErrors"=0, "numSingleSNPhaplotypes"=1),
   shouldSetHaplotypeLengths   = TRUE,
   shouldReturnVcfOnly         = FALSE
 ) {
@@ -170,14 +170,15 @@ evaluateGenotypeFilters <- function(
       }
       if(shouldCreateQCFilteringPlots) {
         sapply(
-          errorVariables,
+          names(errorVariables),
           function(errorVariable) {
             qcFilteringPlots(
               vcfFiltered,
               plotFilestem=paste(theseFiltersPlotFilestem, errorVariable, sep="."),
       #        plotFilestem=paste(c(plotFilestem, regionsMaskFilterName, names(additionalInfoFilters), errorVariable), collapse="."),
               shouldCreateErrorRateBySites=FALSE,
-              errorVariable=errorVariable
+              errorVariable=errorVariable,
+              errorThreshold=errorVariables[errorVariable]
             )
           }
         )
