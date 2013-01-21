@@ -214,6 +214,8 @@ annotateVcf <- function(
         DataFrame(Number="1", Type="Integer", Description="Size of consensus pattern of the first repeat (may differ slightly from the period size)", row.names="RepeatSize1"),
         DataFrame(Number="1", Type="Float", Description="Entropy measure of first repeat based on percent composition", row.names="RepeatEntropy1"),
         DataFrame(Number="1", Type="Float", Description="Quality (same as value in QUAL column)", row.names="QUAL"),
+        DataFrame(Number="1", Type="Float", Description="QUAL/DP (note this is not the same as QD, which is only calculated for depth at variant samples)", row.names="QUALbyDP"),
+        DataFrame(Number="1", Type="Float", Description="QUAL/number of samples (an attempt to normalise the QUAL score across different crosses where the number of progeny differ)", row.names="QUALperSample"),
         DataFrame(Number="0", Type="Flag", Description="Is this a segregating site (i.e. do parents have different genotypes", row.names="SEGREGATING"),
         DataFrame(Number="1", Type="Integer", Description="Number of Mendelian errors (parents have same genotype, progeny has differenet genotype) in progeny", row.names="MendelianErrors")
       )
