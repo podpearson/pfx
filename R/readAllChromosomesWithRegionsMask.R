@@ -19,8 +19,8 @@ readAllChromosomesWithRegionsMask <- function(
   overwriteExisting           = NULL,
   parentalStrains             = NULL
 )  {
-  if(!file.exists(outputDirectory)) {
-    dir.create(outputDirectory, recursive=TRUE)
+  if(!file.exists(file.path(outputDirectory, cross, variantType))) {
+    dir.create(file.path(outputDirectory, cross, variantType), recursive=TRUE)
   }
   if(is.null(overwriteExisting)) {
     lapply(
