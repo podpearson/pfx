@@ -21,7 +21,8 @@ readSingleChromosomeWithRegionsMask <- function(
     stop("Input and output filename are the same")
   }
   if(overwriteExisting) {
-    rng <- GRanges(seqnames=chromosome, ranges=nonVarRegions[seqnames(nonVarRegions)==chromosome])
+    rng <- nonVarRegions[seqnames(nonVarRegions)==chromosome]
+#    rng <- GRanges(seqnames=chromosome, ranges=nonVarRegions[seqnames(nonVarRegions)==chromosome])
     param <- ScanVcfParam(which=rng, geno=c(genoToLoad))
     if(grepl("\\.vcf$", vcfFilename)) {
       if(!file.exists(paste(vcfFilename, "gz", sep="."))) {
