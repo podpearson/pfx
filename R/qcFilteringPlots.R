@@ -10,12 +10,10 @@
 qcFilteringPlots <- function(
   vcf,
   plotFilestem                = "7G8xGB4",
-  variablesToPlot             = as.vector(
-    matrix(
-      row.names(subset(info(exptData(vcf)[["header"]]), Type %in% c("Integer", "Float"))),
-      dimnames=list(row.names(subset(info(exptData(vcf)[["header"]]), Type %in% c("Integer", "Float"))))
-    )[, 1]
-  ),
+  variablesToPlot             = matrix(
+    row.names(subset(info(exptData(vcf)[["header"]]), Type %in% c("Integer", "Float"))),
+    dimnames=list(row.names(subset(info(exptData(vcf)[["header"]]), Type %in% c("Integer", "Float"))))
+  )[, 1],
 #  variablesToPlot             = c(
 ##    "AC"             = "highIsGood",
 #    "BaseQRankSum"           = "highIsGood",
