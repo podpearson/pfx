@@ -8,6 +8,14 @@
 
 
 # pipelineFilterEvaluation(chromosomes = sprintf("Pf3D7_%02d_v3", 1), DPthresholds=5, shouldCreateQCFilteringPlots=TRUE)
+# pipelineFilterEvaluation(DPthresholds=5, shouldUseSavedVersions=TRUE)
+
+#pipelineFilterEvaluation("3d7_hb3", "snps")
+#pipelineFilterEvaluation("7g8_gb4", "snps")
+#pipelineFilterEvaluation("hb3_dd2", "snps")
+#pipelineFilterEvaluation("3d7_hb3", "indels")
+#pipelineFilterEvaluation("7g8_gb4", "indels")
+#pipelineFilterEvaluation("hb3_dd2", "indels")
 
 pipelineFilterEvaluation <- function(
   cross                       = "3d7_hb3",
@@ -38,7 +46,8 @@ pipelineFilterEvaluation <- function(
   GQthresholds                = NULL,
 #  GQthresholds                = c(99, 50, 5),
 #  DPthresholds                = NULL,
-  DPthresholds                = c(10, 5, 1),
+  DPthresholds                = c(5),
+#  DPthresholds                = c(10, 5, 1),
   MAFthresholds               = NULL,
 #  MAFthresholds               = c(0.1, 0, 0.02, 0.05, 0.2, 0.35, 0.5),
   GQthresholdDefault          = 99,
