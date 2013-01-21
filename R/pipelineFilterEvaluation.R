@@ -7,7 +7,7 @@
 ###############################################################################
 
 
-# pipelineFilterEvaluation(chromosomes = sprintf("Pf3D7_%02d_v3", 1))
+# pipelineFilterEvaluation()
 
 pipelineFilterEvaluation <- function(
   cross                       = "3d7_hb3",
@@ -15,10 +15,19 @@ pipelineFilterEvaluation <- function(
   genotypesDirectory          = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes/per_sample_realigned/gatk",
   chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
   outputDirectory             = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20130121/per_sample_realigned/gatk",
-#  outputDirectory             = sub("genotypes", "genotypes_analysis", genotypesDirectory),
   genotypesFileFmt            = "%s.annotated.vcf",
-  gffFilename                 = "/data/malariagen2/plasmodium/pf-crosses/data/genome/sanger/version3/September_2012/Pf3D7_v3.gatk.gff",
-  gffGRL                      = readGffAsGRangesList(gffFilename, chromsomeNames=chromosomes),
+  initialSampleQCresultsFile  = file.path(outputDirectory, cross, variantType, paste(cross, ".initialSampleQCresults.rda", sep="")),
+  variantFilters              = NULL,
+#  filters=list(
+#    "QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5),
+#    "QD14" = list(column="QD", operator="<", value=14),
+#    "BaseQRankSum45" = list(column="BaseQRankSum", operator="<", value=-45, filterOutNAs=FALSE),
+#    "numFilteredGenotypes10" = list(column="numFilteredGenotypes", operator=">", value=10)
+#  ),
+  sampleSets                  = list(
+    "FinalSamples"              = list(additionalInfoFilters=variantFilters, sampleSetName="final"),
+    "BestReplicate"             = list(additionalInfoFilters=variantFilters, sampleSetName="bestReplicate")
+  ),
   parentalStrains             = if(cross=="3d7_hb3") {
     c("ERR019061", "ERR019054")
   } else if(cross=="7g8_gb4") {
@@ -26,34 +35,64 @@ pipelineFilterEvaluation <- function(
   } else if(cross=="hb3_dd2") {
     c("ERR012788", "ERR012840")
   },
-  sampleIDcolumn              = "ena_run_accession",
-  sampleIDmappingsColumn      = sampleIDcolumn,
-  filtersToRemove             = NULL,
-  samplesToRemove             = NULL,
-#  samplesToRemove             = c("ERR045643", "ERR045644", "ERR045645", "ERR045646", "ERR045647", "ERR045625"),
-  plotFilestem                = NULL,
-#  heterozygosityThreshold     = 0.3,
-#  missingnessThreshold        = 0.3,
-#  discordanceThresholdInitial = 1000,
-#  discordanceThresholdMg      = 10000,
-#  discordanceThresholdSeg     = 100,
-#  discordanceThresholdJiang   = 100,
-#  discordanceThresholdRawVsJia= 100,
-#  discordanceThresholdFltVsJia= 100,
-#  discordanceThreshold5ChVsJia= 50,
-#  shouldCompareWithJiang      = grepl("7g8xGb4", cross),
+  GQthresholds                = NULL,
+#  GQthresholds                = c(99, 50, 5),
+#  DPthresholds                = NULL,
+  DPthresholds                = c(10, 5, 1),
+  MAFthresholds               = NULL,
+#  MAFthresholds               = c(0.1, 0, 0.02, 0.05, 0.2, 0.35, 0.5),
+  GQthresholdDefault          = 99,
+  DPthresholdDefault          = 5,
+  MAFthresholdDefault         = 0.1,
+  genotypeFiltersList         = c(
+    lapply(
+      MAFthresholds,
+      function(MAFthreshold) {
+        list(
+          "LowGQ" = list(column="GQ", operator="<", value=GQthresholdDefault, filterOutNAs=TRUE),
+          "LowDP" = list(column="DP", operator="<", value=DPthresholdDefault, filterOutNAs=TRUE),
+          "HighMAF" = list(column="MAF", operator=">", value=MAFthreshold, filterOutNAs=TRUE)
+        )
+      }
+    ),
+    lapply(
+      DPthresholds,
+      function(DPthreshold) {
+        list(
+          "LowGQ" = list(column="GQ", operator="<", value=GQthresholdDefault, filterOutNAs=TRUE),
+          "LowDP" = list(column="DP", operator="<", value=DPthreshold, filterOutNAs=TRUE),
+          "HighMAF" = list(column="MAF", operator=">", value=MAFthresholdDefault, filterOutNAs=TRUE)
+        )
+      }
+    ),
+    lapply(
+      GQthresholds,
+      function(GQthreshold) {
+        list(
+          "LowGQ" = list(column="GQ", operator="<", value=GQthreshold, filterOutNAs=TRUE),
+          "LowDP" = list(column="DP", operator="<", value=DPthresholdDefault, filterOutNAs=TRUE),
+          "HighMAF" = list(column="MAF", operator=">", value=MAFthresholdDefault, filterOutNAs=TRUE)
+        )
+      }
+    )
+  ),
   overwriteExisting           = NULL,
-  shouldUseSavedVersions      = TRUE,
-  vcfCoreAllSamplesRda        = file.path(outputDirectory, cross, variantType, paste(cross, "vcfCoreFinalSamples.rda", sep="."))
-#  vcfListRda                  = file.path(outputDirectory, cross, variantType, paste(cross, "vcfList.rda", sep=".")),
-#  vcfVariantRda               = file.path(outputDirectory, cross, variantType, paste(cross, "vcfVariant.rda", sep=".")),
-#  vcfVariantAnnotatedRda      = file.path(outputDirectory, cross, variantType, paste(cross, "vcfVariantAnnotated.rda", sep=".")),
-#  vcfInitialFilteredRda       = file.path(outputDirectory, cross, variantType, paste(cross, "vcfInitialFiltered.rda", sep=".")),
-#  initialSampleQCresultsRda   = file.path(outputDirectory, cross, variantType, paste(cross, "initialSampleQCresults.rda", sep=".")),
-#  vcfFinalFilteredRda         = file.path(outputDirectory, cross, variantType, paste(cross, "vcfFinalFiltered.rda", sep=".")),
-#  vcfUnfilteredFinalSamplesRda = file.path(outputDirectory, cross, variantType, paste(cross, "vcfUnfilteredFinalSamples.rda", sep=".")),
-#  vcfCoreFinalSamplesRda      = file.path(outputDirectory, cross, variantType, paste(cross, "vcfCoreFinalSamples.rda", sep=".")),
-#  vcfUniqueFilteredRda        = file.path(outputDirectory, cross, variantType, paste(cross, "vcfUniqueFiltered.rda", sep="."))
+  shouldUseSavedVersions      = FALSE,
+  shouldUseExistingRda        = FALSE,
+  minMeanMAFtoConsiderContam  = 0.01,
+  plotFilestemExtra           = if(!is.null(MAFthresholds)) {
+    "varyingMAF"
+  } else if(!is.null(DPthresholds)) {
+    "varyingDP"
+  } else if(!is.null(GQthresholds)) {
+    "varyingGQ"
+  },
+  setMonomorphicProgenyFilter = TRUE,
+  monomorphicSkipChromosomes  = if(cross=="3d7_hb3") "Pf3D7_13_v3" else NULL,
+  regionsMask                 = varRegions_v3("/data/malariagen2/plasmodium/pf-crosses/meta/regions_v3_rdp.bed"),
+  shouldCreateQCFilteringPlots= TRUE,
+  vcfCoreAllSamplesRda        = file.path(outputDirectory, cross, variantType, paste(cross, "vcfCoreFinalSamples.rda", sep=".")),
+  shouldReturnVcfOnly         = FALSE
 ) {
   if(file.exists(vcfCoreAllSamplesRda) & shouldUseSavedVersions) {
     load(vcfCoreAllSamplesRda)
@@ -82,6 +121,96 @@ pipelineFilterEvaluation <- function(
     }
     vcfCoreAllSamples <- combineVcfListIntoVcf(vcfList)
     save(vcfCoreAllSamples, file=vcfCoreAllSamplesRda)
+  }
+  load(initialSampleQCresultsFile)
+  vcfAnnotatedFinalSamplesFilename <- file.path(outputDirectory, cross, variantType, paste(cross, ".vcfAnnotatedFinalSamples.rda", sep=""))
+  vcfAnnotatedBestReplicateSamplesFilename <- file.path(outputDirectory, cross, variantType, paste(cross, ".vcfAnnotatedBestReplicateSamples.rda", sep=""))
+  vcfAnnotatedUncontaminatedSamplesFilename <- file.path(outputDirectory, cross, variantType, paste(cross, ".vcfAnnotatedUncontaminatedSamples.rda", sep=""))
+  vcfList <- list()
+  sampleSetNames <- sapply(sampleSets, function(x) x[["sampleSetName"]])
+  if(shouldUseExistingRda && file.exists(vcfAnnotatedFinalSamplesFilename) && file.exists(vcfAnnotatedBestReplicateSamplesFilename) && file.exists(vcfAnnotatedUncontaminatedSamplesFilename)) {
+    load(vcfAnnotatedFinalSamplesFilename)
+    load(vcfAnnotatedBestReplicateSamplesFilename)
+    load(vcfAnnotatedUncontaminatedSamplesFilename)
+    vcfList[["final"]] <- vcfAnnotatedFinalSamples
+    vcfList[["bestReplicate"]] <- vcfAnnotatedBestReplicateSamples
+    vcfList[["uncontaminated"]] <- vcfAnnotatedUncontaminatedSamples
+    rm(vcfAnnotatedFinalSamplesFilename)
+    rm(vcfAnnotatedBestReplicateSamples)
+    rm(vcfAnnotatedUncontaminatedSamples)
+    gc()
+  } else {
+    if("final" %in% sampleSetNames) {
+      finalSamples <- setdiff(dimnames(vcfCoreAllSamples)[[2]], initialSampleQCresults[["qcFailedSamples"]])
+      vcfList[["final"]] <-  annotateVcf(vcfCoreAllSamples[, finalSamples])
+    }
+    if("bestReplicate" %in% sampleSetNames) {
+      bestReplicateSamples <- setdiff(initialSampleQCresults[["uniqueSamples"]], initialSampleQCresults[["qcFailedSamples"]])
+      vcfList[["bestReplicate"]] <-  annotateVcf(vcfCoreAllSamples[, bestReplicateSamples])
+    }
+    if("uncontaminated" %in% sampleSetNames) {
+#      if(!exists("vcfInitialFiltered")) {
+#        load(file.path(analysisDirectory, cross, variantType, paste(cross, ".vcfInitialFiltered.rda", sep="")))
+#      }
+#      vcfInitialFilteredPASS <- vcfInitialFiltered[filt(vcfInitialFiltered)=="PASS"]
+      RefReads <- matrix(
+        sapply(geno(vcfCoreAllSamples)[["AD"]], function(x) x[1]),
+        ncol=dim(geno(vcfCoreAllSamples)[["AD"]])[2],
+        dimnames=dimnames(geno(vcfCoreAllSamples)[["AD"]])
+      )
+      FirstAltReads <- matrix(
+        sapply(geno(vcfCoreAllSamples)[["AD"]], function(x) x[2]),
+        ncol=dim(geno(vcfCoreAllSamples)[["AD"]])[2],
+        dimnames=dimnames(geno(vcfCoreAllSamples)[["AD"]])
+      )
+      MAF <- pmin(RefReads, FirstAltReads)/(RefReads+FirstAltReads)
+      meanMAFperSample <- colMeans(MAF, na.rm = TRUE)
+      uncontaminatedSamples <- intersect(names(which(meanMAFperSample < minMeanMAFtoConsiderContam)), dimnames(vcfCoreAllSamples)[[2]])
+      vcfList[["uncontaminated"]] <-  annotateVcf(vcfCoreAllSamples[, uncontaminatedSamples])
+    }
+  }
+  filterResultsList <- sapply(
+    names(sampleSets),
+    function(sampleSet) {
+      if(is.null(parentalIDs)) {
+        filterResults <- evaluateGenotypeFilters(
+          vcfList[[sampleSets[[sampleSet]][["sampleSetName"]]]],
+          plotFilestem                = file.path(outputDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, sampleSets[[sampleSet]][["sampleSetName"]], sep=".")),
+          additionalInfoFilters       = sampleSets[[sampleSet]][["additionalInfoFilters"]],
+          regionsMask                 = regionsMask,
+          shouldCreateQCFilteringPlots=shouldCreateQCFilteringPlots,
+          genotypeFiltersList         = genotypeFiltersList,
+          setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+          monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+          sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+          shouldReturnVcfOnly         = shouldReturnVcfOnly
+        )
+      } else {
+        filterResults <- evaluateGenotypeFilters(
+          vcfList[[sampleSets[[sampleSet]][["sampleSetName"]]]],
+          plotFilestem                = file.path(outputDirectory, cross, variantType, paste(cross, variantType, "evaluateGenotypeFilters", plotFilestemExtra, sampleSets[[sampleSet]][["sampleSetName"]], sep=".")),
+          additionalInfoFilters       = sampleSets[[sampleSet]][["additionalInfoFilters"]],
+          regionsMask                 = regionsMask,
+          shouldCreateQCFilteringPlots=shouldCreateQCFilteringPlots,
+          genotypeFiltersList         = genotypeFiltersList,
+          setMonomorphicProgenyFilter = setMonomorphicProgenyFilter,
+          monomorphicSkipChromosomes  = monomorphicSkipChromosomes,
+          sampleDuplicates            = initialSampleQCresults[["sampleDuplicates"]],
+          parentalIDs                 = parentalIDs,
+          shouldReturnVcfOnly         = shouldReturnVcfOnly
+        )
+      }
+      names(filterResults) <- paste(sampleSet, names(filterResults))
+      filterResults
+    },
+    simplify=FALSE,
+    USE.NAMES=TRUE
+  )
+  if(shouldReturnVcfOnly) {
+    return(filterResultsList)
+  } else {
+    filterResults <- do.call(cbind, filterResultsList)
+    return(filterResults)
   }
 }
 

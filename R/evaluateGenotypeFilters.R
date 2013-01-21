@@ -84,7 +84,7 @@ evaluateGenotypeFilters <- function(
       }
     )
   ),
-  maxNumFilteredGenotypes     = 2,
+#  maxNumFilteredGenotypes     = 2,
   errorVariables              = c("MendelianErrors", "numSingleSNPhaplotypes"),
   shouldSetHaplotypeLengths   = TRUE,
   shouldReturnVcfOnly         = FALSE
