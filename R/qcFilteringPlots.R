@@ -11,8 +11,8 @@ qcFilteringPlots <- function(
   vcf,
   plotFilestem                = "7G8xGB4",
   variablesToPlot             = matrix(
-    row.names(subset(info(exptData(vcf)[["header"]]), Type %in% c("Integer", "Float"))),
-    dimnames=list(row.names(subset(info(exptData(vcf)[["header"]]), Type %in% c("Integer", "Float"))))
+    row.names(subset(info(exptData(vcf)[["header"]]), Type %in% c("Integer", "Float") & Number=="1")),
+    dimnames=list(row.names(subset(info(exptData(vcf)[["header"]]), Type %in% c("Integer", "Float") & Number=="1")))
   )[, 1],
 #  variablesToPlot             = c(
 ##    "AC"             = "highIsGood",
@@ -108,6 +108,7 @@ qcFilteringPlots <- function(
   shouldCreateBinnedErrorRates= TRUE,
   verbose                     = TRUE
 ) {
+  
   if(!is.null(regionsToMask)) {
     vcf <- vcf[!(rowData(vcf) %in% regionsToMask)]
   }
