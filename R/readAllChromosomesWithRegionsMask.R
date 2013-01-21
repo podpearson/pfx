@@ -51,14 +51,25 @@ readAllChromosomesWithRegionsMask <- function(
     lapply(
       chromosomes,
       function(chromosome) {
+        inputVcfFilename <- file.path(genotypesDirectory, cross, variantType, sprintf(genotypesFileFmt, chromosome))
+        outputVcfFilename <- file.path(outputDirectory, cross, variantType, sprintf(genotypesFileFmt, chromosome))
+        outputVcfGzFilename <- paste(outputVcfFilename, "gz", sep=".")
+        outputRdaFilename <- paste(outputVcfFilename, "coreAllSamples.rda", sep=".")
+        if(!file.exists(outputVcfGzFilename)) {
+          if(!file.exists(outputVcfFilename)) {
+            file.copy(inputVcfFilename, outputVcfFilename)
+          }
+          bgzip(outputVcfFilename)
+          indexTabix(outputVcfGzFilename, "vcf4")
+        }
         readSingleChromosomeWithRegionsMask(
-          file.path(genotypesDirectory, cross, variantType, sprintf(genotypesFileFmt, chromosome)),
-          chromosome,
-          filtersToRemove             = filtersToRemove,
-          samplesToRemove             = samplesToRemove,
+          vcfFilename                 = outputVcfGzFilename,
+          chromosome                  = chromosome,
+          genoToLoad                  = genoToLoad,
+          nonVarRegions               = nonVarRegions,
           overwriteExisting           = overwriteExisting,
           parentalStrains             = parentalStrains,
-          outputRdaFilename           = file.path(outputDirectory, cross, variantType, sub("\\.vcf[\\.gz]*$", paste("\\.variantSites\\.", chromosome,"\\.rda", sep=""), sprintf(genotypesFileFmt, chromosome)))
+          outputRdaFilename           = outputRdaFilename
         )
       }
     )
