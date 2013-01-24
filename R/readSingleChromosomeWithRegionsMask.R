@@ -10,7 +10,7 @@
 readSingleChromosomeWithRegionsMask <- function(
   vcfFilename                 = "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20130121/per_sample_realigned/gatk/3d7_hb3/snps/Pf3D7_01_v3.annotated.vcf.gz",
   chromosome                  = "Pf3D7_01_v3",
-  genoToLoad                  = c("GT", "AD", "GQ", "MQ0"),
+  genoToLoad                  = c("GT", "DP", "AD", "GQ", "MQ0"),
   shouldDetermineNonVarFromVcf= TRUE,
   nonVarRegions               = nonVarRegions_v3(),
   outputRdaFilename           = sub("\\.vcf[\\.gz]*$", paste("\\.coreAllSamples\\.rda", sep=""), vcfFilename),
