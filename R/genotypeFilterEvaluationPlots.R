@@ -20,7 +20,15 @@
 #  lapply(c("final", "bestReplicate", "uncontaminated"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", plotFilestemExtra="DP_QUALbyDP5", variablesToPlot = list("DPforGQ99andMAF0.1_QUALbyDP5" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9)), infoFilterString = x))
 #  lapply(c("final", "bestReplicate"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", plotFilestemExtra="DP_QUALbyDP5", variablesToPlot = list("DPforGQ99andMAF0.1_QUALbyDP5" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9)), infoFilterString = paste(x, "5.14.10", sep=".")))
 #  lapply(c("final", "bestReplicate"), function(x) genotypeFilterEvaluationPlots(sampleSet="x", plotFilestemExtra="DP_QUALbyDP5", variablesToPlot = list("DPforGQ99andMAF0.1_QUALbyDP5" = c("15"=1, "10"=2, "8"=3, "6"=4, "5"=5, "4"=6, "3"=7, "2"=8, "1"=9)), infoFilterString = paste(x, "5.14.-45.10", sep=".")))
-
+#  allResultsListNoMonomorphicProgenyFilter <- lapply(c("bestReplicate"), function(x) genotypeFilterEvaluationPlots(
+#        analysisDirectory="/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20130121/per_sample_realigned/gatk",
+#        sampleSet=x, plotFilestemExtra="varyingDP", variablesToPlot = list("DPforGQ99andMAF0.1_QUALbyDP5" = c("5"=1)), infoFilterString = paste(x, "6.2.41.0.25", sep="."))
+#  )
+#  allResultsListFinalSamples <- lapply(c("final"), function(x) genotypeFilterEvaluationPlots(
+#        analysisDirectory="/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20130121/per_sample_realigned/gatk",
+#        sampleSet=x, plotFilestemExtra="varyingDP", variablesToPlot = list("DPforGQ99andMAF0.1_QUALbyDP5" = c("5"=1)), infoFilterString = paste(x, "6.2.41.0.25", sep="."))
+#  )
+#
 genotypeFilterEvaluationPlots <- function(
   analysisDirectory           = "/data/malariagen2/plasmodium/pf-crosses/data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20120107/gatk",
   crosses                     = c("3d7_hb3", "7g8_gb4", "hb3_dd2"),
@@ -66,6 +74,7 @@ genotypeFilterEvaluationPlots <- function(
             cross <- strsplit(crossVariantType, "\\.")[[1]][1]
             variantType <- strsplit(crossVariantType, "\\.")[[1]][2]
             load(file.path(analysisDirectory, cross, variantType, paste(crossVariantType, "evaluateGenotypeFilters", plotFilestemExtra, infoFilterString, "fullReturnDF.rda", sep=".")))
+#            if(crossVariantType=="hb3_dd2.snps") browser()
             fullReturnDF[["cross"]] <- cross
             fullReturnDF[["variantType"]] <- variantType
             fullReturnDF[["crossVariantType"]] <- crossVariantType
@@ -89,9 +98,15 @@ genotypeFilterEvaluationPlots <- function(
         function(plotToCreate) {
           cat(".")
           qplotStatement <- paste(
-            "qplot(value,",
+            "qplot(crossesByVariantTypes, ",
+#            "qplot(value,",
             plotToCreate,
-            ", data=allResultsList[[variableToPlot]], geom=\"line\", group=crossVariantType, colour=crossVariantType) + theme_bw() + theme(legend.position=\"none\") + scale_colour_brewer(palette=\"Paired\")"
+#            ", data=allResultsList[[variableToPlot]], colour=crossVariantType) + geom_point(position=\"jitter\") + theme_bw() + theme(legend.position=\"none\") + scale_colour_brewer(palette=\"Paired\")"
+#            ", data=allResultsList[[variableToPlot]], colour=crossVariantType) + geom_point(position=\"jitter\") + theme_bw() + theme(legend.position=\"none\") + scale_colour_brewer(palette=\"Paired\")"
+            ", data=allResultsList[[variableToPlot]], fill=crossVariantType, stat=\"identity\", geom=\"bar\") + theme_bw() + theme(legend.position=\"none\") + scale_fill_brewer(palette=\"Paired\")"
+#            ", data=allResultsList[[variableToPlot]], fill=crossVariantType, geom=\"bar\") + theme_bw() + theme(legend.position=\"none\") + scale_fill_brewer(palette=\"Paired\")"
+#            ", data=allResultsList[[variableToPlot]], colour=crossVariantType, position=\"jitter\") + theme_bw() + theme(legend.position=\"none\") + scale_colour_brewer(palette=\"Paired\")"
+#            ", data=allResultsList[[variableToPlot]], geom=\"line\", group=crossVariantType, colour=crossVariantType) + theme_bw() + theme(legend.position=\"none\") + scale_colour_brewer(palette=\"Paired\")"
           )
           eval(parse(text=qplotStatement))
         }
@@ -104,4 +119,5 @@ genotypeFilterEvaluationPlots <- function(
       dev.off()
     }
   )
+  return(allResultsList)
 }
