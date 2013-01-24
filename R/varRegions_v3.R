@@ -10,7 +10,8 @@
 varRegions_v3 <- function(
   regionsV3bedFilename        = "/data/malariagen2/plasmodium/pf-crosses/meta/regions_v3.bed.gz"
 ) {
-  regionsBedV3 <- read.table(regionsV3bedFilename, header=FALSE, sep="\t", as.is=TRUE)
+  regionsBedV3 <- read.table(regionsV3bedFilename, header=FALSE, as.is=TRUE)
+#  regionsBedV3 <- read.table(regionsV3bedFilename, header=FALSE, sep="\t", as.is=TRUE)
   regions_v3GR <- GRanges(
     seqnames=regionsBedV3[[1]],
     ranges=IRanges(
