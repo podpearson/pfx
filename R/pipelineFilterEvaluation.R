@@ -108,15 +108,40 @@
 #pipelineFilterEvaluation("7g8_gb4", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), genotypeFiltersList=list(list("LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE), "LowDP" = list(column="DP", operator="<", value=5, filterOutNAs=TRUE), "HighMAF" = list(column="MAF", operator=">", value=Inf, filterOutNAs=FALSE))), overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
 #pipelineFilterEvaluation("hb3_dd2", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), genotypeFiltersList=list(list("LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE), "LowDP" = list(column="DP", operator="<", value=5, filterOutNAs=TRUE), "HighMAF" = list(column="MAF", operator=">", value=Inf, filterOutNAs=FALSE))), overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
 
+## Rerun of set I emailed Alistair about 2013/01/22 using Alisatir's definitions of nonVar regions and DP rather than AD for depth calculations
+#pipelineFilterEvaluation("3d7_hb3", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+#pipelineFilterEvaluation("7g8_gb4", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+#pipelineFilterEvaluation("hb3_dd2", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+#pipelineFilterEvaluation("3d7_hb3", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+#pipelineFilterEvaluation("7g8_gb4", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+#pipelineFilterEvaluation("hb3_dd2", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), overwriteExisting=TRUE, shouldUseSavedVersions=FALSE)
+
+## The following is the set I emailed Alistair about 2013/01/22
+#pipelineFilterEvaluation("3d7_hb3", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+#pipelineFilterEvaluation("7g8_gb4", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+#pipelineFilterEvaluation("hb3_dd2", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+#pipelineFilterEvaluation("3d7_hb3", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+#pipelineFilterEvaluation("7g8_gb4", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+#pipelineFilterEvaluation("hb3_dd2", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+
+## The following is the set I emailed Alistair about 2013/01/22, but without filtering out AD=0,0 variants
+#pipelineFilterEvaluation("3d7_hb3", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), filterOutMAFNAs=FALSE)
+#pipelineFilterEvaluation("7g8_gb4", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), filterOutMAFNAs=FALSE)
+#pipelineFilterEvaluation("hb3_dd2", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), filterOutMAFNAs=FALSE)
+#pipelineFilterEvaluation("3d7_hb3", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), filterOutMAFNAs=FALSE)
+#pipelineFilterEvaluation("7g8_gb4", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), filterOutMAFNAs=FALSE)
+#pipelineFilterEvaluation("hb3_dd2", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), filterOutMAFNAs=FALSE)
+
+
 #vcf_3d7_hbs_indels <- pipelineFilterEvaluation("3d7_hb3", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), genotypeFiltersList=list(list("LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE), "LowDP" = list(column="DP", operator="<", value=5, filterOutNAs=TRUE), "HighMAF" = list(column="MAF", operator=">", value=Inf, filterOutNAs=FALSE))), shouldReturnVcfOnly=TRUE)
 
 #pipelineFilterEvaluation("7g8_gb4", "indels", variantFilters=list("QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5)), DPthresholds=10)
 pipelineFilterEvaluation <- function(
   cross                       = "3d7_hb3",
   variantType                 = "snps",
-  genotypesDirectory          = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes/per_sample_realigned/gatk",
+  genotypesDirectory          = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes/per_sample_realigned/gatk_2.3.9",
   chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
-  outputDirectory             = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20130121/per_sample_realigned/gatk",
+  outputDirectory             = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20130125/per_sample_realigned/gatk_2.3.9",
   genotypesFileFmt            = "%s.annotated.vcf",
   initialSampleQCresultsFile  = file.path(outputDirectory, cross, variantType, paste(cross, ".initialSampleQCresults.rda", sep="")),
   variantFilters              = NULL,
@@ -147,6 +172,7 @@ pipelineFilterEvaluation <- function(
   GQthresholdDefault          = 99,
   DPthresholdDefault          = 5,
   MAFthresholdDefault         = 0.1,
+  filterOutMAFNAs             = TRUE,
   genotypeFiltersList         = c(
     lapply(
       MAFthresholds,
@@ -154,7 +180,7 @@ pipelineFilterEvaluation <- function(
         list(
           "LowGQ" = list(column="GQ", operator="<", value=GQthresholdDefault, filterOutNAs=TRUE),
           "LowDP" = list(column="DP", operator="<", value=DPthresholdDefault, filterOutNAs=TRUE),
-          "HighMAF" = list(column="MAF", operator=">", value=MAFthreshold, filterOutNAs=TRUE)
+          "HighMAF" = list(column="MAF", operator=">", value=MAFthreshold, filterOutNAs=filterOutMAFNAs)
         )
       }
     ),
@@ -164,7 +190,7 @@ pipelineFilterEvaluation <- function(
         list(
           "LowGQ" = list(column="GQ", operator="<", value=GQthresholdDefault, filterOutNAs=TRUE),
           "LowDP" = list(column="DP", operator="<", value=DPthreshold, filterOutNAs=TRUE),
-          "HighMAF" = list(column="MAF", operator=">", value=MAFthresholdDefault, filterOutNAs=TRUE)
+          "HighMAF" = list(column="MAF", operator=">", value=MAFthresholdDefault, filterOutNAs=filterOutMAFNAs)
         )
       }
     ),
@@ -174,7 +200,7 @@ pipelineFilterEvaluation <- function(
         list(
           "LowGQ" = list(column="GQ", operator="<", value=GQthreshold, filterOutNAs=TRUE),
           "LowDP" = list(column="DP", operator="<", value=DPthresholdDefault, filterOutNAs=TRUE),
-          "HighMAF" = list(column="MAF", operator=">", value=MAFthresholdDefault, filterOutNAs=TRUE)
+          "HighMAF" = list(column="MAF", operator=">", value=MAFthresholdDefault, filterOutNAs=filterOutMAFNAs)
         )
       }
     )
