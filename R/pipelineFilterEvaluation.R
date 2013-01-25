@@ -143,7 +143,7 @@ pipelineFilterEvaluation <- function(
   chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
   outputDirectory             = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20130125/per_sample_realigned/gatk_2.3.9",
   genotypesFileFmt            = "%s.annotated.vcf",
-  initialSampleQCresultsFile  = file.path(outputDirectory, cross, variantType, paste(cross, ".initialSampleQCresults.rda", sep="")),
+  initialSampleQCresultsFile  = file.path("data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20130121/per_sample_realigned/gatk", cross, variantType, paste(cross, ".initialSampleQCresults.rda", sep="")),
   variantFilters              = NULL,
 #  variantFilters=list(
 #    "QUALbyDP5" = list(column="QUALbyDP", operator="<", value=5),
