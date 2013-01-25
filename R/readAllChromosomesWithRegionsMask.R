@@ -12,7 +12,7 @@ readAllChromosomesWithRegionsMask <- function(
   variantType                 = "snps",
   genotypesDirectory          = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes/gatk",
   chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
-  genoToLoad                  = c("GT", "AD", "GQ", "MQ0"),
+  genoToLoad                  = c("GT", "DP", "AD", "GQ", "MQ0"),
   nonVarRegions               = nonVarRegions_v3(),
   outputDirectory             = sub("genotypes", "genotypes_analysis_20130121", genotypesDirectory),
   genotypesFileFmt            = "%s.annotated.vcf",

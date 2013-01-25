@@ -286,6 +286,7 @@ evaluateGenotypeFilters <- function(
         whichMaxPutativeCrossoversPerSample = names(putativeCrossoversPerSample[-(parentalIDindexes)])[which.max(putativeCrossoversPerSample[-(parentalIDindexes)])],
         numberOfVariants = dim(vcfFiltered)[1],
         numberOfMendelianErrorVariants = length(which(values(info(vcfFiltered))[["MendelianErrors"]] > 0)),
+        numberOfMendelianErrorsInMultipleSamples = length(which(values(info(vcfFiltered))[["MendelianErrors"]] > 1)),
         numberOfMendelianErrorGenotypes = sum(values(info(vcfFiltered))[["MendelianErrors"]]),
         numberOfSingleSNPhaplotypeVariants = length(which(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]] > 0)),
         numberOfSingleSNPhaplotypesInMultipleSamples = length(which(values(info(vcfFiltered))[["numSingleSNPhaplotypes"]] > 1)),
