@@ -132,6 +132,14 @@
 #pipelineFilterEvaluation("7g8_gb4", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), filterOutMAFNAs=FALSE)
 #pipelineFilterEvaluation("hb3_dd2", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), filterOutMAFNAs=FALSE)
 
+## The following is the set I emailed Alistair about 2013/01/22
+#pipelineFilterEvaluation("3d7_hb3", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+#pipelineFilterEvaluation("7g8_gb4", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+#pipelineFilterEvaluation("hb3_dd2", "snps", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+#pipelineFilterEvaluation("3d7_hb3", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+#pipelineFilterEvaluation("7g8_gb4", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+#pipelineFilterEvaluation("hb3_dd2", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)))
+
 
 #vcf_3d7_hbs_indels <- pipelineFilterEvaluation("3d7_hb3", "indels", variantFilters=list("QUALbyDP6" = list(column="QUALbyDP", operator="<", value=6), "numFilteredGenotypes2" = list(column="numFilteredGenotypes", operator=">", value=2), "UQ41" = list(column="UQ", operator=">", value=41), "DPSoftClippedFraction0.25" = list(column="DPSoftClippedFraction", operator=">", value=0.25)), genotypeFiltersList=list(list("LowGQ" = list(column="GQ", operator="<", value=99, filterOutNAs=TRUE), "LowDP" = list(column="DP", operator="<", value=5, filterOutNAs=TRUE), "HighMAF" = list(column="MAF", operator=">", value=Inf, filterOutNAs=FALSE))), shouldReturnVcfOnly=TRUE)
 
@@ -141,7 +149,7 @@ pipelineFilterEvaluation <- function(
   variantType                 = "snps",
   genotypesDirectory          = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes/per_sample_realigned/gatk_2.3.9",
   chromosomes                 = sprintf("Pf3D7_%02d_v3", 1:14),
-  outputDirectory             = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20130125/per_sample_realigned/gatk_2.3.9",
+  outputDirectory             = "data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20130129/per_sample_realigned/gatk_2.3.9",
   genotypesFileFmt            = "%s.annotated.vcf",
   initialSampleQCresultsFile  = file.path("data/3d7_v3/bwa_n0.01_k4_l32/genotypes_analysis_20130121/per_sample_realigned/gatk", cross, variantType, paste(cross, ".initialSampleQCresults.rda", sep="")),
   variantFilters              = NULL,
