@@ -72,11 +72,11 @@ sampleQC <- function(
       numberOfSDs <- as.integer(sub("sd", "", thresholdHeterozgosity))
       thresholdHeterozgosity <- meanValue + (numberOfSDs * sdValue)
     }
-    ADsArray <- array(
-    unlist(geno(vcf)[["AD"]]),
-    dim=c(2, dim(geno(vcf)[["AD"]])[1], dim(geno(vcf)[["AD"]])[2]),
-    dimnames=list(c("Ref", "Nonref"), dimnames(geno(vcf)[["AD"]])[[1]], dimnames(geno(vcf)[["AD"]])[[2]])
-    )
+#    ADsArray <- array(
+#      unlist(geno(vcf)[["AD"]]),
+#      dim=c(2, dim(geno(vcf)[["AD"]])[1], dim(geno(vcf)[["AD"]])[2]),
+#      dimnames=list(c("Ref", "Nonref"), dimnames(geno(vcf)[["AD"]])[[1]], dimnames(geno(vcf)[["AD"]])[[2]])
+#    )
     RefReads <- matrix(
       sapply(geno(vcf)[["AD"]], function(x) x[1]),
       ncol=dim(geno(vcf)[["AD"]])[2],
