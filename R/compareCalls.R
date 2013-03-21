@@ -119,5 +119,7 @@ compareCalls <- function(
   mean(comparisonVsSubjectDiscordanceMatrix[comparisonVsSubjectDiscordanceMatrix<discordanceThreshold])
   genotypeErrorRateIdentical <- sum(comparisonVsSubjectDiscordanceMatrix[comparisonVsSubjectDiscordanceMatrix<discordanceThreshold]) / (dim(comparisonMatchesGTs)[1] * length(which(comparisonVsSubjectDiscordanceMatrix<discordanceThreshold)))
   genotypeConcordance <- 1-genotypeErrorRateIdentical
+  
+  browser()
   return(genotypeConcordance)
 }
