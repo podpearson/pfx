@@ -18,6 +18,7 @@ compareCalls <- function(
   IDparent1                   = dimnames(subjectVcf)[[2]][1],
   IDparent2                   = dimnames(subjectVcf)[[2]][2]
 ) {
+  require(reshape2)
   if(shouldRenameSubjectSamples) {
     subjectVcf <- renameSamples(subjectVcf)
   }
