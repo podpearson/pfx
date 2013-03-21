@@ -14,7 +14,9 @@ compareCalls <- function(
   discordanceThreshold        = 100,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
   plotFilestem                = paste(meta(exptData(subjectVcf)[["header"]])["DataSetName", "Value"], "comparison", sep="."),
-  shouldRenameSubjectSamples  = TRUE
+  shouldRenameSubjectSamples  = TRUE,
+  IDparent1                   = dimnames(subjectVcf)[[2]][1],
+  IDparent2                   = dimnames(subjectVcf)[[2]][2]
 ) {
   if(shouldRenameSubjectSamples) {
     subjectVcf <- renameSamples(subjectVcf)
@@ -29,7 +31,7 @@ compareCalls <- function(
 ##  row.names(sampleAnnotation) <- gsub("-", "\\.", sampleAnnotation[["ox_code"]])
   
   subjectGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(subjectVcf))
-#  browser()
+  browser()
 #  dimnames(subjectGTsCFparents)[[2]] <- paste(sampleAnnotation[dimnames(subjectGTsCFparents)[[2]], "source_code"], " (", dimnames(subjectGTsCFparents)[[2]], ")", sep="")
   comparisonGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(comparisonVcf, GTsToIntMapping = c("7"=1, "G"=2, "."=0)))
   comparisonNearestSubjectGR <- rowData(subjectVcf)[nearest(rowData(comparisonVcf), rowData(subjectVcf))]
