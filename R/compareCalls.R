@@ -120,6 +120,10 @@ compareCalls <- function(
   genotypeErrorRateIdentical <- sum(comparisonVsSubjectDiscordanceMatrix[comparisonVsSubjectDiscordanceMatrix<discordanceThreshold]) / (dim(comparisonMatchesGTs)[1] * length(which(comparisonVsSubjectDiscordanceMatrix<discordanceThreshold)))
   genotypeConcordance <- 1-genotypeErrorRateIdentical
   
+  duplicates <- which(comparisonVsSubjectDiscordanceMatrix<discordanceThreshold, arr.ind=TRUE)
+  duplicates <- duplicates[duplicates[, 1]!=duplicates[, 2], ]
+  diffs <- comparisonMatchesGTs[, duplicates[, 1]] != subjectMatchesGTs[, duplicates[, 2]]
+    
   browser()
   return(genotypeConcordance)
 }
