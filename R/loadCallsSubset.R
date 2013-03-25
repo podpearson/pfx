@@ -14,16 +14,16 @@ loadCallsSubset <- function(
   subsetGrep                  = "set=Intersection",
   reload                      = FALSE
 ) {
-  if(reload || !file.exists(intersectionVcfFilename)) {
-    systemCommand <- sprintf("(zcat %s | head -1000 | grep ^#; zgrep '%s' %s) > %s", vcfFilename, subsetGrep, vcfFilename, intersectionVcfFilename)
+  if(reload || !file.exists(subsetVcfFilename)) {
+    systemCommand <- sprintf("(zcat %s | head -1000 | grep ^#; zgrep '%s' %s) > %s", vcfFilename, subsetGrep, vcfFilename, subsetVcfFilename)
     cat(systemCommand)
     system(systemCommand)
   }
-  if(reload || !file.exists(intersectionRdaFilename)) {
-    vcf <- readVcf(intersectionVcfFilename, genome="Pf")
-    save(vcf, file=intersectionRdaFilename)
+  if(reload || !file.exists(subsetRdaFilename)) {
+    vcf <- readVcf(subsetVcfFilename, genome="Pf")
+    save(vcf, file=subsetRdaFilename)
   } else {
-    load(intersectionRdaFilename)
+    load(subsetRdaFilename)
   }
   return(vcf)
 }
