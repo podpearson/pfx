@@ -16,10 +16,14 @@ compareCalls <- function(
   discordanceThreshold        = 100,
   malariagenDiscordanceThreshold        = 200,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
+  comparisonDSthreshold       = NULL, # This is used specifically for Uberchip calls
   plotFilestem                = paste(meta(exptData(subjectVcf)[["header"]])["DataSetName", "Value"], "comparison", sep="."),
   shouldRenameSubjectSamples  = TRUE,
   IDparent1                   = dimnames(subjectVcf)[[2]][1],
   IDparent2                   = dimnames(subjectVcf)[[2]][2],
+  shouldSubsetToBialleleic    = FALSE,
+  shouldCompareRefsAndAlts    = FALSE,
+  GTsToCompare                = c("parentBased", "asVcf"),
   GTsToIntMapping             = c("7"=1, "G"=2, "."=0)
 #  GTsToIntMapping             = c("0"=1, "0/0"=1, "0|0"=1, "1"=2, "1/1"=2, "1|1"=2, "."=0, "./."=0, "./."=0, "2"=0, "3"=0, "0/1"=0, "1/0"=0, "0|1"=0, "1|0"=0) # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
 ) {
@@ -36,10 +40,13 @@ compareCalls <- function(
 #  row.names(sampleAnnotation) <- sampleAnnotation[["ox_code"]]
 ##  row.names(sampleAnnotation) <- gsub("-", "\\.", sampleAnnotation[["ox_code"]])
   
-  subjectGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(subjectVcf), IDparent1=IDparent1, IDparent2=IDparent2)
-#  browser()
-#  dimnames(subjectGTsCFparents)[[2]] <- paste(sampleAnnotation[dimnames(subjectGTsCFparents)[[2]], "source_code"], " (", dimnames(subjectGTsCFparents)[[2]], ")", sep="")
-  comparisonGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(comparisonVcf, GTsToIntMapping = GTsToIntMapping))
+  if(shouldSubsetToBialleleic) {
+    subjectVcf <- subjectVcf[elementLengths(alt(subjectVcf)) == 1]
+    comparisonVcf <- comparisonVcf[elementLengths(alt(comparisonVcf)) == 1]
+  }
+  if(!is.null(comparisonDSthreshold)) {
+    geno(comparisonVcf)[["GT"]][geno(comparisonVcf)[["DS"]] > comparisonDSthreshold] <- "."
+  }
   comparisonNearestSubjectGR <- rowData(subjectVcf)[nearest(rowData(comparisonVcf), rowData(subjectVcf))]
   table(start(ranges(comparisonNearestSubjectGR)) - start(ranges(rowData(comparisonVcf))))
   table(start(ranges(comparisonNearestSubjectGR))-start(ranges(rowData(comparisonVcf))) >=0 & start(ranges(comparisonNearestSubjectGR))-start(ranges(rowData(comparisonVcf)))<=22)
@@ -53,19 +60,73 @@ compareCalls <- function(
   dev.off()
   pdf(paste(plotFilestem, "positionDifferencesWithThresholds.pdf", sep="."), height=4, width=6)
   print(
-    qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlim=c(-50, 50), xlab="Distance (bp) from", comparisonName, "SNP to nearest", subjectName, "SNP", ylab="Frequency (number of SNPs)")
+    qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlim=c(-50, 50), xlab=paste("Distance (bp) from", comparisonName, "SNP to nearest", subjectName, "SNP"), ylab="Frequency (number of SNPs)")
     + geom_vline(xintercept = distanceThresholds[1], colour="red")
-    + geom_vline(xintercept = distanceThresholds[2], colour="red")
+    + geom_vline(xintercept = distanceThresholds[2]+1, colour="red")
     + theme_bw()
   )
   dev.off()
 
-  comparisonRowsWithMatchesInSubject <- which(subjectVsComparisonPositionDifferences >=distanceThresholds[1] & subjectVsComparisonPositionDifferences<=distanceThresholds[2])
+  comparisonRowsWithMatchesInSubject <- which(
+    subjectVsComparisonPositionDifferences >= distanceThresholds[1] &
+    subjectVsComparisonPositionDifferences <= distanceThresholds[2]
+  )
   subjectRowsWithMatchesInComparison <- nearest(rowData(comparisonVcf), rowData(subjectVcf))[comparisonRowsWithMatchesInSubject]
-  comparisonMatchesGTs <- comparisonGTsCFparents[comparisonRowsWithMatchesInSubject,]
-  subjectMatchesGTs <- subjectGTsCFparents[subjectRowsWithMatchesInComparison, ]
-#  jiangGTsGWInt <- -(matrix(as.integer(factor(jiangMatchesGTsGW)), nrow=nrow(jiangMatchesGTsGW))-2)
-#  dimnames(jiangGTsGWInt) <- dimnames(jiangMatchesGTsGW)
+#  comparisonRowsWithMatchesInSubject <- which(subjectVsComparisonPositionDifferences >=distanceThresholds[1] & subjectVsComparisonPositionDifferences<=distanceThresholds[2])
+#  subjectRowsWithMatchesInComparison <- nearest(rowData(comparisonVcf), rowData(subjectVcf))[comparisonRowsWithMatchesInSubject]
+  table(as.character(ref(subjectVcf[subjectRowsWithMatchesInComparison])), useNA="ifany")
+  table(as.character(ref(comparisonVcf[comparisonRowsWithMatchesInSubject])), useNA="ifany")
+  table(
+    as.character(ref(subjectVcf[subjectRowsWithMatchesInComparison])),
+    as.character(ref(comparisonVcf[comparisonRowsWithMatchesInSubject])),
+    useNA="ifany"
+  )
+  if(shouldCompareRefsAndAlts) {
+    comparisonRowsWithMatchesInSubject2 <- comparisonRowsWithMatchesInSubject[which(as.character(ref(comparisonVcf[comparisonRowsWithMatchesInSubject])) == as.character(ref(subjectVcf[subjectRowsWithMatchesInComparison])))]
+    subjectRowsWithMatchesInComparison2 <- subjectRowsWithMatchesInComparison[which(as.character(ref(comparisonVcf[comparisonRowsWithMatchesInSubject])) == as.character(ref(subjectVcf[subjectRowsWithMatchesInComparison])))]
+    table(
+      as.character(ref(subjectVcf[subjectRowsWithMatchesInComparison2])),
+      as.character(ref(comparisonVcf[comparisonRowsWithMatchesInSubject2])),
+      useNA="ifany"
+    )
+    table(
+      as.character(unlist(alt(subjectVcf[subjectRowsWithMatchesInComparison2]))),
+      as.character(unlist(alt(comparisonVcf[comparisonRowsWithMatchesInSubject2]))),
+      useNA="ifany"
+    )
+    comparisonRowsWithMatchesInSubject3 <- comparisonRowsWithMatchesInSubject2[which(as.character(unlist(alt(comparisonVcf[comparisonRowsWithMatchesInSubject2]))) == as.character(unlist(alt(subjectVcf[subjectRowsWithMatchesInComparison2]))))]
+    subjectRowsWithMatchesInComparison3 <- subjectRowsWithMatchesInComparison2[which(as.character(unlist(alt(comparisonVcf[comparisonRowsWithMatchesInSubject2]))) == as.character(unlist(alt(subjectVcf[subjectRowsWithMatchesInComparison2]))))]
+    table(
+      as.character(ref(subjectVcf[subjectRowsWithMatchesInComparison3])),
+      as.character(ref(comparisonVcf[comparisonRowsWithMatchesInSubject3])),
+      useNA="ifany"
+    )
+    table(
+      as.character(unlist(alt(subjectVcf[subjectRowsWithMatchesInComparison3]))),
+      as.character(unlist(alt(comparisonVcf[comparisonRowsWithMatchesInSubject3]))),
+      useNA="ifany"
+    )
+    comparisonRowsWithMatchesInSubject <- comparisonRowsWithMatchesInSubject3
+    subjectRowsWithMatchesInComparison <- subjectRowsWithMatchesInComparison3
+  }
+  
+  if(GTsToCompare[1] == "parentBased") {
+    subjectGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(subjectVcf), IDparent1=IDparent1, IDparent2=IDparent2)
+    comparisonGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(comparisonVcf, GTsToIntMapping = GTsToIntMapping))
+    comparisonMatchesGTs <- comparisonGTsCFparents[comparisonRowsWithMatchesInSubject,]
+    subjectMatchesGTs <- subjectGTsCFparents[subjectRowsWithMatchesInComparison, ]
+  #  jiangGTsGWInt <- -(matrix(as.integer(factor(jiangMatchesGTsGW)), nrow=nrow(jiangMatchesGTsGW))-2)
+  #  dimnames(jiangGTsGWInt) <- dimnames(jiangMatchesGTsGW)
+  } else if(GTsToCompare[1] == "asVcf") {
+    subjectGTs <- genotypeCallsFromGTas012(subjectVcf)
+    comparisonGTs <- genotypeCallsFromGTas012(comparisonVcf, GTsToIntMapping = GTsToIntMapping)
+    comparisonMatchesGTs <- comparisonGTs[comparisonRowsWithMatchesInSubject,]
+    subjectMatchesGTs <- subjectGTs[subjectRowsWithMatchesInComparison, ]
+    comparisonMatchesGTs[comparisonMatchesGTs==0] <- NA
+    subjectMatchesGTs[subjectMatchesGTs==0] <- NA
+  } else {
+    stop("GTsToCompare must be either \"parentBased\" or \"asVcf\"")
+  }
   
   discordance <- function(x, y) length(which(x!=y))
   vecDiscordance <- Vectorize(discordance)

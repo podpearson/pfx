@@ -15,23 +15,37 @@ compareHb3_Dd2WithUberchip <- function(
     subsetGrep                  = "set=Intersection",
   ),
   uberchipVcf                 = loadUberchipAsVcf(),
-  plotFilestem                = "analysis/release/1.0.combined.RC1/uberchipVsIntersection",
+  discordanceThreshold        = 200,
+  comparisonDSthresholds      = c(1.0, 0.5, 0.2, 0.1),
+  plotFilestem                = paste("analysis/release/1.0.combined.RC1/uberchipVsIntersection_DS<=", comparisonDSthreshold, sep=""),
   IDparent1                   = "HB3_Ferdig/PG0004-CW/ERR012788",
   IDparent2                   = "DD2_Ferdig/PG0008-CW/ERR012840",
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0)
 ) {
   malariagenVcf <- malariagenVcf[geno(malariagenVcf)[["GT"]][, IDparent1] != geno(malariagenVcf)[["GT"]][, IDparent2]]
 #  malariagenVcf <- malariagenVcf[as.character(unlist(alt(malariagenVcf))) %in% c("A", "C", "T", "G")]
-  comparisonVsSubjectDiscordanceMatrix <- compareCalls(
-    malariagenVcf,
-    uberchipVcf,
-    subjectName                 = "MalariaGEN",
-    comparisonName              = "Uberchip",
-    distanceThresholds          = c(0, 0),
-    plotFilestem                = plotFilestem,
-    IDparent1                   = IDparent1,
-    IDparent2                   = IDparent2,
-    GTsToIntMapping             = GTsToIntMapping
+  
+  comparisonVsSubjectDiscordanceMatrixList <- sapply(
+    comparisonDSthresholds,
+    function(comparisonDSthreshold) {
+      compareCalls(
+        malariagenVcf,
+        uberchipVcf,
+        subjectName                 = "MalariaGEN",
+        comparisonName              = "Uberchip",
+        distanceThresholds          = c(0, 0),
+        discordanceThreshold        = discordanceThreshold,
+        comparisonDSthreshold       = comparisonDSthreshold,
+        plotFilestem                = plotFilestem,
+        IDparent1                   = IDparent1,
+        IDparent2                   = IDparent2,
+        shouldSubsetToBialleleic    = TRUE,
+        shouldCompareRefsAndAlts    = TRUE,
+        GTsToIntMapping             = GTsToIntMapping
+      )
+    },
+    USE.NAMES = TRUE,
+    simplify = FALSE
   )
   browser()
   
