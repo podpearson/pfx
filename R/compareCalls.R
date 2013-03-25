@@ -19,7 +19,9 @@ compareCalls <- function(
   plotFilestem                = paste(meta(exptData(subjectVcf)[["header"]])["DataSetName", "Value"], "comparison", sep="."),
   shouldRenameSubjectSamples  = TRUE,
   IDparent1                   = dimnames(subjectVcf)[[2]][1],
-  IDparent2                   = dimnames(subjectVcf)[[2]][2]
+  IDparent2                   = dimnames(subjectVcf)[[2]][2],
+  GTsToIntMapping             = c("7"=1, "G"=2, "."=0)
+#  GTsToIntMapping             = c("0"=1, "0/0"=1, "0|0"=1, "1"=2, "1/1"=2, "1|1"=2, "."=0, "./."=0, "./."=0, "2"=0, "3"=0, "0/1"=0, "1/0"=0, "0|1"=0, "1|0"=0) # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
 ) {
   require(reshape2)
   if(shouldRenameSubjectSamples) {
@@ -37,7 +39,7 @@ compareCalls <- function(
   subjectGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(subjectVcf), IDparent1=IDparent1, IDparent2=IDparent2)
 #  browser()
 #  dimnames(subjectGTsCFparents)[[2]] <- paste(sampleAnnotation[dimnames(subjectGTsCFparents)[[2]], "source_code"], " (", dimnames(subjectGTsCFparents)[[2]], ")", sep="")
-  comparisonGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(comparisonVcf, GTsToIntMapping = c("7"=1, "G"=2, "."=0)))
+  comparisonGTsCFparents <- convertGTsIntToParentBasedGTs(genotypeCallsFromGTas012(comparisonVcf, GTsToIntMapping = GTsToIntMapping))
   comparisonNearestSubjectGR <- rowData(subjectVcf)[nearest(rowData(comparisonVcf), rowData(subjectVcf))]
   table(start(ranges(comparisonNearestSubjectGR)) - start(ranges(rowData(comparisonVcf))))
   table(start(ranges(comparisonNearestSubjectGR))-start(ranges(rowData(comparisonVcf))) >=0 & start(ranges(comparisonNearestSubjectGR))-start(ranges(rowData(comparisonVcf)))<=22)

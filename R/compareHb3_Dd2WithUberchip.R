@@ -15,12 +15,25 @@ compareHb3_Dd2WithUberchip <- function(
     subsetGrep                  = "set=Intersection",
   ),
   uberchipVcf                 = loadUberchipAsVcf(),
-  plotFilestem                = "analysis/release/1.0.combined.RC1/uberchipVsIntersection"
+  plotFilestem                = "analysis/release/1.0.combined.RC1/uberchipVsIntersection",
+  IDparent1                   = "HB3_Ferdig/PG0004-CW/ERR012788",
+  IDparent2                   = "DD2_Ferdig/PG0008-CW/ERR012840",
+  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0)
 ) {
-  browser()
-  malariagenVcf <- malariagenVcf[geno(malariagenVcf)[["GT"]][, "7G8_NIH/PG0083-C/ERR027099"] != geno(malariagenVcf)[["GT"]][, "GB4_NIH/PG0084-C/ERR027100"]]
+  malariagenVcf <- malariagenVcf[geno(malariagenVcf)[["GT"]][, IDparent1] != geno(malariagenVcf)[["GT"]][, IDparent2]]
 #  malariagenVcf <- malariagenVcf[as.character(unlist(alt(malariagenVcf))) %in% c("A", "C", "T", "G")]
-  comparisonVsSubjectDiscordanceMatrix <- compareCalls(malariagenVcf, jiangVcf, plotFilestem=plotFilestem, IDparent1="7G8_NIH/PG0083-C/ERR027099", IDparent2="GB4_NIH/PG0084-C/ERR027100")
+  comparisonVsSubjectDiscordanceMatrix <- compareCalls(
+    malariagenVcf,
+    uberchipVcf,
+    subjectName                 = "MalariaGEN",
+    comparisonName              = "Uberchip",
+    distanceThresholds          = c(0, 0),
+    plotFilestem                = plotFilestem,
+    IDparent1                   = IDparent1,
+    IDparent2                   = IDparent2,
+    GTsToIntMapping             = GTsToIntMapping
+  )
+  browser()
   
   #  attempt to track down which sample pairs have suspect concordance
   which(comparisonVsSubjectDiscordanceMatrix>20 & comparisonVsSubjectDiscordanceMatrix<100, arr.ind=TRUE)
