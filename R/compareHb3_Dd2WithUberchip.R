@@ -1,4 +1,4 @@
-# compare7g8_gb4WithJiang.R
+# compareHb3_Dd2WithUberchip.R
 # 
 # Package: pfx
 # Author: Richard D Pearson
@@ -7,11 +7,17 @@
 ###############################################################################
 
 
-compare7g8_gb4WithJiang <- function(
-  malariagenVcf               = loadIntersectionCalls(),
-  jiangVcf                    = loadJiangGenotypesAsVcf2(),
-  plotFilestem                = "analysis/release/1.0.combined.RC1/jiangVsIntersection"
+compareHb3_Dd2WithUberchip <- function(
+  malariagenVcf               = loadCallsSubset(
+    vcfFilename                 = "data/release/1.0.combined.RC1/hb3_dd2.combined.vcf.gz",
+    subsetVcfFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf",
+    subsetRdaFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf.rda",
+    subsetGrep                  = "set=Intersection",
+  ),
+  uberchipVcf                 = loadUberchipAsVcf(),
+  plotFilestem                = "analysis/release/1.0.combined.RC1/uberchipVsIntersection"
 ) {
+  browser()
   malariagenVcf <- malariagenVcf[geno(malariagenVcf)[["GT"]][, "7G8_NIH/PG0083-C/ERR027099"] != geno(malariagenVcf)[["GT"]][, "GB4_NIH/PG0084-C/ERR027100"]]
 #  malariagenVcf <- malariagenVcf[as.character(unlist(alt(malariagenVcf))) %in% c("A", "C", "T", "G")]
   comparisonVsSubjectDiscordanceMatrix <- compareCalls(malariagenVcf, jiangVcf, plotFilestem=plotFilestem, IDparent1="7G8_NIH/PG0083-C/ERR027099", IDparent2="GB4_NIH/PG0084-C/ERR027100")
@@ -70,3 +76,4 @@ compare7g8_gb4WithJiang <- function(
   comparisonVsSubjectDiscordanceMatrix[, "NF10.PG0096.C.ERR027108"]
 
 }
+

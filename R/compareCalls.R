@@ -10,8 +10,11 @@
 compareCalls <- function(
   subjectVcf,
   comparisonVcf,
+  subjectName                 = "MalariaGEN",
+  comparisonName              = "Jiang et al",
   distanceThresholds          = c(0, 22),
   discordanceThreshold        = 100,
+  malariagenDiscordanceThreshold        = 200,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
   plotFilestem                = paste(meta(exptData(subjectVcf)[["header"]])["DataSetName", "Value"], "comparison", sep="."),
   shouldRenameSubjectSamples  = TRUE,
@@ -42,13 +45,13 @@ compareCalls <- function(
   require(ggplot2)
   pdf(paste(plotFilestem, "positionDifferences.pdf", sep="."), height=4, width=6)
   print(
-    qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlim=c(-50, 50), xlab="Distance (bp) from Jiang et al SNP to nearest MalariaGEN SNP", ylab="Frequency (number of SNPs)")
+    qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlim=c(-50, 50), xlab=paste("Distance (bp) from", comparisonName, "SNP to nearest", subjectName, "SNP"), ylab="Frequency (number of SNPs)")
     + theme_bw()
   )
   dev.off()
   pdf(paste(plotFilestem, "positionDifferencesWithThresholds.pdf", sep="."), height=4, width=6)
   print(
-    qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlim=c(-50, 50), xlab="Distance (bp) from Jiang et al SNP to nearest MalariaGEN SNP", ylab="Frequency (number of SNPs)")
+    qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlim=c(-50, 50), xlab="Distance (bp) from", comparisonName, "SNP to nearest", subjectName, "SNP", ylab="Frequency (number of SNPs)")
     + geom_vline(xintercept = distanceThresholds[1], colour="red")
     + geom_vline(xintercept = distanceThresholds[2], colour="red")
     + theme_bw()
@@ -68,14 +71,14 @@ compareCalls <- function(
 
   pdf(paste(plotFilestem, "discordances.pdf", sep="."), height=4, width=6)
   print(
-    qplot(as.vector(comparisonVsSubjectDiscordanceMatrix), binwidth=50, xlab="Number of discordant SNPs between Jiang et al and malariagen samples", ylab="Frequency (number of sample pairs)")
+    qplot(as.vector(comparisonVsSubjectDiscordanceMatrix), binwidth=50, xlab=paste("Number of discordant SNPs between", comparisonName, "and", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
     + geom_vline(xintercept = discordanceThreshold, colour="red")
     + theme_bw()
   )
   dev.off()
   pdf(paste(plotFilestem, "discordancesDuplicates.pdf", sep="."), height=4, width=6)
   print(
-    qplot(as.vector(comparisonVsSubjectDiscordanceMatrix[comparisonVsSubjectDiscordanceMatrix<discordanceThreshold]), binwidth=1, xlab="Number of discordant SNPs between Jiang et al and malariagen samples", ylab="Frequency (number of sample pairs)")
+    qplot(as.vector(comparisonVsSubjectDiscordanceMatrix[comparisonVsSubjectDiscordanceMatrix<discordanceThreshold]), binwidth=1, xlab=paste("Number of discordant SNPs between", comparisonName, "and", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
     + theme_bw()
   )
   dev.off()
@@ -93,8 +96,8 @@ compareCalls <- function(
     + geom_tile()
     + scale_fill_gradient2(low="red", high="blue", midpoint=median(comparisonVsSubjectDiscordanceMatrix, na.rm=TRUE))
     + theme_bw()
-    + xlab("Jiang et al. sample ID")
-    + ylab("Malariagen sample ID")
+    + xlab(paste(comparisonName, "sample ID"))
+    + ylab(paste(subjectName, "sample ID"))
     + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 #    + theme(axis.title.x = text(labels="Jiang et al. sample ID"))
 #    + theme(axis.title.y = element_blank())
@@ -110,11 +113,119 @@ compareCalls <- function(
     + geom_tile()
     + scale_fill_grey()
     + theme_bw()
-    + xlab("Jiang et al. sample ID")
-    + ylab("Malariagen sample ID")
+    + xlab(paste(comparisonName, "sample ID"))
+    + ylab(paste(subjectName, "sample ID"))
     + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
   )
   dev.off()
+  
+  
+  
+  subjectVsSubjectDiscordanceMatrix <- outer(data.frame(subjectMatchesGTs), data.frame(subjectMatchesGTs), vecDiscordance)
+
+  pdf(paste(plotFilestem, "malariagenDiscordances.pdf", sep="."), height=4, width=6)
+  print(
+    qplot(as.vector(subjectVsSubjectDiscordanceMatrix), binwidth=50, xlab=paste("Number of discordant SNPs between pairs of", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
+    + geom_vline(xintercept = malariagenDiscordanceThreshold, colour="red")
+    + theme_bw()
+  )
+  dev.off()
+  pdf(paste(plotFilestem, "malariagenDiscordancesDuplicates.pdf", sep="."), height=4, width=6)
+  print(
+    qplot(as.vector(subjectVsSubjectDiscordanceMatrix[subjectVsSubjectDiscordanceMatrix<malariagenDiscordanceThreshold]), binwidth=1, xlab=paste("Number of discordant SNPs between pairs of", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
+    + theme_bw()
+  )
+  dev.off()
+
+  subjectDiscordanceDF <- melt(subjectVsSubjectDiscordanceMatrix, value.name="Discordances")
+  subjectDiscordanceDF[["putativeDuplicateSample"]] <- subjectDiscordanceDF[["Discordances"]] <= malariagenDiscordanceThreshold
+  
+  pdf(paste(plotFilestem, "malariagenDiscordanceHeatmap.pdf", sep="."), height=10, width=12)
+  print(
+    ggplot(
+      subjectDiscordanceDF,
+#      melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances"),
+      aes(x=Var1, y=Var2, fill=Discordances)
+    )
+    + geom_tile()
+    + scale_fill_gradient2(low="red", high="blue", midpoint=median(subjectVsSubjectDiscordanceMatrix, na.rm=TRUE))
+    + theme_bw()
+    + xlab(paste(subjectName, "sample ID"))
+    + ylab(paste(subjectName, "sample ID"))
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+  )
+  dev.off()
+
+  pdf(paste(plotFilestem, "malariagenPutativeIdenticalSamples.pdf", sep="."), height=10, width=12)
+  print(
+    ggplot(
+      subjectDiscordanceDF,
+      aes(x=Var1, y=Var2, fill=putativeDuplicateSample)
+    )
+    + geom_tile()
+    + scale_fill_grey()
+    + theme_bw()
+    + xlab(paste(subjectName, "sample ID"))
+    + ylab(paste(subjectName, "sample ID"))
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+  )
+  dev.off()
+  
+  
+  
+  comparisonVsComparisonDiscordanceMatrix <- outer(data.frame(comparisonMatchesGTs), data.frame(comparisonMatchesGTs), vecDiscordance)
+
+  pdf(paste(plotFilestem, "comparisonDiscordances.pdf", sep="."), height=4, width=6)
+  print(
+    qplot(as.vector(comparisonVsComparisonDiscordanceMatrix), binwidth=50, xlab=paste("Number of discordant SNPs between pairs of", comparisonName, "samples"), ylab="Frequency (number of sample pairs)")
+    + geom_vline(xintercept = discordanceThreshold, colour="red")
+    + theme_bw()
+  )
+  dev.off()
+  pdf(paste(plotFilestem, "comparisonDiscordancesDuplicates.pdf", sep="."), height=4, width=6)
+  print(
+    qplot(as.vector(comparisonVsComparisonDiscordanceMatrix[comparisonVsComparisonDiscordanceMatrix<discordanceThreshold]), binwidth=1, xlab=paste("Number of discordant SNPs between pairs of", comparisonName, "samples"), ylab="Frequency (number of sample pairs)")
+    + theme_bw()
+  )
+  dev.off()
+
+  comparisonDiscordanceDF <- melt(comparisonVsComparisonDiscordanceMatrix, value.name="Discordances")
+  comparisonDiscordanceDF[["putativeDuplicateSample"]] <- comparisonDiscordanceDF[["Discordances"]] <= discordanceThreshold
+  
+  pdf(paste(plotFilestem, "comparisonDiscordanceHeatmap.pdf", sep="."), height=8, width=10)
+  print(
+    ggplot(
+      comparisonDiscordanceDF,
+#      melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances"),
+      aes(x=Var1, y=Var2, fill=Discordances)
+    )
+    + geom_tile()
+    + scale_fill_gradient2(low="red", high="blue", midpoint=median(comparisonVsSubjectDiscordanceMatrix, na.rm=TRUE))
+    + theme_bw()
+    + xlab(paste(comparisonName, "sample ID"))
+    + ylab(paste(comparisonName, "sample ID"))
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+#    + theme(axis.title.x = text(labels="Jiang et al. sample ID"))
+#    + theme(axis.title.y = element_blank())
+  )
+  dev.off()
+
+  pdf(paste(plotFilestem, "comparisonPutativeIdenticalSamples.pdf", sep="."), height=8, width=10)
+  print(
+    ggplot(
+      comparisonDiscordanceDF,
+      aes(x=Var1, y=Var2, fill=putativeDuplicateSample)
+    )
+    + geom_tile()
+    + scale_fill_grey()
+    + theme_bw()
+    + xlab(paste(comparisonName, "sample ID"))
+    + ylab(paste(comparisonName, "sample ID"))
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+  )
+  dev.off()
+
+  
 
   mean(comparisonVsSubjectDiscordanceMatrix[comparisonVsSubjectDiscordanceMatrix<discordanceThreshold])
   genotypeErrorRateIdentical <- sum(comparisonVsSubjectDiscordanceMatrix[comparisonVsSubjectDiscordanceMatrix<discordanceThreshold]) / (dim(comparisonMatchesGTs)[1] * length(which(comparisonVsSubjectDiscordanceMatrix<discordanceThreshold)))
@@ -123,7 +234,29 @@ compareCalls <- function(
   duplicates <- which(comparisonVsSubjectDiscordanceMatrix<discordanceThreshold, arr.ind=TRUE)
   duplicates <- duplicates[duplicates[, 1]!=duplicates[, 2], ]
   diffs <- comparisonMatchesGTs[, duplicates[, 1]] != subjectMatchesGTs[, duplicates[, 2]]
-    
-  browser()
-  return(genotypeConcordance)
+  table(rowSums(diffs))
+  table(subjectMatchesGTs[24, duplicates[, 2]], comparisonMatchesGTs[24, duplicates[, 1]], useNA="ifany")
+##  which variants are monomorphic in progeny?
+#  malariagenProgeny <- setdiff(dimnames(subjectMatchesGTs)[[2]], c("7G8_NIH/PG0083-C/ERR027099", "GB4_NIH/PG0084-C/ERR027100"))
+#  table(apply(subjectMatchesGTs[, malariagenProgeny], 1, function(x) length(unique(x))), useNA="ifany")
+#  jiangProgeny <- setdiff(dimnames(comparisonMatchesGTs)[[2]], c("_7G8", "GB4"))
+#  table(apply(comparisonMatchesGTs[, jiangProgeny], 1, function(x) length(unique(x))), useNA="ifany")
+#  No vairants are monomorphic in progeny - this was a dead end...
+
+  mostDiscordantSNPs <- which(rowSums(diffs) > 3)
+  sapply(
+    mostDiscordantSNPs,
+    function(SNPindex) {
+      names(which(subjectMatchesGTs[SNPindex, duplicates[, 2]]!=comparisonMatchesGTs[SNPindex, duplicates[, 1]]))
+    }
+  )
+  lapply(
+    mostDiscordantSNPs,
+    function(SNPindex) {
+      subjectMatchesGTs[(SNPindex-2):(SNPindex+2), ]
+    }
+  )
+      
+#  browser()
+  return(comparisonVsSubjectDiscordanceMatrix)
 }
