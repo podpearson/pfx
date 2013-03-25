@@ -41,6 +41,7 @@ compareHb3_Dd2WithUberchip <- function(
         IDparent2                   = IDparent2,
         shouldSubsetToBialleleic    = TRUE,
         shouldCompareRefsAndAlts    = TRUE,
+        GTsToCompare                = "asVcf",
         GTsToIntMapping             = GTsToIntMapping
       )
     },
