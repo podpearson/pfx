@@ -16,8 +16,7 @@ compare7g8_gb4WithSu10kChip <- function(
   ),
   su10kChipVcf                = loadSu10kChipAsVcf(),
   discordanceThreshold        = 200,
-  comparisonDSthresholds      = c(1.0, 0.5, 0.2, 0.1),
-  plotFilestem                = "analysis/release/1.0.combined.RC1/su10kChipVsIntersection_DS<=",
+  plotFilestem                = "analysis/release/1.0.combined.RC1/su10kChipVsIntersection",
   IDparent1                   = "7G8_NIH/PG0083-C/ERR027099",
   IDparent2                   = "GB4_NIH/PG0084-C/ERR027100",
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0)
@@ -31,7 +30,6 @@ compare7g8_gb4WithSu10kChip <- function(
     comparisonName              = "Su10kChip",
     distanceThresholds          = c(0, 0),
     discordanceThreshold        = discordanceThreshold,
-    comparisonDSthreshold       = comparisonDSthreshold,
     plotFilestem                = paste(plotFilestem, comparisonDSthreshold, sep=""),
     IDparent1                   = IDparent1,
     IDparent2                   = IDparent2,
