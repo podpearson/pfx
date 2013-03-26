@@ -30,7 +30,7 @@ compare7g8_gb4WithSu10kChip <- function(
     comparisonName              = "Su10kChip",
     distanceThresholds          = c(0, 0),
     discordanceThreshold        = discordanceThreshold,
-    plotFilestem                = paste(plotFilestem, comparisonDSthreshold, sep=""),
+    plotFilestem                = plotFilestem,
     IDparent1                   = IDparent1,
     IDparent2                   = IDparent2,
     shouldSubsetToBialleleic    = TRUE,
