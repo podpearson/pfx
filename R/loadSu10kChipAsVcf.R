@@ -16,7 +16,7 @@ loadSu10kChipAsVcf <- function(
   su10kChipV3UnmappedFilename = "data/Su10kChip/10K_Genotypes_HJiang_80%MinAssayCallRate.v3.unmapped",
   v2tov3chainFile             = "opt/liftover/2to3.liftOver",
   liftoverExecutable          = "opt/liftover/liftOver",
-  shouldSaveVcfFile           = TRUE, # Note that due to a bug in VariantAnnotation::.makeVcfGeno it is necessary to add "DUMMY" genotypes data
+  shouldSaveVcfFile           = FALSE, # Note that due to a bug in VariantAnnotation::.makeVcfGeno it is necessary to add "DUMMY" genotypes data
   shouldSaveRdaFile           = TRUE,
   reload                      = FALSE,
   verbose                     = TRUE
@@ -105,7 +105,7 @@ loadSu10kChipAsVcf <- function(
       ),
       fixed    = DataFrame(
         REF = DNAStringSet(REFs[row.names(su10kChipV3Bed), 1]),
-        ALT = DNAStringSetList(ALTs[row.names(su10kChipV3Bed), 1]),
+        ALT = do.call(DNAStringSetList, as.list(ALTs[row.names(su10kChipV3Bed), 1])),
         QUAL = rep(0.0, dim(su10kChipV3Bed)[1]),
         FILTER = rep("PASS", dim(su10kChipV3Bed)[1])
       ),

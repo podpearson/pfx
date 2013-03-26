@@ -1,4 +1,4 @@
-# compareHb3_Dd2WithUberchip.R
+# compare7g8_gb4WithSu10kChip.R
 # 
 # Package: pfx
 # Author: Richard D Pearson
@@ -7,32 +7,31 @@
 ###############################################################################
 
 
-compareHb3_Dd2WithUberchip <- function(
+compare7g8_gb4WithSu10kChip <- function(
   malariagenVcf               = loadCallsSubset(
-    vcfFilename                 = "data/release/1.0.combined.RC1/hb3_dd2.combined.vcf.gz",
-    subsetVcfFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf",
-    subsetRdaFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf.rda",
+    vcfFilename                 = "data/release/1.0.combined.RC1/7g8_gb4.combined.vcf.gz",
+    subsetVcfFilename           = "analysis/release/1.0.combined.RC1/7g8_gb4.combined.Intersection.vcf",
+    subsetRdaFilename           = "analysis/release/1.0.combined.RC1/7g8_gb4.combined.Intersection.vcf.rda",
     subsetGrep                  = "set=Intersection"
   ),
-  uberchipVcf                 = loadUberchipAsVcf(),
+  su10kChipVcf                = loadSu10kChipAsVcf(),
   discordanceThreshold        = 200,
   comparisonDSthresholds      = c(1.0, 0.5, 0.2, 0.1),
-  plotFilestem                = "analysis/release/1.0.combined.RC1/uberchipVsIntersection_DS<=",
-  IDparent1                   = "HB3_Ferdig/PG0004-CW/ERR012788",
-  IDparent2                   = "DD2_Ferdig/PG0008-CW/ERR012840",
+  plotFilestem                = "analysis/release/1.0.combined.RC1/su10kChipVsIntersection_DS<=",
+  IDparent1                   = "7G8_NIH/PG0083-C/ERR027099",
+  IDparent2                   = "GB4_NIH/PG0084-C/ERR027100",
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0)
 ) {
   malariagenVcf <- malariagenVcf[geno(malariagenVcf)[["GT"]][, IDparent1] != geno(malariagenVcf)[["GT"]][, IDparent2]]
-#  malariagenVcf <- malariagenVcf[as.character(unlist(alt(malariagenVcf))) %in% c("A", "C", "T", "G")]
   
   comparisonVsSubjectDiscordanceMatrixList <- sapply(
     comparisonDSthresholds,
     function(comparisonDSthreshold) {
       compareCalls(
         malariagenVcf,
-        uberchipVcf,
+        su10kChipVcf,
         subjectName                 = "MalariaGEN",
-        comparisonName              = "Uberchip",
+        comparisonName              = "Su10kChip",
         distanceThresholds          = c(0, 0),
         discordanceThreshold        = discordanceThreshold,
         comparisonDSthreshold       = comparisonDSthreshold,
