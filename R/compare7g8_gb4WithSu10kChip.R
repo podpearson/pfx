@@ -14,14 +14,13 @@ compare7g8_gb4WithSu10kChip <- function(
     subsetRdaFilename           = "analysis/release/1.0.combined.RC1/7g8_gb4.combined.Intersection.vcf.rda",
     subsetGrep                  = "set=Intersection"
   ),
-  su10kChipVcf                = loadSu10kChipAsVcf(),
+  su10kChipVcf                = loadSu10kChipAsVcf,
   discordanceThreshold        = 200,
   comparisonDSthresholds      = c(1.0, 0.5, 0.2, 0.1),
   plotFilestem                = "analysis/release/1.0.combined.RC1/su10kChipVsIntersection_DS<=",
   IDparent1                   = "7G8_NIH/PG0083-C/ERR027099",
   IDparent2                   = "GB4_NIH/PG0084-C/ERR027100",
-  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0),
-  reload                      = FALSE
+  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0)
 ) {
   malariagenVcf <- malariagenVcf[geno(malariagenVcf)[["GT"]][, IDparent1] != geno(malariagenVcf)[["GT"]][, IDparent2]]
   
@@ -39,8 +38,7 @@ compare7g8_gb4WithSu10kChip <- function(
     shouldSubsetToBialleleic    = TRUE,
     shouldCompareRefsAndAlts    = TRUE,
     GTsToCompare                = "asVcf",
-    GTsToIntMapping             = GTsToIntMapping,
-    reload                      = reload
+    GTsToIntMapping             = GTsToIntMapping
   )
   browser()
   
