@@ -81,7 +81,7 @@ loadSu10kChipAsVcf <- function(
       ),
       exptData = SimpleList(
         header = VCFHeader(
-          samples = sampleIDs,
+          samples = row.names(sampleManifest),
           header  = DataFrameList(
             META = rbind(
               DataFrame(Value = "VCFv4.0", row.names="fileformat"),
