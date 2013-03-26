@@ -34,7 +34,8 @@ loadSu10kChipAsVcf <- function(
     su10kChipV2calls[["RefGenotype"]] <- ifelse(genotypes[, "3D7_(a)4095667-83237"] == genotypes[, "3D7_(a)4095667-82282"] & genotypes[, "3D7_(a)4095667-83237"] %in% c("A", "C", "T", "G"), genotypes[, "3D7_(a)4095667-83237"], NA)
     goodSNPs <- !is.na(su10kChipV2calls[["RefGenotype"]])
     su10kChipV2calls <- su10kChipV2calls[goodSNPs, ]
-    genotypes <- genotypes[goodSNPs, as.numeric(sampleManifest[["Experiment Call Rate %"]]) > 0]
+    sampleIDs <- row.names(sampleManifest[sampleManifest[["Experiment Call Rate %"]] > 0, ])
+    genotypes <- genotypes[goodSNPs, sampleIDs]
     
     REFs <- matrix(rep(su10kChipV2calls[["RefGenotype"]], dim(genotypes)[2]), ncol=dim(genotypes)[2], dimnames=dimnames(genotypes))
     ALTs <- matrix(
@@ -76,12 +77,12 @@ loadSu10kChipAsVcf <- function(
     su10kChipVcf <- VCF(
       rowData = su10kChipRowData,
       colData = DataFrame(
-        Samples = seq(along=row.names(sampleManifest)),
-        row.names = row.names(sampleManifest)
+        Samples = seq(along=sampleIDs),
+        row.names = sampleIDs
       ),
       exptData = SimpleList(
         header = VCFHeader(
-          samples = row.names(sampleManifest),
+          samples = sampleIDs,
           header  = DataFrameList(
             META = rbind(
               DataFrame(Value = "VCFv4.0", row.names="fileformat"),
