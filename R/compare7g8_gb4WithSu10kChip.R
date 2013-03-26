@@ -20,32 +20,27 @@ compare7g8_gb4WithSu10kChip <- function(
   plotFilestem                = "analysis/release/1.0.combined.RC1/su10kChipVsIntersection_DS<=",
   IDparent1                   = "7G8_NIH/PG0083-C/ERR027099",
   IDparent2                   = "GB4_NIH/PG0084-C/ERR027100",
-  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0)
+  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0),
+  reload                      = FALSE
 ) {
   malariagenVcf <- malariagenVcf[geno(malariagenVcf)[["GT"]][, IDparent1] != geno(malariagenVcf)[["GT"]][, IDparent2]]
   
-  comparisonVsSubjectDiscordanceMatrixList <- sapply(
-    comparisonDSthresholds,
-    function(comparisonDSthreshold) {
-      compareCalls(
-        malariagenVcf,
-        su10kChipVcf,
-        subjectName                 = "MalariaGEN",
-        comparisonName              = "Su10kChip",
-        distanceThresholds          = c(0, 0),
-        discordanceThreshold        = discordanceThreshold,
-        comparisonDSthreshold       = comparisonDSthreshold,
-        plotFilestem                = paste(plotFilestem, comparisonDSthreshold, sep=""),
-        IDparent1                   = IDparent1,
-        IDparent2                   = IDparent2,
-        shouldSubsetToBialleleic    = TRUE,
-        shouldCompareRefsAndAlts    = TRUE,
-        GTsToCompare                = "asVcf",
-        GTsToIntMapping             = GTsToIntMapping
-      )
-    },
-    USE.NAMES = TRUE,
-    simplify = FALSE
+  comparisonVsSubjectDiscordanceMatrix <- compareCalls(
+    malariagenVcf,
+    su10kChipVcf,
+    subjectName                 = "MalariaGEN",
+    comparisonName              = "Su10kChip",
+    distanceThresholds          = c(0, 0),
+    discordanceThreshold        = discordanceThreshold,
+    comparisonDSthreshold       = comparisonDSthreshold,
+    plotFilestem                = paste(plotFilestem, comparisonDSthreshold, sep=""),
+    IDparent1                   = IDparent1,
+    IDparent2                   = IDparent2,
+    shouldSubsetToBialleleic    = TRUE,
+    shouldCompareRefsAndAlts    = TRUE,
+    GTsToCompare                = "asVcf",
+    GTsToIntMapping             = GTsToIntMapping,
+    reload                      = reload
   )
   browser()
   

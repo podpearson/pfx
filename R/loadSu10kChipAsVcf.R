@@ -14,6 +14,7 @@ loadSu10kChipAsVcf <- function(
   su10kChipV2BedFilename      = "data/Su10kChip/10K_Genotypes_HJiang_80%MinAssayCallRate.bed",
   su10kChipV3BedFilename      = "data/Su10kChip/10K_Genotypes_HJiang_80%MinAssayCallRate.v3.bed",
   su10kChipV3UnmappedFilename = "data/Su10kChip/10K_Genotypes_HJiang_80%MinAssayCallRate.v3.unmapped",
+  shouldRemapToV3             = FALSE,
   v2tov3chainFile             = "opt/liftover/2to3.liftOver",
   liftoverExecutable          = "opt/liftover/liftOver",
   shouldSaveVcfFile           = FALSE, # Note that due to a bug in VariantAnnotation::.makeVcfGeno it is necessary to add "DUMMY" genotypes data
@@ -56,14 +57,18 @@ loadSu10kChipAsVcf <- function(
       stringsAsFactors = FALSE
     )
     row.names(su10kChipV2Bed) <- su10kChipV2Bed[["ID"]]
-    write.table(su10kChipV2Bed, file=su10kChipV2BedFilename, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
-    system(paste(liftoverExecutable, su10kChipV2BedFilename, v2tov3chainFile, su10kChipV3BedFilename, su10kChipV3UnmappedFilename))  
-    su10kChipV3Bed <- read.table(su10kChipV3BedFilename, header=FALSE, sep="\t", col.names=c("Chr", "Start", "End", "ID"), as.is=TRUE)
-    row.names(su10kChipV3Bed) <- su10kChipV3Bed[["ID"]]
-  
-  #  couple of sanity checks. Firstly are all IDs still the same (they should be), and secondly have any variants changed chromosomes (only a few moved from 8 to 7)
-    identical(su10kChipV2Bed[row.names(su10kChipV3Bed), "ID"], su10kChipV3Bed[["ID"]])
-    table(su10kChipV2Bed[row.names(su10kChipV3Bed), "Chr"], su10kChipV3Bed[["Chr"]])
+    if(shouldRemapToV3) {
+      write.table(su10kChipV2Bed, file=su10kChipV2BedFilename, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
+      system(paste(liftoverExecutable, su10kChipV2BedFilename, v2tov3chainFile, su10kChipV3BedFilename, su10kChipV3UnmappedFilename))  
+      su10kChipV3Bed <- read.table(su10kChipV3BedFilename, header=FALSE, sep="\t", col.names=c("Chr", "Start", "End", "ID"), as.is=TRUE)
+      row.names(su10kChipV3Bed) <- su10kChipV3Bed[["ID"]]
+    
+    #  couple of sanity checks. Firstly are all IDs still the same (they should be), and secondly have any variants changed chromosomes (only a few moved from 8 to 7)
+      identical(su10kChipV2Bed[row.names(su10kChipV3Bed), "ID"], su10kChipV3Bed[["ID"]])
+      table(su10kChipV2Bed[row.names(su10kChipV3Bed), "Chr"], su10kChipV3Bed[["Chr"]])
+    } else {
+      su10kChipV3Bed <- su10kChipV2Bed
+    }
     
     su10kChipRowData  = GRanges(
       seqnames = su10kChipV3Bed[["Chr"]],
