@@ -105,7 +105,7 @@ loadSu10kChipAsVcf <- function(
       ),
       fixed    = DataFrame(
         REF = DNAStringSet(REFs[row.names(su10kChipV3Bed), 1]),
-        ALT = DNAStringSet(ALTs[row.names(su10kChipV3Bed), 1]),
+        ALT = DNAStringSetList(ALTs[row.names(su10kChipV3Bed), 1]),
         QUAL = rep(0.0, dim(su10kChipV3Bed)[1]),
         FILTER = rep("PASS", dim(su10kChipV3Bed)[1])
       ),
