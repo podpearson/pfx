@@ -68,6 +68,7 @@ loadSu10kChipAsVcf <- function(
       table(su10kChipV2Bed[row.names(su10kChipV3Bed), "Chr"], su10kChipV3Bed[["Chr"]])
     } else {
       su10kChipV3Bed <- su10kChipV2Bed
+      su10kChipV3Bed[["Chr"]] <- paste(su10kChipV3Bed[["Chr"]], "_v3", sep="")
     }
     
     su10kChipRowData  = GRanges(
