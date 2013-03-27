@@ -43,17 +43,17 @@ compareHb3_Dd2WithUberchip <- function(
   IDparent2                   = "DD2_Ferdig/PG0008-CW/ERR012840",
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0)
 ) {
-  malariagenVcf <- malariagenVcf[geno(malariagenVcf)[["GT"]][, IDparent1] != geno(malariagenVcf)[["GT"]][, IDparent2]]
 #  malariagenVcf <- malariagenVcf[as.character(unlist(alt(malariagenVcf))) %in% c("A", "C", "T", "G")]
   
   discordanceMatricesList <- sapply(
     names(malariagenVcfList),
     function(callSetName) {
+      malariagenVcf <- malariagenVcfList[[callSetName]][geno(malariagenVcfList[[callSetName]])[["GT"]][, IDparent1] != geno(malariagenVcfList[[callSetName]])[["GT"]][, IDparent2]]
       comparisonVsSubjectDiscordanceMatrixList <- sapply(
         comparisonDSthresholds,
         function(comparisonDSthreshold) {
           compareCalls(
-            malariagenVcfList[[callSetName]],
+            malariagenVcf,
             uberchipVcf,
             subjectName                 = paste("MalariaGEN", callSetName, sep="."),
             comparisonName              = "Uberchip",
