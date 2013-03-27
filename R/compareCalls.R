@@ -14,7 +14,7 @@ compareCalls <- function(
   comparisonName              = "Jiang et al",
   distanceThresholds          = c(0, 22),
   discordanceThreshold        = 100,
-  discordanceProportionThreshold = 0.05,
+  discordanceProportionThreshold = 0.15,
   malariagenDiscordanceThreshold        = 200,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
   comparisonDSthreshold       = NULL, # This is used specifically for Uberchip calls
