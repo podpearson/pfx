@@ -15,7 +15,8 @@ compareCalls <- function(
   distanceThresholds          = c(0, 22),
   discordanceThreshold        = 100,
   discordanceProportionThreshold = 0.15,
-  malariagenDiscordanceThreshold        = 200,
+  malariagenDiscordanceThreshold = 200,
+  malariagenDiscordanceProportionThreshold = 0.15,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
   comparisonDSthreshold       = NULL, # This is used specifically for Uberchip calls
   plotFilestem                = paste(meta(exptData(subjectVcf)[["header"]])["DataSetName", "Value"], "comparison", sep="."),
@@ -239,6 +240,7 @@ compareCalls <- function(
   
   
   subjectVsSubjectDiscordanceMatrix <- outer(data.frame(subjectMatchesGTs), data.frame(subjectMatchesGTs), vecDiscordance)
+  subjectVsSubjectDiscordanceProportionMatrix <- outer(data.frame(subjectMatchesGTs), data.frame(subjectMatchesGTs), vecDiscordanceProportion)
 
   pdf(paste(plotFilestem, "malariagenDiscordances.pdf", sep="."), height=4, width=6)
   print(
@@ -288,9 +290,58 @@ compareCalls <- function(
   )
   dev.off()
   
+  pdf(paste(plotFilestem, "malariagenDiscordanceProportions.pdf", sep="."), height=4, width=6)
+  print(
+    qplot(as.vector(subjectVsSubjectDiscordanceProportionMatrix), xlab=paste("Proportion of discordant SNPs between pairs of", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
+    + geom_vline(xintercept = malariagenDiscordanceProportionThreshold, colour="red")
+    + theme_bw()
+  )
+  dev.off()
+  pdf(paste(plotFilestem, "malariagenDiscordanceProportionsDuplicates.pdf", sep="."), height=4, width=6)
+  print(
+    qplot(as.vector(subjectVsSubjectDiscordanceProportionMatrix[subjectVsSubjectDiscordanceProportionMatrix<malariagenDiscordanceProportionThreshold]), binwidth=1, xlab=paste("Proportion of discordant SNPs between pairs of", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
+    + theme_bw()
+  )
+  dev.off()
+
+  subjectDiscordanceProportionDF <- melt(subjectVsSubjectDiscordanceProportionMatrix, value.name="DiscordanceProportions")
+  subjectDiscordanceProportionDF[["putativeDuplicateSample"]] <- subjectDiscordanceDF[["DiscordanceProportions"]] <= malariagenDiscordanceThreshold
+  
+  pdf(paste(plotFilestem, "malariagenDiscordanceProportionHeatmap.pdf", sep="."), height=10, width=12)
+  print(
+    ggplot(
+      subjectDiscordanceProportionDF,
+#      melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances"),
+      aes(x=Var1, y=Var2, fill=DiscordanceProportions)
+    )
+    + geom_tile()
+    + scale_fill_gradient2(low="red", high="blue", midpoint=median(subjectVsSubjectDiscordanceProportionMatrix, na.rm=TRUE))
+    + theme_bw()
+    + xlab(paste(subjectName, "sample ID"))
+    + ylab(paste(subjectName, "sample ID"))
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+  )
+  dev.off()
+
+  pdf(paste(plotFilestem, "malariagenPutativeIdenticalSamplesFromProportions.pdf", sep="."), height=10, width=12)
+  print(
+    ggplot(
+      subjectDiscordanceProportionDF,
+      aes(x=Var1, y=Var2, fill=putativeDuplicateSample)
+    )
+    + geom_tile()
+    + scale_fill_grey()
+    + theme_bw()
+    + xlab(paste(subjectName, "sample ID"))
+    + ylab(paste(subjectName, "sample ID"))
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+  )
+  dev.off()
+  
   
   
   comparisonVsComparisonDiscordanceMatrix <- outer(data.frame(comparisonMatchesGTs), data.frame(comparisonMatchesGTs), vecDiscordance)
+  comparisonVsComparisonDiscordanceProportionMatrix <- outer(data.frame(comparisonMatchesGTs), data.frame(comparisonMatchesGTs), vecDiscordanceProportion)
 
   pdf(paste(plotFilestem, "comparisonDiscordances.pdf", sep="."), height=4, width=6)
   print(
@@ -342,6 +393,56 @@ compareCalls <- function(
   )
   dev.off()
 
+  pdf(paste(plotFilestem, "comparisonDiscordanceProportions.pdf", sep="."), height=4, width=6)
+  print(
+    qplot(as.vector(comparisonVsComparisonDiscordanceProportionMatrix), xlab=paste("Proportion of discordant SNPs between pairs of", comparisonName, "samples"), ylab="Frequency (number of sample pairs)")
+    + geom_vline(xintercept = discordanceProportionThreshold, colour="red")
+    + theme_bw()
+  )
+  dev.off()
+  pdf(paste(plotFilestem, "comparisonDiscordanceProportionsDuplicates.pdf", sep="."), height=4, width=6)
+  print(
+    qplot(as.vector(comparisonVsComparisonDiscordanceProportionMatrix[comparisonVsComparisonDiscordanceProportionMatrix<discordanceProportionThreshold]), binwidth=1, xlab=paste("Proportion of discordant SNPs between pairs of", comparisonName, "samples"), ylab="Frequency (number of sample pairs)")
+    + theme_bw()
+  )
+  dev.off()
+
+  comparisonDiscordanceProportionDF <- melt(comparisonVsComparisonDiscordanceProportionMatrix, value.name="Discordances")
+  comparisonDiscordanceProportionDF[["putativeDuplicateSample"]] <- comparisonDiscordanceProportionDF[["Discordances"]] <= discordanceProportionThreshold
+  
+  pdf(paste(plotFilestem, "comparisonDiscordanceProportionHeatmap.pdf", sep="."), height=8, width=10)
+  print(
+    ggplot(
+      comparisonDiscordanceProportionDF,
+#      melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances"),
+      aes(x=Var1, y=Var2, fill=DiscordanceProportions)
+    )
+    + geom_tile()
+    + scale_fill_gradient2(low="red", high="blue", midpoint=median(comparisonVsSubjectDiscordanceProportionMatrix, na.rm=TRUE))
+    + theme_bw()
+    + xlab(paste(comparisonName, "sample ID"))
+    + ylab(paste(comparisonName, "sample ID"))
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+#    + theme(axis.title.x = text(labels="Jiang et al. sample ID"))
+#    + theme(axis.title.y = element_blank())
+  )
+  dev.off()
+
+  pdf(paste(plotFilestem, "comparisonPutativeIdenticalSamplesFromProportions.pdf", sep="."), height=8, width=10)
+  print(
+    ggplot(
+      comparisonDiscordanceProportionDF,
+      aes(x=Var1, y=Var2, fill=putativeDuplicateSample)
+    )
+    + geom_tile()
+    + scale_fill_grey()
+    + theme_bw()
+    + xlab(paste(comparisonName, "sample ID"))
+    + ylab(paste(comparisonName, "sample ID"))
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+  )
+  dev.off()
+
   
 
   mean(comparisonVsSubjectDiscordanceMatrix[comparisonVsSubjectDiscordanceMatrix<discordanceThreshold])
@@ -375,5 +476,14 @@ compareCalls <- function(
   )
       
 #  browser()
-  return(comparisonVsSubjectDiscordanceMatrix)
+  return(
+    list(
+      comparisonVsSubjectDiscordanceMatrix = comparisonVsSubjectDiscordanceMatrix,
+      comparisonVsSubjectDiscordanceProportionMatrix = comparisonVsSubjectDiscordanceProportionMatrix,
+      subjectVsSubjectDiscordanceMatrix = subjectVsSubjectDiscordanceMatrix,
+      subjectVsSubjectDiscordanceProportionMatrix = subjectVsSubjectDiscordanceProportionMatrix,
+      comparisonVsComparisonDiscordanceMatrix = comparisonVsComparisonDiscordanceMatrix,
+      comparisonVsComparisonDiscordanceProportionMatrix = comparisonVsComparisonDiscordanceProportionMatrix
+    )
+  )
 }
