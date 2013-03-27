@@ -34,7 +34,7 @@ compareCalls <- function(
   if(shouldRenameSubjectSamples) {
     subjectVcf <- renameSamples(subjectVcf)
   }
-  sampleAnnotation <- readSampleAnnotation(sampleAnnotationFilename)
+#  sampleAnnotation <- readSampleAnnotation(sampleAnnotationFilename)
 #  sampleAnnotation <- read.delim(sampleAnnotationFilename)
 #  sampleAnnotation[["cross"]] <- ifelse(sampleAnnotation[["project_code"]]=="PFproj1", "Hb3xDd2", ifelse(sampleAnnotation[["project_code"]]=="PFproj2", "3d7xHb3", "7g8xGb4"))
 #  sampleAnnotation[["qcStatus"]] <- ifelse(sampleAnnotation[["ajm_qc"]]=="fail", "fail", "pass")
@@ -61,19 +61,24 @@ compareCalls <- function(
     + theme_bw()
   )
   dev.off()
+  
+  comparisonRowsWithMatchesInSubject <- which(
+    subjectVsComparisonPositionDifferences >= distanceThresholds[1] &
+    subjectVsComparisonPositionDifferences <= distanceThresholds[2]
+  )
+#  positionsWithinThresholdsText <- paste(length(comparisonRowsWithMatchesInSubject), "of", length(subjectVsComparisonPositionDifferences), "SNPs within thresholds")
+  positionsWithinThresholdsText <- paste(length(comparisonRowsWithMatchesInSubject), "of", length(subjectVsComparisonPositionDifferences), comparisonName, "SNPs are in", subjectName)
   pdf(paste(plotFilestem, "positionDifferencesWithThresholds.pdf", sep="."), height=4, width=6)
   print(
     qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlim=c(-50, 50), xlab=paste("Distance (bp) from", comparisonName, "SNP to nearest", subjectName, "SNP"), ylab="Frequency (number of SNPs)")
     + geom_vline(xintercept = distanceThresholds[1], colour="red")
     + geom_vline(xintercept = distanceThresholds[2]+1, colour="red")
     + theme_bw()
+    + labs(title = positionsWithinThresholdsText)
+#    + geom_text(data = data.frame(), aes(-50, 100, label = positionsWithinThresholdsText))
   )
   dev.off()
 
-  comparisonRowsWithMatchesInSubject <- which(
-    subjectVsComparisonPositionDifferences >= distanceThresholds[1] &
-    subjectVsComparisonPositionDifferences <= distanceThresholds[2]
-  )
   subjectRowsWithMatchesInComparison <- nearest(rowData(comparisonVcf), rowData(subjectVcf))[comparisonRowsWithMatchesInSubject]
 #  comparisonRowsWithMatchesInSubject <- which(subjectVsComparisonPositionDifferences >=distanceThresholds[1] & subjectVsComparisonPositionDifferences<=distanceThresholds[2])
 #  subjectRowsWithMatchesInComparison <- nearest(rowData(comparisonVcf), rowData(subjectVcf))[comparisonRowsWithMatchesInSubject]
@@ -131,6 +136,82 @@ compareCalls <- function(
     stop("GTsToCompare must be either \"parentBased\" or \"asVcf\"")
   }
   
+  return(
+    list(
+      comparisonVsSubjectDiscordanceMatrix = callComparisonPlots(
+        subjectMatchesGTs,
+        comparisonMatchesGTs,
+        comparison="discordances",
+        threshold=discordanceThreshold,
+        plotFilestem=plotFilestem,
+        expectedMatches=expectedMatches[["comparisonVsSubject"]],
+        subjectName=subjectName,
+        comparisonName=comparisonName
+      ),
+      comparisonVsSubjectDiscordanceProportionMatrix = callComparisonPlots(
+        subjectMatchesGTs,
+        comparisonMatchesGTs,
+        comparison="discordanceProportions",
+        threshold=discordanceProportionThreshold,
+        plotFilestem=plotFilestem,
+        expectedMatches=expectedMatches[["comparisonVsSubject"]],
+        subjectName=subjectName,
+        comparisonName=comparisonName
+      ),
+      subjectVsSubjectDiscordanceMatrix = callComparisonPlots(
+        subjectMatchesGTs,
+        subjectMatchesGTs,
+        comparison="discordances",
+        threshold=discordanceThreshold,
+        plotFilestem=paste(plotFilestem, "subject", sep="."),
+        expectedMatches=expectedMatches[["subjectVsSubject"]],
+        subjectName=subjectName,
+        comparisonName=subjectName,
+        discordanceHeatmapWidth=12
+      ),
+      subjectVsSubjectDiscordanceProportionMatrix = callComparisonPlots(
+        subjectMatchesGTs,
+        subjectMatchesGTs,
+        comparison="discordanceProportions",
+        threshold=discordanceProportionThreshold,
+        plotFilestem=paste(plotFilestem, "subject", sep="."),
+        expectedMatches=expectedMatches[["subjectVsSubject"]],
+        subjectName=subjectName,
+        comparisonName=subjectName,
+        discordanceHeatmapWidth=12
+      ),
+      comparisonVsComparisonDiscordanceMatrix = callComparisonPlots(
+        comparisonMatchesGTs,
+        comparisonMatchesGTs,
+        comparison="discordances",
+        threshold=discordanceThreshold,
+        plotFilestem=paste(plotFilestem, "comparison", sep="."),
+        expectedMatches=expectedMatches[["comparisonVsComparison"]],
+        subjectName=comparisonName,
+        comparisonName=comparisonName,
+        discordanceHeatmapHeight=8
+      ),
+      comparisonVsComparisonDiscordanceProportionMatrix = callComparisonPlots(
+        comparisonMatchesGTs,
+        comparisonMatchesGTs,
+        comparison="discordanceProportions",
+        threshold=discordanceProportionThreshold,
+        plotFilestem=paste(plotFilestem, "comparison", sep="."),
+        expectedMatches=expectedMatches[["comparisonVsComparison"]],
+        subjectName=comparisonName,
+        comparisonName=comparisonName,
+        discordanceHeatmapHeight=8
+      )
+    )
+  )
+
+  callComparisonPlots(subjectMatchesGTs, comparisonMatchesGTs, comparison="discordances", threshold=discordanceThreshold, plotFilestem=plotFilestem, expectedMatches=expectedMatches[["comparisonVsSubject"]], subjectName=subjectName, comparisonName=comparisonName)
+  callComparisonPlots(subjectMatchesGTs, comparisonMatchesGTs, comparison="discordanceProportions", threshold=discordanceProportionThreshold, plotFilestem=plotFilestem, expectedMatches=expectedMatches[["comparisonVsSubject"]], subjectName=subjectName, comparisonName=comparisonName)
+  callComparisonPlots(subjectMatchesGTs, subjectMatchesGTs, comparison="discordances", threshold=discordanceThreshold, plotFilestem=paste(plotFilestem, "subject", sep="."), expectedMatches=expectedMatches[["subjectVsSubject"]], subjectName=subjectName, comparisonName=subjectName, discordanceHeatmapWidth=12)
+  callComparisonPlots(subjectMatchesGTs, subjectMatchesGTs, comparison="discordanceProportions", threshold=discordanceProportionThreshold, plotFilestem=paste(plotFilestem, "subject", sep="."), expectedMatches=expectedMatches[["subjectVsSubject"]], subjectName=subjectName, comparisonName=subjectName, discordanceHeatmapWidth=12)
+  callComparisonPlots(comparisonMatchesGTs, comparisonMatchesGTs, comparison="discordances", threshold=discordanceThreshold, plotFilestem=paste(plotFilestem, "comparison", sep="."), expectedMatches=expectedMatches[["comparisonVsComparison"]], subjectName=comparisonName, comparisonName=comparisonName, discordanceHeatmapHeight=8)
+  callComparisonPlots(comparisonMatchesGTs, comparisonMatchesGTs, comparison="discordanceProportions", threshold=discordanceProportionThreshold, plotFilestem=paste(plotFilestem, "comparison", sep="."), expectedMatches=expectedMatches[["comparisonVsComparison"]], subjectName=comparisonName, comparisonName=comparisonName, discordanceHeatmapHeight=8)
+  
   discordance <- function(x, y) length(which(x!=y))
   vecDiscordance <- Vectorize(discordance)
   comparisonVsSubjectDiscordanceMatrix <- outer(data.frame(comparisonMatchesGTs), data.frame(subjectMatchesGTs), vecDiscordance)
@@ -138,11 +219,13 @@ compareCalls <- function(
   vecDiscordanceProportion <- Vectorize(discordanceProportion)
   comparisonVsSubjectDiscordanceProportionMatrix <- outer(data.frame(comparisonMatchesGTs), data.frame(subjectMatchesGTs), vecDiscordanceProportion)
 
+  discordancesText <- paste("Median pairwise discordance =", median(comparisonVsSubjectDiscordanceMatrix), "\nMedian discordance of putative matches = ", median(comparisonVsSubjectDiscordanceMatrix[comparisonVsSubjectDiscordanceMatrix<discordanceThreshold]))
   pdf(paste(plotFilestem, "discordances.pdf", sep="."), height=4, width=6)
   print(
     qplot(as.vector(comparisonVsSubjectDiscordanceMatrix), binwidth=50, xlab=paste("Number of discordant SNPs between", comparisonName, "and", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
     + geom_vline(xintercept = discordanceThreshold, colour="red")
     + theme_bw()
+    + labs(title=discordancesText)
   )
   dev.off()
   pdf(paste(plotFilestem, "discordancesDuplicates.pdf", sep="."), height=4, width=6)
@@ -153,26 +236,38 @@ compareCalls <- function(
   dev.off()
   if(!is.null(expectedMatches) && "comparisonVsSubject" %in% names(expectedMatches)) {
     comparisonVsSubjectDiscordanceMatrixExpectMatches <- comparisonVsSubjectDiscordanceMatrix[expectedMatches[["comparisonVsSubject"]]]
+    discordancesText <- paste("Median discordances in expected matches =", median(comparisonVsSubjectDiscordanceMatrixExpectMatches))
     pdf(paste(plotFilestem, "discordancesExpectedMatches.pdf", sep="."), height=4, width=6)
     print(
       qplot(as.vector(comparisonVsSubjectDiscordanceMatrixExpectMatches), xlab=paste("Number of discordant SNPs between", comparisonName, "and", subjectName, "expected match samples"), ylab="Frequency (number of sample pairs)")
       + geom_vline(xintercept = discordanceThreshold, colour="red")
       + theme_bw()
+      + labs(title=discordancesText)
     )
     dev.off()
+    discordancesText <- paste("Median discordances in true expected matches = ", median(comparisonVsSubjectDiscordanceMatrix[comparisonVsSubjectDiscordanceMatrix<discordanceThreshold]))
     pdf(paste(plotFilestem, "discordancesDuplicatesExpectedMatches.pdf", sep="."), height=4, width=6)
     print(
       qplot(as.vector(comparisonVsSubjectDiscordanceMatrixExpectMatches[comparisonVsSubjectDiscordanceMatrixExpectMatches<discordanceThreshold]), xlab=paste("Number of discordant SNPs between", comparisonName, "and", subjectName, "expected match samples"), ylab="Frequency (number of sample pairs)")
       + theme_bw()
+      + labs(title=discordancesText)
     )
     dev.off()
   }
   
-  browser()
-
   discordanceDF <- melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances")
   discordanceDF[["putativeDuplicateSample"]] <- discordanceDF[["Discordances"]] <= discordanceThreshold
-  discordanceDF[["expectedDuplicateSample"]] <- NA
+  if(!is.null(expectedMatches) && "comparisonVsSubject" %in% names(expectedMatches)) {
+    comparisonVsSubjectExpectedMatches <- comparisonVsSubjectDiscordanceMatrix
+    comparisonVsSubjectExpectedMatches[,] <- 0
+    comparisonVsSubjectExpectedMatches[expectedMatches[["comparisonVsSubject"]]] <- 1
+    expectedMatchesDF <- melt(comparisonVsSubjectExpectedMatches, value.name="ExpectedMatch")
+    discordanceDF[["expectedDuplicateSample"]] <- as.logical(expectedMatchesDF[["ExpectedMatch"]])
+    discordanceDF[discordanceDF[["expectedDuplicateSample"]] & discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Expected match"
+    discordanceDF[!discordanceDF[["expectedDuplicateSample"]] & discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Unexpected match"
+    discordanceDF[discordanceDF[["expectedDuplicateSample"]] & !discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Unexpected non-match"
+    discordanceDF[!discordanceDF[["expectedDuplicateSample"]] & !discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Expected non-match"
+  }
   
   pdf(paste(plotFilestem, "discordanceHeatmap.pdf", sep="."), height=10, width=10)
   print(
@@ -207,11 +302,30 @@ compareCalls <- function(
   )
   dev.off()
   
+  if(!is.null(expectedMatches) && "comparisonVsSubject" %in% names(expectedMatches)) {
+    pdf(paste(plotFilestem, "samplePairStatus.pdf", sep="."), height=10, width=10)
+    print(
+      ggplot(
+        discordanceDF,
+        aes(x=Var1, y=Var2, fill=SamplePairStatus)
+      )
+      + geom_tile()
+      + scale_fill_manual(values = c("green", "grey90", "orange", "red"))
+      + theme_bw()
+      + xlab(paste(comparisonName, "sample ID"))
+      + ylab(paste(subjectName, "sample ID"))
+      + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+    )
+    dev.off()
+  }
+  
+  discordancesText <- paste("Median pairwise discordance proportion =", round(median(comparisonVsSubjectDiscordanceProportionMatrix), 3), "\nMedian discordance proportion of putative matches = ", round(median(comparisonVsSubjectDiscordanceProportionMatrix[comparisonVsSubjectDiscordanceProportionMatrix<discordanceProportionThreshold]), 3))
   pdf(paste(plotFilestem, "discordanceProportions.pdf", sep="."), height=4, width=6)
   print(
     qplot(as.vector(comparisonVsSubjectDiscordanceProportionMatrix), xlab=paste("Proportion of discordant SNPs between", comparisonName, "and", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
     + geom_vline(xintercept = discordanceProportionThreshold, colour="red")
     + theme_bw()
+    + labs(title=discordancesText)
   )
   dev.off()
   pdf(paste(plotFilestem, "discordanceProportionsDuplicates.pdf", sep="."), height=4, width=6)
@@ -220,9 +334,21 @@ compareCalls <- function(
     + theme_bw()
   )
   dev.off()
+    discordancesText <- paste("Median discordances in expected matches =", median(comparisonVsSubjectDiscordanceMatrixExpectMatches))
 
   discordanceProportionDF <- melt(comparisonVsSubjectDiscordanceProportionMatrix, value.name="DiscordanceProportions")
   discordanceProportionDF[["putativeDuplicateSample"]] <- discordanceProportionDF[["DiscordanceProportions"]] <= discordanceProportionThreshold
+  if(!is.null(expectedMatches) && "comparisonVsSubject" %in% names(expectedMatches)) {
+    comparisonVsSubjectExpectedMatches <- comparisonVsSubjectDiscordanceMatrix
+    comparisonVsSubjectExpectedMatches[,] <- 0
+    comparisonVsSubjectExpectedMatches[expectedMatches[["comparisonVsSubject"]]] <- 1
+    expectedMatchesDF <- melt(comparisonVsSubjectExpectedMatches, value.name="ExpectedMatch")
+    discordanceProportionDF[["expectedDuplicateSample"]] <- as.logical(expectedMatchesDF[["ExpectedMatch"]])
+    discordanceProportionDF[discordanceProportionDF[["expectedDuplicateSample"]] & discordanceProportionDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Expected match"
+    discordanceProportionDF[!discordanceProportionDF[["expectedDuplicateSample"]] & discordanceProportionDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Unexpected match"
+    discordanceProportionDF[discordanceProportionDF[["expectedDuplicateSample"]] & !discordanceProportionDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Unexpected non-match"
+    discordanceProportionDF[!discordanceProportionDF[["expectedDuplicateSample"]] & !discordanceProportionDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Expected non-match"
+  }
   
   pdf(paste(plotFilestem, "discordanceProportionHeatmap.pdf", sep="."), height=10, width=10)
   print(
@@ -256,6 +382,23 @@ compareCalls <- function(
     + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
   )
   dev.off()
+  
+  if(!is.null(expectedMatches) && "comparisonVsSubject" %in% names(expectedMatches)) {
+    pdf(paste(plotFilestem, "samplePairStatusUsingProportions.pdf", sep="."), height=10, width=10)
+    print(
+      ggplot(
+        discordanceProportionDF,
+        aes(x=Var1, y=Var2, fill=SamplePairStatus)
+      )
+      + geom_tile()
+      + scale_fill_manual(values = c("green", "grey90", "orange", "red"))
+      + theme_bw()
+      + xlab(paste(comparisonName, "sample ID"))
+      + ylab(paste(subjectName, "sample ID"))
+      + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+    )
+    dev.off()
+  }
   
   
   
