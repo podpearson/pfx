@@ -142,16 +142,22 @@ callComparisonPlots <- function(
   
   discordanceDF <- melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances")
   discordanceDF[["putativeDuplicateSample"]] <- discordanceDF[["Discordances"]] <= threshold
+  discordanceDF[["putativeDuplicateSample"]][is.na(discordanceDF[["putativeDuplicateSample"]])] <- FALSE
   if(!is.null(expectedMatches)) {
     comparisonVsSubjectExpectedMatches <- comparisonVsSubjectDiscordanceMatrix
     comparisonVsSubjectExpectedMatches[,] <- 0
     comparisonVsSubjectExpectedMatches[expectedMatches] <- 1
     expectedMatchesDF <- melt(comparisonVsSubjectExpectedMatches, value.name="ExpectedMatch")
     discordanceDF[["expectedDuplicateSample"]] <- as.logical(expectedMatchesDF[["ExpectedMatch"]])
-    discordanceDF[discordanceDF[["expectedDuplicateSample"]] & discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Expected match"
-    discordanceDF[!discordanceDF[["expectedDuplicateSample"]] & discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Unexpected match"
-    discordanceDF[discordanceDF[["expectedDuplicateSample"]] & !discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Unexpected non-match"
-    discordanceDF[!discordanceDF[["expectedDuplicateSample"]] & !discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Expected non-match"
+    discordanceDF[discordanceDF[["expectedDuplicateSample"]] & discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "1) Expected match"
+    discordanceDF[!discordanceDF[["expectedDuplicateSample"]] & discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "3) Unexpected match"
+    discordanceDF[discordanceDF[["expectedDuplicateSample"]] & !discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "4) Unexpected non-match"
+    discordanceDF[!discordanceDF[["expectedDuplicateSample"]] & !discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "2) Expected non-match"
+    discordanceDF[is.na(discordanceDF[["Discordances"]]), "SamplePairStatus"] <- "5) No matching SNPs"
+    if(subjectIsComparison) {
+      discordanceDF[discordanceDF[["Var1"]] == discordanceDF[["Var2"]], "SamplePairStatus"] <- "6) Identical sample"
+    }
+    
   }
   
   pdf(
@@ -204,7 +210,7 @@ callComparisonPlots <- function(
         aes(x=Var1, y=Var2, fill=SamplePairStatus)
       )
       + geom_tile()
-      + scale_fill_manual(values = c("green", "grey90", "orange", "red"))
+      + scale_fill_manual(values = c("green", "grey90", "orange", "red", "black", "white"))
       + theme_bw()
       + xlab(paste(comparisonName, "sample ID"))
       + ylab(paste(subjectName, "sample ID"))
