@@ -157,8 +157,8 @@ callComparisonPlots <- function(
     if(subjectIsComparison) {
       discordanceDF[discordanceDF[["Var1"]] == discordanceDF[["Var2"]], "SamplePairStatus"] <- "Identical sample"
     }
-    discordanceDF[["SamplePairStatus"]] <- factor(discordanceDF[["SamplePairStatus"]], levels=c("Expected match", "Expected non-match", "Unexpected match", "Unexpected non-match", "No matching SNPs", "Identical sample"))
-    browser()
+#    discordanceDF[["SamplePairStatus"]] <- factor(discordanceDF[["SamplePairStatus"]], levels=c("Expected match", "Expected non-match", "Unexpected match", "Unexpected non-match", "No matching SNPs", "Identical sample"))
+#    browser()
   }
   
   pdf(
@@ -211,7 +211,7 @@ callComparisonPlots <- function(
         aes(x=Var1, y=Var2, fill=SamplePairStatus)
       )
       + geom_tile()
-      + scale_fill_manual(values = c("green", "grey90", "orange", "red", "black", "white"))
+      + scale_fill_manual(values = c("Expected match"="green", "Expected non-match"="grey90", "Unexpected match"="orange", "Unexpected non-match"="red", "No matching SNPs"="black", "Identical sample"="white"))
       + theme_bw()
       + xlab(paste(comparisonName, "sample ID"))
       + ylab(paste(subjectName, "sample ID"))
