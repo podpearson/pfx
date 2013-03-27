@@ -407,8 +407,8 @@ compareCalls <- function(
   )
   dev.off()
 
-  comparisonDiscordanceProportionDF <- melt(comparisonVsComparisonDiscordanceProportionMatrix, value.name="Discordances")
-  comparisonDiscordanceProportionDF[["putativeDuplicateSample"]] <- comparisonDiscordanceProportionDF[["Discordances"]] <= discordanceProportionThreshold
+  comparisonDiscordanceProportionDF <- melt(comparisonVsComparisonDiscordanceProportionMatrix, value.name="DiscordanceProportions")
+  comparisonDiscordanceProportionDF[["putativeDuplicateSample"]] <- comparisonDiscordanceProportionDF[["DiscordanceProportions"]] <= discordanceProportionThreshold
   
   pdf(paste(plotFilestem, "comparisonDiscordanceProportionHeatmap.pdf", sep="."), height=8, width=10)
   print(
