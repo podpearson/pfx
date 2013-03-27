@@ -158,6 +158,7 @@ callComparisonPlots <- function(
       discordanceDF[discordanceDF[["Var1"]] == discordanceDF[["Var2"]], "SamplePairStatus"] <- "Identical sample"
     }
     discordanceDF[["SamplePairStatus"]] <- factor(discordanceDF[["SamplePairStatus"]], levels=c("Expected match", "Expected non-match", "Unexpected match", "Unexpected non-match", "No matching SNPs", "Identical sample"))
+    browser()
   }
   
   pdf(
