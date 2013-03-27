@@ -151,7 +151,7 @@ compareCalls <- function(
     + theme_bw()
   )
   dev.off()
-  if(exists(expectedMatches[["comparisonVsSubject"]])) {
+  if(!is.null(expectedMatches) && exists(expectedMatches[["comparisonVsSubject"]])) {
     comparisonVsSubjectDiscordanceMatrixExpectMatches <- comparisonVsSubjectDiscordanceMatrix[expectedMatches[["comparisonVsSubject"]]]
     pdf(paste(plotFilestem, "discordancesExpectedMatches.pdf", sep="."), height=4, width=6)
     print(
