@@ -151,7 +151,7 @@ compareCalls <- function(
     + theme_bw()
   )
   dev.off()
-  if(!is.null(expectedMatches) && exists(expectedMatches[["comparisonVsSubject"]])) {
+  if(!is.null(expectedMatches) && "comparisonVsSubject" %in% names(expectedMatches)) {
     comparisonVsSubjectDiscordanceMatrixExpectMatches <- comparisonVsSubjectDiscordanceMatrix[expectedMatches[["comparisonVsSubject"]]]
     pdf(paste(plotFilestem, "discordancesExpectedMatches.pdf", sep="."), height=4, width=6)
     print(
@@ -167,9 +167,12 @@ compareCalls <- function(
     )
     dev.off()
   }
+  
+  browser()
 
   discordanceDF <- melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances")
   discordanceDF[["putativeDuplicateSample"]] <- discordanceDF[["Discordances"]] <= discordanceThreshold
+  discordanceDF[["expectedDuplicateSample"]] <- NA
   
   pdf(paste(plotFilestem, "discordanceHeatmap.pdf", sep="."), height=10, width=10)
   print(
