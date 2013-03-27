@@ -8,12 +8,32 @@
 
 
 compareHb3_Dd2WithUberchip <- function(
-  malariagenVcf               = loadCallsSubset(
-    vcfFilename                 = "data/release/1.0.combined.RC1/hb3_dd2.combined.vcf.gz",
-    subsetVcfFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf",
-    subsetRdaFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf.rda",
-    subsetGrep                  = "set=Intersection"
+  malariagenVcfList             = list(
+    Intersection = loadCallsSubset(
+      vcfFilename                 = "data/release/1.0.combined.RC1/hb3_dd2.combined.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf.rda",
+      subsetGrep                  = "set=Intersection"
+    ),
+    GATK = loadCallsSubset(
+      vcfFilename                 = "data/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.PASS.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.PASS.vcf.rda",
+      subsetGrep                  = "PASS"
+    ),
+    Cortex = loadCallsSubset(
+      vcfFilename                 = "data/release/1.0.cortex.RC1/hb3_dd2.cortex.final.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.cortex.RC1/hb3_dd2.cortex.final.PASS.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.cortex.RC1/hb3_dd2.cortex.final.PASS.vcf.rda",
+      subsetGrep                  = "PASS"
+    )
   ),
+#  malariagenVcf               = loadCallsSubset(
+#    vcfFilename                 = "data/release/1.0.combined.RC1/hb3_dd2.combined.vcf.gz",
+#    subsetVcfFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf",
+#    subsetRdaFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf.rda",
+#    subsetGrep                  = "set=Intersection"
+#  ),
   uberchipVcf                 = loadUberchipAsVcf(),
   discordanceThreshold        = 200,
   discordanceProportionThreshold = 0.15,
@@ -26,30 +46,63 @@ compareHb3_Dd2WithUberchip <- function(
   malariagenVcf <- malariagenVcf[geno(malariagenVcf)[["GT"]][, IDparent1] != geno(malariagenVcf)[["GT"]][, IDparent2]]
 #  malariagenVcf <- malariagenVcf[as.character(unlist(alt(malariagenVcf))) %in% c("A", "C", "T", "G")]
   
-  comparisonVsSubjectDiscordanceMatrixList <- sapply(
-    comparisonDSthresholds,
-    function(comparisonDSthreshold) {
-      compareCalls(
-        malariagenVcf,
-        uberchipVcf,
-        subjectName                 = "MalariaGEN",
-        comparisonName              = "Uberchip",
-        distanceThresholds          = c(0, 0),
-        discordanceThreshold        = discordanceThreshold,
-        discordanceProportionThreshold = discordanceProportionThreshold,
-        comparisonDSthreshold       = comparisonDSthreshold,
-        plotFilestem                = paste(plotFilestem, comparisonDSthreshold, sep=""),
-        IDparent1                   = IDparent1,
-        IDparent2                   = IDparent2,
-        shouldSubsetToBialleleic    = TRUE,
-        shouldCompareRefsAndAlts    = TRUE,
-        GTsToCompare                = "asVcf",
-        GTsToIntMapping             = GTsToIntMapping
+  discordanceMatricesList <- sapply(
+    names(malariagenVcfList),
+    function(callSetName) {
+      comparisonVsSubjectDiscordanceMatrixList <- sapply(
+        comparisonDSthresholds,
+        function(comparisonDSthreshold) {
+          compareCalls(
+            malariagenVcfList[[callSetName]],
+            uberchipVcf,
+            subjectName                 = "MalariaGEN",
+            comparisonName              = "Uberchip",
+            distanceThresholds          = c(0, 0),
+            discordanceThreshold        = discordanceThreshold,
+            discordanceProportionThreshold = discordanceProportionThreshold,
+            comparisonDSthreshold       = comparisonDSthreshold,
+            plotFilestem                = paste(plotFilestem, comparisonDSthreshold, sep=""),
+            IDparent1                   = IDparent1,
+            IDparent2                   = IDparent2,
+            shouldSubsetToBialleleic    = TRUE,
+            shouldCompareRefsAndAlts    = TRUE,
+            GTsToCompare                = "asVcf",
+            GTsToIntMapping             = GTsToIntMapping
+          )
+        },
+        USE.NAMES = TRUE,
+        simplify = FALSE
       )
+      names(comparisonVsSubjectDiscordanceMatrixList) <- comparisonDSthresholds
+      comparisonVsSubjectDiscordanceMatrixList
     },
     USE.NAMES = TRUE,
     simplify = FALSE
   )
+#  comparisonVsSubjectDiscordanceMatrixList <- sapply(
+#    comparisonDSthresholds,
+#    function(comparisonDSthreshold) {
+#      compareCalls(
+#        malariagenVcf,
+#        uberchipVcf,
+#        subjectName                 = "MalariaGEN",
+#        comparisonName              = "Uberchip",
+#        distanceThresholds          = c(0, 0),
+#        discordanceThreshold        = discordanceThreshold,
+#        discordanceProportionThreshold = discordanceProportionThreshold,
+#        comparisonDSthreshold       = comparisonDSthreshold,
+#        plotFilestem                = paste(plotFilestem, comparisonDSthreshold, sep=""),
+#        IDparent1                   = IDparent1,
+#        IDparent2                   = IDparent2,
+#        shouldSubsetToBialleleic    = TRUE,
+#        shouldCompareRefsAndAlts    = TRUE,
+#        GTsToCompare                = "asVcf",
+#        GTsToIntMapping             = GTsToIntMapping
+#      )
+#    },
+#    USE.NAMES = TRUE,
+#    simplify = FALSE
+#  )
   browser()
   
 #  #  attempt to track down which sample pairs have suspect concordance

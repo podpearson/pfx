@@ -14,6 +14,9 @@ loadCallsSubset <- function(
   subsetGrep                  = "set=Intersection",
   reload                      = FALSE
 ) {
+  if(!file.exists(dirname(subsetVcfFilename))) {
+    dir.create(dirname(subsetVcfFilename), recursive=TRUE)
+  }
   if(reload || !file.exists(subsetVcfFilename)) {
     systemCommand <- sprintf("(zcat %s | head -1000 | grep ^#; zgrep '%s' %s) > %s", vcfFilename, subsetGrep, vcfFilename, subsetVcfFilename)
     cat(systemCommand)
