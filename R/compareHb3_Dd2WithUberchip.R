@@ -41,7 +41,68 @@ compareHb3_Dd2WithUberchip <- function(
   plotFilestem                = "analysis/release/1.0.combined.RC1/uberchip",
   IDparent1                   = "HB3_Ferdig/PG0004-CW/ERR012788",
   IDparent2                   = "DD2_Ferdig/PG0008-CW/ERR012840",
-  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0)
+  GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0),
+  expectedMatches = list(
+    comparisonVsSubject = rbind(
+      c("CH3_61_1", "CH3_61.PG0033.C.ERR022940"),
+      c("CH3_61_1", "CH3_61.PG0033.Cx.ERR175544"),
+      c("CH3_61_2", "CH3_61.PG0033.C.ERR022940"),
+      c("CH3_61_2", "CH3_61.PG0033.Cx.ERR175544"),
+      c("Dd2_1", "DD2_Ferdig.PG0008.CW.ERR012840"),
+      c("Dd2_2", "DD2_Ferdig.PG0008.CW.ERR012840"),
+      c("Dd2_3", "DD2_Ferdig.PG0008.CW.ERR012840"),
+      c("Dd2_4", "DD2_Ferdig.PG0008.CW.ERR012840"),
+      c("Dd2_5", "DD2_Ferdig.PG0008.CW.ERR012840"),
+      c("HB3_1", "HB3_Ferdig.PG0004.CW.ERR012788"),
+      c("HB3_2", "HB3_Ferdig.PG0004.CW.ERR012788"),
+      c("HB3_3", "HB3_Ferdig.PG0004.CW.ERR012788"),
+      c("HB3_4", "HB3_Ferdig.PG0004.CW.ERR012788"),
+      c("QC23_1", "QC23.PG0045.C.ERR012892"),
+      c("QC23_2", "QC23.PG0045.C.ERR012892"),
+      c("SC05_1", "SC05.PG0019.C.ERR019051"),
+      c("SC05_2", "SC05.PG0019.C.ERR019051"),
+      c("X7C126_1", "X7C126.PG0047.C.ERR015452"),
+      c("X7C126_1", "X7C126.PG0047.C.ERR012891"),
+      c("X7C126_2", "X7C126.PG0047.C.ERR015452"),
+      c("X7C126_2", "X7C126.PG0047.C.ERR012891"),
+      c("X7C126_3", "X7C126.PG0047.C.ERR015452"),
+      c("X7C126_3", "X7C126.PG0047.C.ERR012891"),
+      c("X7C424_1", "X7C424.PG0044.C.ERR019043"),
+      c("X7C424_2", "X7C424.PG0044.C.ERR019043")
+    ),
+    comparisonVsComparison = rbind(
+      c("X7C126_1", "X7C126_2"),
+      c("X7C126_1", "X7C126_3"),
+      c("X7C126_2", "X7C126_3"),
+      c("X7C424_1", "X7C424_2"),
+      c("CH3_61_1", "CH3_61_2"),
+      c("Dd2_1", "Dd2_2"),
+      c("Dd2_1", "Dd2_3"),
+      c("Dd2_1", "Dd2_4"),
+      c("Dd2_1", "Dd2_5"),
+      c("Dd2_2", "Dd2_3"),
+      c("Dd2_2", "Dd2_4"),
+      c("Dd2_2", "Dd2_5"),
+      c("Dd2_3", "Dd2_4"),
+      c("Dd2_3", "Dd2_5"),
+      c("Dd2_4", "Dd2_5"),
+      c("HB3_1", "HB3_2"),
+      c("HB3_1", "HB3_3"),
+      c("HB3_1", "HB3_4"),
+      c("HB3_2", "HB3_3"),
+      c("HB3_2", "HB3_4"),
+      c("HB3_3", "HB3_4"),
+      c("QC23_1", "QC23_2"),
+      c("SC05_1", "SC05_2")
+    ),
+    subjectVsSubject = rbind(
+      c("CH3_61.PG0033.C.ERR022940", "CH3_61.PG0033.Cx.ERR175544"),
+      c("GC06.PG0028.C.ERR012894", "GC06.PG0028.C.ERR015456"),
+      c("X1BB5.PG0023.C.ERR012893", "X1BB5.PG0023.C.ERR015449"),
+      c("X7C126.PG0047.C.ERR012891", "X7C126.PG0047.C.ERR015452"),
+      c("X7C46.PG0046.C.ERR022939", "X7C46.PG0046.Cx.ERR107476")
+    )
+  )
 ) {
 #  malariagenVcf <- malariagenVcf[as.character(unlist(alt(malariagenVcf))) %in% c("A", "C", "T", "G")]
   
@@ -140,6 +201,24 @@ compareHb3_Dd2WithUberchip <- function(
     c("X7C424_1", "X7C424.PG0044.C.ERR019043"),
     c("X7C424_2", "X7C424.PG0044.C.ERR019043")
   )
+  
+  numberOfComparisons <- list()
+  numberOfComparisons[["Intersection"]] <- discordanceMatricesList[["Intersection"]][["0.5"]][["comparisonVsSubjectDiscordanceMatrix"]][expectedMatches] / discordanceMatricesList[["Intersection"]][["0.5"]][["comparisonVsSubjectDiscordanceProportionMatrix"]][expectedMatches]
+  numberOfComparisons[["GATK"]] <- discordanceMatricesList[["GATK"]][["0.5"]][["comparisonVsSubjectDiscordanceMatrix"]][expectedMatches] / discordanceMatricesList[["GATK"]][["0.5"]][["comparisonVsSubjectDiscordanceProportionMatrix"]][expectedMatches]
+  numberOfComparisons[["Cortex"]] <- discordanceMatricesList[["Cortex"]][["0.5"]][["comparisonVsSubjectDiscordanceMatrix"]][expectedMatches] / discordanceMatricesList[["Cortex"]][["0.5"]][["comparisonVsSubjectDiscordanceProportionMatrix"]][expectedMatches]
+  
+  stem(discordanceMatricesList[["Intersection"]][["0.5"]][["comparisonVsSubjectDiscordanceProportionMatrix"]][expectedMatches])
+  stem(discordanceMatricesList[["GATK"]][["0.5"]][["comparisonVsSubjectDiscordanceProportionMatrix"]][expectedMatches])
+  stem(discordanceMatricesList[["Cortex"]][["0.5"]][["comparisonVsSubjectDiscordanceProportionMatrix"]][expectedMatches])
+  median(discordanceMatricesList[["Intersection"]][["0.5"]][["comparisonVsSubjectDiscordanceProportionMatrix"]][expectedMatches])
+  median(discordanceMatricesList[["GATK"]][["0.5"]][["comparisonVsSubjectDiscordanceProportionMatrix"]][expectedMatches])
+  median(discordanceMatricesList[["Cortex"]][["0.5"]][["comparisonVsSubjectDiscordanceProportionMatrix"]][expectedMatches])
+  
+  median(discordanceMatricesList[["Intersection"]][["0.5"]][["comparisonVsSubjectDiscordanceMatrix"]][expectedMatches])
+  median(discordanceMatricesList[["GATK"]][["0.5"]][["comparisonVsSubjectDiscordanceMatrix"]][expectedMatches])
+  median(discordanceMatricesList[["Cortex"]][["0.5"]][["comparisonVsSubjectDiscordanceMatrix"]][expectedMatches])
+  
+  
   stem(comparisonVsSubjectDiscordanceMatrixList[[1]][expectedMatches])
   median(comparisonVsSubjectDiscordanceMatrixList[[1]][expectedMatches])
   expectedMatches[which(comparisonVsSubjectDiscordanceMatrixList[[1]][expectedMatches] > 1000, arr.ind=TRUE), ]

@@ -26,8 +26,9 @@ compareCalls <- function(
   shouldSubsetToBialleleic    = FALSE,
   shouldCompareRefsAndAlts    = FALSE,
   GTsToCompare                = c("parentBased", "asVcf"),
-  GTsToIntMapping             = c("7"=1, "G"=2, "."=0)
+  GTsToIntMapping             = c("7"=1, "G"=2, "."=0),
 #  GTsToIntMapping             = c("0"=1, "0/0"=1, "0|0"=1, "1"=2, "1/1"=2, "1|1"=2, "."=0, "./."=0, "./."=0, "2"=0, "3"=0, "0/1"=0, "1/0"=0, "0|1"=0, "1|0"=0) # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
+  expectedMatches             = NULL
 ) {
   require(reshape2)
   if(shouldRenameSubjectSamples) {
@@ -150,6 +151,22 @@ compareCalls <- function(
     + theme_bw()
   )
   dev.off()
+  if(exists(expectedMatches[["comparisonVsSubject"]])) {
+    comparisonVsSubjectDiscordanceMatrixExpectMatches <- comparisonVsSubjectDiscordanceMatrix[expectedMatches[["comparisonVsSubject"]]]
+    pdf(paste(plotFilestem, "discordancesExpectedMatches.pdf", sep="."), height=4, width=6)
+    print(
+      qplot(as.vector(comparisonVsSubjectDiscordanceMatrixExpectMatches), xlab=paste("Number of discordant SNPs between", comparisonName, "and", subjectName, "expected match samples"), ylab="Frequency (number of sample pairs)")
+      + geom_vline(xintercept = discordanceThreshold, colour="red")
+      + theme_bw()
+    )
+    dev.off()
+    pdf(paste(plotFilestem, "discordancesDuplicatesExpectedMatches.pdf", sep="."), height=4, width=6)
+    print(
+      qplot(as.vector(comparisonVsSubjectDiscordanceMatrixExpectMatches[comparisonVsSubjectDiscordanceMatrixExpectMatches<discordanceThreshold]), xlab=paste("Number of discordant SNPs between", comparisonName, "and", subjectName, "expected match samples"), ylab="Frequency (number of sample pairs)")
+      + theme_bw()
+    )
+    dev.off()
+  }
 
   discordanceDF <- melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances")
   discordanceDF[["putativeDuplicateSample"]] <- discordanceDF[["Discordances"]] <= discordanceThreshold
