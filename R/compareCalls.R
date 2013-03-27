@@ -14,6 +14,7 @@ compareCalls <- function(
   comparisonName              = "Jiang et al",
   distanceThresholds          = c(0, 22),
   discordanceThreshold        = 100,
+  discordanceProportionThreshold = 0.01,
   malariagenDiscordanceThreshold        = 200,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
   comparisonDSthreshold       = NULL, # This is used specifically for Uberchip calls
@@ -131,6 +132,9 @@ compareCalls <- function(
   discordance <- function(x, y) length(which(x!=y))
   vecDiscordance <- Vectorize(discordance)
   comparisonVsSubjectDiscordanceMatrix <- outer(data.frame(comparisonMatchesGTs), data.frame(subjectMatchesGTs), vecDiscordance)
+  discordanceProportion <- function(x, y) length(which(x!=y)) / length(which(!is.na(x) & !is.na(y)))
+  vecDiscordanceProportion <- Vectorize(discordanceProportion)
+  comparisonVsSubjectDiscordanceProportionMatrix <- outer(data.frame(comparisonMatchesGTs), data.frame(subjectMatchesGTs), vecDiscordanceProportion)
 
   pdf(paste(plotFilestem, "discordances.pdf", sep="."), height=4, width=6)
   print(
@@ -171,6 +175,56 @@ compareCalls <- function(
   print(
     ggplot(
       discordanceDF,
+      aes(x=Var1, y=Var2, fill=putativeDuplicateSample)
+    )
+    + geom_tile()
+    + scale_fill_grey()
+    + theme_bw()
+    + xlab(paste(comparisonName, "sample ID"))
+    + ylab(paste(subjectName, "sample ID"))
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+  )
+  dev.off()
+  
+  pdf(paste(plotFilestem, "discordanceProportions.pdf", sep="."), height=4, width=6)
+  print(
+    qplot(as.vector(comparisonVsSubjectDiscordanceProportionMatrix), binwidth=50, xlab=paste("Proportion of discordant SNPs between", comparisonName, "and", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
+    + geom_vline(xintercept = discordanceProportionThreshold, colour="red")
+    + theme_bw()
+  )
+  dev.off()
+  pdf(paste(plotFilestem, "discordanceProportionsDuplicates.pdf", sep="."), height=4, width=6)
+  print(
+    qplot(as.vector(comparisonVsSubjectDiscordanceProportionMatrix[comparisonVsSubjectDiscordanceProportionMatrix<discordanceProportionThreshold]), binwidth=1, xlab=paste("Proportion of discordant SNPs between", comparisonName, "and", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
+    + theme_bw()
+  )
+  dev.off()
+
+  discordanceProportionDF <- melt(comparisonVsSubjectDiscordanceProportionMatrix, value.name="DiscordanceProportions")
+  discordanceProportionDF[["putativeDuplicateSample"]] <- discordanceProportionDF[["DiscordanceProportions"]] <= discordanceProportionThreshold
+  
+  pdf(paste(plotFilestem, "discordanceProportionHeatmap.pdf", sep="."), height=10, width=10)
+  print(
+    ggplot(
+      discordanceProportionDF,
+#      melt(comparisonVsSubjectDiscordanceMatrix, value.name="Discordances"),
+      aes(x=Var1, y=Var2, fill=DiscordanceProportions)
+    )
+    + geom_tile()
+    + scale_fill_gradient2(low="red", high="blue", midpoint=median(comparisonVsSubjectDiscordanceProportionMatrix, na.rm=TRUE))
+    + theme_bw()
+    + xlab(paste(comparisonName, "sample ID"))
+    + ylab(paste(subjectName, "sample ID"))
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+#    + theme(axis.title.x = text(labels="Jiang et al. sample ID"))
+#    + theme(axis.title.y = element_blank())
+  )
+  dev.off()
+
+  pdf(paste(plotFilestem, "putativeIdenticalSamplesFromProportions.pdf", sep="."), height=10, width=10)
+  print(
+    ggplot(
+      discordanceProportionDF,
       aes(x=Var1, y=Var2, fill=putativeDuplicateSample)
     )
     + geom_tile()
