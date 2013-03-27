@@ -149,15 +149,15 @@ callComparisonPlots <- function(
     comparisonVsSubjectExpectedMatches[expectedMatches] <- 1
     expectedMatchesDF <- melt(comparisonVsSubjectExpectedMatches, value.name="ExpectedMatch")
     discordanceDF[["expectedDuplicateSample"]] <- as.logical(expectedMatchesDF[["ExpectedMatch"]])
-    discordanceDF[discordanceDF[["expectedDuplicateSample"]] & discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "1) Expected match"
-    discordanceDF[!discordanceDF[["expectedDuplicateSample"]] & discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "3) Unexpected match"
-    discordanceDF[discordanceDF[["expectedDuplicateSample"]] & !discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "4) Unexpected non-match"
-    discordanceDF[!discordanceDF[["expectedDuplicateSample"]] & !discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "2) Expected non-match"
-    discordanceDF[is.na(discordanceDF[["Discordances"]]), "SamplePairStatus"] <- "5) No matching SNPs"
+    discordanceDF[discordanceDF[["expectedDuplicateSample"]] & discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Expected match"
+    discordanceDF[!discordanceDF[["expectedDuplicateSample"]] & discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Unexpected match"
+    discordanceDF[discordanceDF[["expectedDuplicateSample"]] & !discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Unexpected non-match"
+    discordanceDF[!discordanceDF[["expectedDuplicateSample"]] & !discordanceDF[["putativeDuplicateSample"]], "SamplePairStatus"] <- "Expected non-match"
+    discordanceDF[is.na(discordanceDF[["Discordances"]]), "SamplePairStatus"] <- "No matching SNPs"
     if(subjectIsComparison) {
-      discordanceDF[discordanceDF[["Var1"]] == discordanceDF[["Var2"]], "SamplePairStatus"] <- "6) Identical sample"
+      discordanceDF[discordanceDF[["Var1"]] == discordanceDF[["Var2"]], "SamplePairStatus"] <- "Identical sample"
     }
-    
+    discordanceDF[["SamplePairStatus"]] <- factor(discordanceDF[["SamplePairStatus"]], levels=c("Expected match", "Expected non-match", "Unexpected match", "Unexpected non-match", "No matching SNPs", "Identical sample"))
   }
   
   pdf(
