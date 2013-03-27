@@ -305,7 +305,7 @@ compareCalls <- function(
   dev.off()
 
   subjectDiscordanceProportionDF <- melt(subjectVsSubjectDiscordanceProportionMatrix, value.name="DiscordanceProportions")
-  subjectDiscordanceProportionDF[["putativeDuplicateSample"]] <- subjectDiscordanceDF[["DiscordanceProportions"]] <= malariagenDiscordanceThreshold
+  subjectDiscordanceProportionDF[["putativeDuplicateSample"]] <- subjectDiscordanceProportionDF[["DiscordanceProportions"]] <= malariagenDiscordanceProportionThreshold
   
   pdf(paste(plotFilestem, "malariagenDiscordanceProportionHeatmap.pdf", sep="."), height=10, width=12)
   print(
