@@ -14,7 +14,7 @@ compareCalls <- function(
   comparisonName              = "Jiang et al",
   distanceThresholds          = c(0, 22),
   discordanceThreshold        = 100,
-  discordanceProportionThreshold = 0.01,
+  discordanceProportionThreshold = 0.05,
   malariagenDiscordanceThreshold        = 200,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
   comparisonDSthreshold       = NULL, # This is used specifically for Uberchip calls
@@ -188,14 +188,14 @@ compareCalls <- function(
   
   pdf(paste(plotFilestem, "discordanceProportions.pdf", sep="."), height=4, width=6)
   print(
-    qplot(as.vector(comparisonVsSubjectDiscordanceProportionMatrix), binwidth=50, xlab=paste("Proportion of discordant SNPs between", comparisonName, "and", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
+    qplot(as.vector(comparisonVsSubjectDiscordanceProportionMatrix), xlab=paste("Proportion of discordant SNPs between", comparisonName, "and", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
     + geom_vline(xintercept = discordanceProportionThreshold, colour="red")
     + theme_bw()
   )
   dev.off()
   pdf(paste(plotFilestem, "discordanceProportionsDuplicates.pdf", sep="."), height=4, width=6)
   print(
-    qplot(as.vector(comparisonVsSubjectDiscordanceProportionMatrix[comparisonVsSubjectDiscordanceProportionMatrix<discordanceProportionThreshold]), binwidth=1, xlab=paste("Proportion of discordant SNPs between", comparisonName, "and", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
+    qplot(as.vector(comparisonVsSubjectDiscordanceProportionMatrix[comparisonVsSubjectDiscordanceProportionMatrix<discordanceProportionThreshold]), xlab=paste("Proportion of discordant SNPs between", comparisonName, "and", subjectName, "samples"), ylab="Frequency (number of sample pairs)")
     + theme_bw()
   )
   dev.off()
