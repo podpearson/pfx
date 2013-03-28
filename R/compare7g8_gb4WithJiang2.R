@@ -10,21 +10,21 @@
 compare7g8_gb4WithJiang2 <- function(
   malariagenVcfList             = list(
     Intersection = loadCallsSubset(
-      vcfFilename                 = "data/release/1.0.combined.RC1/hb3_dd2.combined.vcf.gz",
-      subsetVcfFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf",
-      subsetRdaFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf.rda",
+      vcfFilename                 = "data/release/1.0.combined.RC1/7g8_gb4.combined.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.combined.RC1/7g8_gb4.combined.Intersection.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.combined.RC1/7g8_gb4.combined.Intersection.vcf.rda",
       subsetGrep                  = "set=Intersection"
     ),
     GATK = loadCallsSubset(
-      vcfFilename                 = "data/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.vcf.gz",
-      subsetVcfFilename           = "analysis/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.PASS.vcf",
-      subsetRdaFilename           = "analysis/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.PASS.vcf.rda",
+      vcfFilename                 = "data/release/1.0.GATK.RC6/7g8_gb4.gatk.both.final.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.GATK.RC6/7g8_gb4.gatk.both.final.PASS.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.GATK.RC6/7g8_gb4.gatk.both.final.PASS.vcf.rda",
       subsetGrep                  = "PASS"
     ),
     Cortex = loadCallsSubset(
-      vcfFilename                 = "data/release/1.0.cortex.RC1/hb3_dd2.cortex.final.vcf.gz",
-      subsetVcfFilename           = "analysis/release/1.0.cortex.RC1/hb3_dd2.cortex.final.PASS.vcf",
-      subsetRdaFilename           = "analysis/release/1.0.cortex.RC1/hb3_dd2.cortex.final.PASS.vcf.rda",
+      vcfFilename                 = "data/release/1.0.cortex.RC1/7g8_gb4.cortex.final.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.cortex.RC1/7g8_gb4.cortex.final.PASS.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.cortex.RC1/7g8_gb4.cortex.final.PASS.vcf.rda",
       subsetGrep                  = "PASS"
     )
   ),
