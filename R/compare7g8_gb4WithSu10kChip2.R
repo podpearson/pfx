@@ -29,7 +29,7 @@ compare7g8_gb4WithSu10kChip2 <- function(
     )
   ),
   su10kChipVcf                = loadSu10kChipAsVcf(),
-  discordanceThreshold        = 100,
+  discordanceThreshold        = 25,
   discordanceProportionThreshold = 0.15,
   plotFilestem                = "analysis/release/1.0.combined.RC1/su10kChip",
   IDparent1                   = "7G8_NIH/PG0083-C/ERR027099",
