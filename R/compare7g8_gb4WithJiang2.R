@@ -112,14 +112,13 @@ compare7g8_gb4WithJiang2 <- function(
       malariagenVcf <- malariagenVcfList[[callSetName]][geno(malariagenVcfList[[callSetName]])[["GT"]][, IDparent1] != geno(malariagenVcfList[[callSetName]])[["GT"]][, IDparent2]]
       compareCalls(
         malariagenVcf,
-        uberchipVcf,
+        jiangVcf,
         subjectName                 = paste("MalariaGEN", callSetName, sep="."),
         comparisonName              = "Jiang et al",
         distanceThresholds          = c(0, 22),
         discordanceThreshold        = discordanceThreshold,
         discordanceProportionThreshold = discordanceProportionThreshold,
-        comparisonDSthreshold       = comparisonDSthreshold,
-        plotFilestem                = paste(plotFilestem, "Vs", callSetName, "_DS<=", comparisonDSthreshold, sep=""),
+        plotFilestem                = paste(plotFilestem, "Vs", callSetName, sep=""),
         IDparent1                   = IDparent1,
         IDparent2                   = IDparent2,
         shouldSubsetToBialleleic    = TRUE,
