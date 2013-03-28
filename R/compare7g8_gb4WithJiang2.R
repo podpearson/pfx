@@ -122,7 +122,7 @@ compare7g8_gb4WithJiang2 <- function(
         IDparent1                   = IDparent1,
         IDparent2                   = IDparent2,
         shouldSubsetToBialleleic    = TRUE,
-        shouldCompareRefsAndAlts    = TRUE,
+        shouldCompareRefsAndAlts    = FALSE,
         GTsToCompare                = "parentBased",
         GTsToIntMapping             = GTsToIntMapping,
         expectedMatches             = expectedMatches
