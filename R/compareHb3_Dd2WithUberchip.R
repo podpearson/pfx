@@ -15,16 +15,34 @@ compareHb3_Dd2WithUberchip <- function(
       subsetRdaFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Intersection.vcf.rda",
       subsetGrep                  = "set=Intersection"
     ),
+    Union = loadCallsSubset(
+      vcfFilename                 = "data/release/1.0.combined.RC1/hb3_dd2.combined.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Union.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.combined.RC1/hb3_dd2.combined.Union.vcf.rda",
+      subsetGrep                  = ""
+    ),
     GATK = loadCallsSubset(
       vcfFilename                 = "data/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.vcf.gz",
       subsetVcfFilename           = "analysis/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.PASS.vcf",
       subsetRdaFilename           = "analysis/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.PASS.vcf.rda",
       subsetGrep                  = "PASS"
     ),
+    GATKunfiltered = loadCallsSubset(
+      vcfFilename                 = "data/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.unfiltered.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.unfiltered.vcf.rda",
+      subsetGrep                  = "PASS"
+    ),
     Cortex = loadCallsSubset(
       vcfFilename                 = "data/release/1.0.cortex.RC1/hb3_dd2.cortex.final.vcf.gz",
       subsetVcfFilename           = "analysis/release/1.0.cortex.RC1/hb3_dd2.cortex.final.PASS.vcf",
       subsetRdaFilename           = "analysis/release/1.0.cortex.RC1/hb3_dd2.cortex.final.PASS.vcf.rda",
+      subsetGrep                  = "PASS"
+    ),
+    CortexUnfiltered = loadCallsSubset(
+      vcfFilename                 = "data/release/1.0.cortex.RC1/hb3_dd2.cortex.final.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.cortex.RC1/hb3_dd2.cortex.final.unfiltered.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.cortex.RC1/hb3_dd2.cortex.final.unfiltered.vcf.rda",
       subsetGrep                  = "PASS"
     )
   ),
@@ -37,10 +55,13 @@ compareHb3_Dd2WithUberchip <- function(
   uberchipVcf                 = loadUberchipAsVcf(),
   discordanceThreshold        = 200,
   discordanceProportionThreshold = 0.15,
-  comparisonDSthresholds      = c(1.0, 0.5, 0.2, 0.1),
+  comparisonDSthresholds      = c(0.5),
+#  comparisonDSthresholds      = c(1.0, 0.5, 0.2, 0.1),
   plotFilestem                = "analysis/release/1.0.combined.RC1/uberchip",
   IDparent1                   = "HB3_Ferdig/PG0004-CW/ERR012788",
   IDparent2                   = "DD2_Ferdig/PG0008-CW/ERR012840",
+  IDcomparisonParent1         = "HB3_3",
+  IDcomparisonParent2         = "Dd2_5",
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0),
   expectedMatches = list(
     comparisonVsSubject = rbind(
@@ -125,6 +146,8 @@ compareHb3_Dd2WithUberchip <- function(
             plotFilestem                = paste(plotFilestem, "Vs", callSetName, "_DS<=", comparisonDSthreshold, sep=""),
             IDparent1                   = IDparent1,
             IDparent2                   = IDparent2,
+            IDcomparisonParent1         = IDcomparisonParent1,
+            IDcomparisonParent2         = IDcomparisonParent2,
             shouldSubsetToBialleleic    = TRUE,
             shouldCompareRefsAndAlts    = TRUE,
             GTsToCompare                = "asVcf",
@@ -141,6 +164,9 @@ compareHb3_Dd2WithUberchip <- function(
     USE.NAMES = TRUE,
     simplify = FALSE
   )
+  
+  return(discordanceMatricesList)
+  
 #  comparisonVsSubjectDiscordanceMatrixList <- sapply(
 #    comparisonDSthresholds,
 #    function(comparisonDSthreshold) {
