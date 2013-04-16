@@ -15,17 +15,35 @@ compare7g8_gb4WithSu10kChip2 <- function(
       subsetRdaFilename           = "analysis/release/1.0.combined.RC1/7g8_gb4.combined.Intersection.vcf.rda",
       subsetGrep                  = "set=Intersection"
     ),
+    Union = loadCallsSubset(
+      vcfFilename                 = "data/release/1.0.combined.RC1/7g8_gb4.combined.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.combined.RC1/7g8_gb4.combined.Union.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.combined.RC1/7g8_gb4.combined.Union.vcf.rda",
+      subsetGrep                  = ""
+    ),
     GATK = loadCallsSubset(
       vcfFilename                 = "data/release/1.0.GATK.RC6/7g8_gb4.gatk.both.final.vcf.gz",
       subsetVcfFilename           = "analysis/release/1.0.GATK.RC6/7g8_gb4.gatk.both.final.PASS.vcf",
       subsetRdaFilename           = "analysis/release/1.0.GATK.RC6/7g8_gb4.gatk.both.final.PASS.vcf.rda",
       subsetGrep                  = "PASS"
     ),
+    GATKunfiltered = loadCallsSubset(
+      vcfFilename                 = "data/release/1.0.GATK.RC6/7g8_gb4.gatk.both.final.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.GATK.RC6/7g8_gb4.gatk.both.final.unfiltered.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.GATK.RC6/7g8_gb4.gatk.both.final.unfiltered.vcf.rda",
+      subsetGrep                  = ""
+    ),
     Cortex = loadCallsSubset(
       vcfFilename                 = "data/release/1.0.cortex.RC1/7g8_gb4.cortex.final.vcf.gz",
       subsetVcfFilename           = "analysis/release/1.0.cortex.RC1/7g8_gb4.cortex.final.PASS.vcf",
       subsetRdaFilename           = "analysis/release/1.0.cortex.RC1/7g8_gb4.cortex.final.PASS.vcf.rda",
       subsetGrep                  = "PASS"
+    ),
+    CortexUnfiltered = loadCallsSubset(
+      vcfFilename                 = "data/release/1.0.cortex.RC1/7g8_gb4.cortex.final.vcf.gz",
+      subsetVcfFilename           = "analysis/release/1.0.cortex.RC1/7g8_gb4.cortex.final.unfiltered.vcf",
+      subsetRdaFilename           = "analysis/release/1.0.cortex.RC1/7g8_gb4.cortex.final.unfiltered.vcf.rda",
+      subsetGrep                  = ""
     )
   ),
   su10kChipVcf                = loadSu10kChipAsVcf(),
@@ -34,6 +52,8 @@ compare7g8_gb4WithSu10kChip2 <- function(
   plotFilestem                = "analysis/release/1.0.combined.RC1/su10kChip",
   IDparent1                   = "7G8_NIH/PG0083-C/ERR027099",
   IDparent2                   = "GB4_NIH/PG0084-C/ERR027100",
+  IDcomparisonParent1         = "7G8_(a)4095667-82251",
+  IDcomparisonParent2         = "GB4_(a)4095667-82103",
   GTsToIntMapping             = c("0"=1, "1"=2, "."=0, "./."=0),
   expectedMatches = list(
     comparisonVsSubject = rbind(
@@ -128,6 +148,8 @@ compare7g8_gb4WithSu10kChip2 <- function(
         plotFilestem                = paste(plotFilestem, "Vs", callSetName, sep=""),
         IDparent1                   = IDparent1,
         IDparent2                   = IDparent2,
+        IDcomparisonParent1         = IDcomparisonParent1,
+        IDcomparisonParent2         = IDcomparisonParent2,
         shouldSubsetToBialleleic    = TRUE,
         shouldCompareRefsAndAlts    = TRUE,
         GTsToCompare                = "asVcf",
