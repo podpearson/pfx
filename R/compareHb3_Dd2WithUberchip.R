@@ -31,7 +31,8 @@ compareHb3_Dd2WithUberchip <- function(
       vcfFilename                 = "data/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.vcf.gz",
       subsetVcfFilename           = "analysis/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.unfiltered.vcf",
       subsetRdaFilename           = "analysis/release/1.0.GATK.RC6/hb3_dd2.gatk.both.final.unfiltered.vcf.rda",
-      subsetGrep                  = "PASS"
+      subsetGrep                  = "",
+      reload                      = TRUE
     ),
     Cortex = loadCallsSubset(
       vcfFilename                 = "data/release/1.0.cortex.RC1/hb3_dd2.cortex.final.vcf.gz",
@@ -43,7 +44,8 @@ compareHb3_Dd2WithUberchip <- function(
       vcfFilename                 = "data/release/1.0.cortex.RC1/hb3_dd2.cortex.final.vcf.gz",
       subsetVcfFilename           = "analysis/release/1.0.cortex.RC1/hb3_dd2.cortex.final.unfiltered.vcf",
       subsetRdaFilename           = "analysis/release/1.0.cortex.RC1/hb3_dd2.cortex.final.unfiltered.vcf.rda",
-      subsetGrep                  = "PASS"
+      subsetGrep                  = "",
+      reload                      = TRUE
     )
   ),
 #  malariagenVcf               = loadCallsSubset(
