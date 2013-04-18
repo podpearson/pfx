@@ -27,11 +27,16 @@ compareCalls <- function(
   IDcomparisonParent2         = dimnames(comparisonName)[[2]][2],
   shouldSubsetToBialleleic    = FALSE,
   shouldCompareRefsAndAlts    = FALSE,
+  shouldDetermineSegregating  = TRUE,
   GTsToCompare                = c("parentBased", "asVcf"),
   GTsToIntMapping             = c("7"=1, "G"=2, "."=0),
 #  GTsToIntMapping             = c("0"=1, "0/0"=1, "0|0"=1, "1"=2, "1/1"=2, "1|1"=2, "."=0, "./."=0, "./."=0, "2"=0, "3"=0, "0/1"=0, "1/0"=0, "0|1"=0, "1|0"=0) # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
-  expectedMatches             = NULL
+  expectedMatches             = NULL,
+  positionDifferenceXlim      = c(-50, 50)
 ) {
+  if(!file.exists(dirname(plotFilestem))) {
+    dir.create(dirname(plotFilestem), recursive=TRUE)
+  }
   require(reshape2)
   if(shouldRenameSubjectSamples) {
     subjectVcf <- renameSamples(subjectVcf)
@@ -52,24 +57,40 @@ compareCalls <- function(
   if(!is.null(comparisonDSthreshold)) {
     geno(comparisonVcf)[["GT"]][geno(comparisonVcf)[["DS"]] > comparisonDSthreshold] <- "."
   }
+  nearestMatchesForComparison <- nearest(rowData(comparisonVcf), rowData(subjectVcf))
+  if(any(is.na(nearestMatchesForComparison))) {
+    comparisonVcf <- comparisonVcf[!is.na(nearestMatchesForComparison)]
+    nearestMatchesForComparison <- nearest(rowData(comparisonVcf), rowData(subjectVcf))
+  }
   comparisonNearestSubjectGR <- rowData(subjectVcf)[nearest(rowData(comparisonVcf), rowData(subjectVcf))]
   table(start(ranges(comparisonNearestSubjectGR)) - start(ranges(rowData(comparisonVcf))))
   table(start(ranges(comparisonNearestSubjectGR))-start(ranges(rowData(comparisonVcf))) >=0 & start(ranges(comparisonNearestSubjectGR))-start(ranges(rowData(comparisonVcf)))<=22)
   subjectVsComparisonPositionDifferences <- start(ranges(comparisonNearestSubjectGR))-start(ranges(rowData(comparisonVcf)))
   require(ggplot2)
   pdf(paste(plotFilestem, "positionDifferences.pdf", sep="."), height=4, width=6)
-  print(
-    qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlim=c(-50, 50), xlab=paste("Distance (bp) from", comparisonName, "SNP to nearest", subjectName, "SNP"), ylab="Frequency (number of SNPs)")
-    + theme_bw()
-  )
+  if(is.null(positionDifferenceXlim)) {
+    print(
+      qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlab=paste("Distance (bp) from", comparisonName, "SNP to nearest", subjectName, "SNP"), ylab="Frequency (number of SNPs)")
+      + theme_bw()
+    )
+  } else {
+    print(
+      qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlim=positionDifferenceXlim, xlab=paste("Distance (bp) from", comparisonName, "SNP to nearest", subjectName, "SNP"), ylab="Frequency (number of SNPs)")
+      + theme_bw()
+    )
+  }
   dev.off()
   
   comparisonGTsas012 <- genotypeCallsFromGTas012(comparisonVcf, GTsToIntMapping = GTsToIntMapping)
-  segregatingComparisonVariants <- which(
-    comparisonGTsas012[, IDcomparisonParent1] != 0 &
-    comparisonGTsas012[, IDcomparisonParent2] != 0 &
-    comparisonGTsas012[, IDcomparisonParent1] != comparisonGTsas012[, IDcomparisonParent2]
-  )
+  if(shouldDetermineSegregating) {
+    segregatingComparisonVariants <- which(
+      comparisonGTsas012[, IDcomparisonParent1] != 0 &
+      comparisonGTsas012[, IDcomparisonParent2] != 0 &
+      comparisonGTsas012[, IDcomparisonParent1] != comparisonGTsas012[, IDcomparisonParent2]
+    )
+  } else {
+    segregatingComparisonVariants <- which(apply(comparisonGTsas012, 1, function(x) length(which(c("1", "2") %in% x))) == 2)
+  }
   
   comparisonRowsWithMatchesInSubject <- which(
     subjectVsComparisonPositionDifferences >= distanceThresholds[1] &
@@ -78,14 +99,25 @@ compareCalls <- function(
 #  positionsWithinThresholdsText <- paste(length(comparisonRowsWithMatchesInSubject), "of", length(subjectVsComparisonPositionDifferences), "SNPs within thresholds")
   positionsWithinThresholdsText <- paste(length(comparisonRowsWithMatchesInSubject), "of", length(subjectVsComparisonPositionDifferences), comparisonName, "SNPs are in", subjectName)
   pdf(paste(plotFilestem, "positionDifferencesWithThresholds.pdf", sep="."), height=4, width=6)
-  print(
-    qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlim=c(-50, 50), xlab=paste("Distance (bp) from", comparisonName, "SNP to nearest", subjectName, "SNP"), ylab="Frequency (number of SNPs)")
-    + geom_vline(xintercept = distanceThresholds[1], colour="red")
-    + geom_vline(xintercept = distanceThresholds[2]+1, colour="red")
-    + theme_bw()
-    + labs(title = positionsWithinThresholdsText)
-#    + geom_text(data = data.frame(), aes(-50, 100, label = positionsWithinThresholdsText))
-  )
+  if(is.null(positionDifferenceXlim)) {
+    print(
+      qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlab=paste("Distance (bp) from", comparisonName, "SNP to nearest", subjectName, "SNP"), ylab="Frequency (number of SNPs)")
+      + geom_vline(xintercept = distanceThresholds[1], colour="red")
+      + geom_vline(xintercept = distanceThresholds[2]+1, colour="red")
+      + theme_bw()
+      + labs(title = positionsWithinThresholdsText)
+  #    + geom_text(data = data.frame(), aes(-50, 100, label = positionsWithinThresholdsText))
+    )
+  } else {
+    print(
+      qplot(subjectVsComparisonPositionDifferences, binwidth=1, xlim=positionDifferenceXlim, xlab=paste("Distance (bp) from", comparisonName, "SNP to nearest", subjectName, "SNP"), ylab="Frequency (number of SNPs)")
+      + geom_vline(xintercept = distanceThresholds[1], colour="red")
+      + geom_vline(xintercept = distanceThresholds[2]+1, colour="red")
+      + theme_bw()
+      + labs(title = positionsWithinThresholdsText)
+  #    + geom_text(data = data.frame(), aes(-50, 100, label = positionsWithinThresholdsText))
+    )
+  }
   dev.off()
   
   sensitivityResults <- numeric(0)
