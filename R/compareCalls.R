@@ -28,11 +28,18 @@ compareCalls <- function(
   shouldSubsetToBialleleic    = FALSE,
   shouldCompareRefsAndAlts    = FALSE,
   shouldDetermineSegregating  = TRUE,
+  shouldCompareWithinSetOnAll = TRUE,
   GTsToCompare                = c("parentBased", "asVcf"),
   GTsToIntMapping             = c("7"=1, "G"=2, "."=0),
 #  GTsToIntMapping             = c("0"=1, "0/0"=1, "0|0"=1, "1"=2, "1/1"=2, "1|1"=2, "."=0, "./."=0, "./."=0, "2"=0, "3"=0, "0/1"=0, "1/0"=0, "0|1"=0, "1|0"=0) # "./." is needed as sometimes this is output by GATK's UG (presumably a bug). "2", "3", needed for the case of multi-allelic sites
   expectedMatches             = NULL,
-  positionDifferenceXlim      = c(-50, 50)
+  positionDifferenceXlim      = c(-50, 50),
+  subjVsCompHeatmapHeight     = 10,
+  subjVsCompHeatmapWidth      = 10,
+  subjVsSubjHeatmapHeight     = 10,
+  subjVsSubjHeatmapWidth      = 12,
+  compVsCompHeatmapHeight     = 8,
+  compVsCompHeatmapWidth      = 10
 ) {
   if(!file.exists(dirname(plotFilestem))) {
     dir.create(dirname(plotFilestem), recursive=TRUE)
@@ -190,64 +197,76 @@ compareCalls <- function(
         comparisonMatchesGTs,
         comparison="discordances",
         threshold=discordanceThreshold,
-        plotFilestem=plotFilestem,
+#        plotFilestem=plotFilestem,
+        plotFilestem=paste(plotFilestem, ".", subjectName, "vs", comparisonName, sep=""),
         expectedMatches=expectedMatches[["comparisonVsSubject"]],
         subjectName=subjectName,
-        comparisonName=comparisonName
+        comparisonName=comparisonName,
+        discordanceHeatmapHeight = subjVsCompHeatmapHeight,
+        discordanceHeatmapWidth = subjVsCompHeatmapWidth
       ),
       comparisonVsSubjectDiscordanceProportionMatrix = callComparisonPlots(
         subjectMatchesGTs,
         comparisonMatchesGTs,
         comparison="discordanceProportions",
         threshold=discordanceProportionThreshold,
-        plotFilestem=plotFilestem,
+        plotFilestem=paste(plotFilestem, ".", subjectName, "vs", comparisonName, sep=""),
         expectedMatches=expectedMatches[["comparisonVsSubject"]],
         subjectName=subjectName,
-        comparisonName=comparisonName
+        comparisonName=comparisonName,
+        discordanceHeatmapHeight = subjVsCompHeatmapHeight,
+        discordanceHeatmapWidth = subjVsCompHeatmapWidth
       ),
       subjectVsSubjectDiscordanceMatrix = callComparisonPlots(
-        subjectMatchesGTs,
-        subjectMatchesGTs,
+        if(shouldCompareWithinSetOnAll) subjectGTs else subjectMatchesGTs,
+        if(shouldCompareWithinSetOnAll) subjectGTs else subjectMatchesGTs,
         comparison="discordances",
         threshold=discordanceThreshold,
-        plotFilestem=paste(plotFilestem, "subject", sep="."),
+#        plotFilestem=paste(plotFilestem, "subject", sep="."),
+        plotFilestem=paste(plotFilestem, ".", subjectName, "vs", subjectName, sep=""),
         expectedMatches=expectedMatches[["subjectVsSubject"]],
         subjectName=subjectName,
         comparisonName=subjectName,
-        discordanceHeatmapWidth=12
+        discordanceHeatmapHeight = subjVsSubjHeatmapHeight,
+        discordanceHeatmapWidth = subjVsSubjHeatmapWidth
       ),
       subjectVsSubjectDiscordanceProportionMatrix = callComparisonPlots(
-        subjectMatchesGTs,
-        subjectMatchesGTs,
+        if(shouldCompareWithinSetOnAll) subjectGTs else subjectMatchesGTs,
+        if(shouldCompareWithinSetOnAll) subjectGTs else subjectMatchesGTs,
         comparison="discordanceProportions",
         threshold=discordanceProportionThreshold,
-        plotFilestem=paste(plotFilestem, "subject", sep="."),
+        plotFilestem=paste(plotFilestem, ".", subjectName, "vs", subjectName, sep=""),
+        plotFilestem=paste(plotFilestem, ".", subjectName, "vs", comparisonName, sep=""),
         expectedMatches=expectedMatches[["subjectVsSubject"]],
         subjectName=subjectName,
         comparisonName=subjectName,
-        discordanceHeatmapWidth=12
+        discordanceHeatmapHeight = subjVsSubjHeatmapHeight,
+        discordanceHeatmapWidth = subjVsSubjHeatmapWidth
       ),
       comparisonVsComparisonDiscordanceMatrix = callComparisonPlots(
-        comparisonMatchesGTs,
-        comparisonMatchesGTs,
+        if(shouldCompareWithinSetOnAll) comparisonGTs else comparisonMatchesGTs,
+        if(shouldCompareWithinSetOnAll) comparisonGTs else comparisonMatchesGTs,
         comparison="discordances",
         threshold=discordanceThreshold,
-        plotFilestem=paste(plotFilestem, "comparison", sep="."),
+#        plotFilestem=paste(plotFilestem, "comparison", sep="."),
+        plotFilestem=paste(plotFilestem, ".", comparisonName, "vs", comparisonName, sep=""),
         expectedMatches=expectedMatches[["comparisonVsComparison"]],
         subjectName=comparisonName,
         comparisonName=comparisonName,
-        discordanceHeatmapHeight=8
+        discordanceHeatmapHeight = compVsCompHeatmapHeight,
+        discordanceHeatmapWidth = compVsCompHeatmapWidth
       ),
       comparisonVsComparisonDiscordanceProportionMatrix = callComparisonPlots(
-        comparisonMatchesGTs,
-        comparisonMatchesGTs,
+        if(shouldCompareWithinSetOnAll) comparisonGTs else comparisonMatchesGTs,
+        if(shouldCompareWithinSetOnAll) comparisonGTs else comparisonMatchesGTs,
         comparison="discordanceProportions",
         threshold=discordanceProportionThreshold,
-        plotFilestem=paste(plotFilestem, "comparison", sep="."),
+        plotFilestem=paste(plotFilestem, ".", comparisonName, "vs", comparisonName, sep=""),
         expectedMatches=expectedMatches[["comparisonVsComparison"]],
         subjectName=comparisonName,
         comparisonName=comparisonName,
-        discordanceHeatmapHeight=8
+        discordanceHeatmapHeight = compVsCompHeatmapHeight,
+        discordanceHeatmapWidth = compVsCompHeatmapWidth
       ),
       sensitivityResults = sensitivityResults
     )
