@@ -23,9 +23,12 @@ callComparisonPlots <- function(
 #  discordanceHistogramBinwidth= 50
   discordanceHeatmapHeight    = 10,
   discordanceHeatmapWidth     = 10,
+  heatmapMargin               = 10,
   verbose                     = TRUE
 )
 {
+  require(gplots)
+
   if(subjectIsComparison) {
     expectedMatches <- rbind(expectedMatches, cbind(expectedMatches[, 2], expectedMatches[, 1]))
   }
@@ -166,6 +169,28 @@ callComparisonPlots <- function(
     height=discordanceHeatmapHeight,
     width=discordanceHeatmapWidth
   )
+  print(
+    ggplot(
+      discordanceDF,
+      aes(x=Var1, y=Var2, fill=Discordances)
+    )
+    + geom_tile()
+    + scale_fill_gradient2(low="red", high="blue", midpoint=median(comparisonVsSubjectDiscordanceMatrix, na.rm=TRUE))
+    + theme_bw()
+    + xlab(paste(comparisonName, "sample ID"))
+    + ylab(paste(subjectName, "sample ID"))
+    + theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+  )
+  dev.off()
+
+  pdf(
+    paste(plotFilestem, comparison, "Heatmap2.pdf", sep="."),
+    height=discordanceHeatmapHeight,
+    width=discordanceHeatmapWidth
+  )
+  heatmap.2(comparisonVsSubjectDiscordanceMatrix, margins=c(heatmapMargin, heatmapMargin))
+  dev.off()
+  
   print(
     ggplot(
       discordanceDF,

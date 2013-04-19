@@ -236,7 +236,6 @@ compareCalls <- function(
         comparison="discordanceProportions",
         threshold=discordanceProportionThreshold,
         plotFilestem=paste(plotFilestem, ".", subjectName, "vs", subjectName, sep=""),
-        plotFilestem=paste(plotFilestem, ".", subjectName, "vs", comparisonName, sep=""),
         expectedMatches=expectedMatches[["subjectVsSubject"]],
         subjectName=subjectName,
         comparisonName=subjectName,
