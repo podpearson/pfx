@@ -43,7 +43,12 @@ callComparisonPlots <- function(
     stop("discordance must be either \"discordances\" or \"discordanceProportions\"")
   }
   vecDiscordance <- Vectorize(discordance)
-  comparisonVsSubjectDiscordanceMatrix <- outer(data.frame(comparisonMatchesGTs), data.frame(subjectMatchesGTs), vecDiscordance)
+  comparisonMatchesGTsDF <- data.frame(comparisonMatchesGTs)
+  names(comparisonMatchesGTsDF) <- dimnames(comparisonMatchesGTs)[[2]]
+  subjectMatchesGTsDF <- data.frame(subjectMatchesGTs)
+  names(subjectMatchesGTsDF) <- dimnames(subjectMatchesGTs)[[2]]
+#  comparisonVsSubjectDiscordanceMatrix <- outer(data.frame(comparisonMatchesGTs), data.frame(subjectMatchesGTs), vecDiscordance)
+  comparisonVsSubjectDiscordanceMatrix <- outer(comparisonMatchesGTsDF, subjectMatchesGTsDF, vecDiscordance)
 
   discordancesText <- paste(
     "Median pairwise",
