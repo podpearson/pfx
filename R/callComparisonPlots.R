@@ -23,7 +23,7 @@ callComparisonPlots <- function(
 #  discordanceHistogramBinwidth= 50
   discordanceHeatmapHeight    = 10,
   discordanceHeatmapWidth     = 10,
-  heatmapMargin               = 10,
+  heatmapMargin               = 12,
   verbose                     = TRUE
 )
 {
@@ -49,6 +49,8 @@ callComparisonPlots <- function(
   names(subjectMatchesGTsDF) <- dimnames(subjectMatchesGTs)[[2]]
 #  comparisonVsSubjectDiscordanceMatrix <- outer(data.frame(comparisonMatchesGTs), data.frame(subjectMatchesGTs), vecDiscordance)
   comparisonVsSubjectDiscordanceMatrix <- outer(comparisonMatchesGTsDF, subjectMatchesGTsDF, vecDiscordance)
+  comparisonVsSubjectDiscordanceMatrix2 <- comparisonVsSubjectDiscordanceMatrix[apply(comparisonVsSubjectDiscordanceMatrix, 1, function(x) !any(is.na(x))), ]
+  comparisonVsSubjectDiscordanceMatrix2 <- comparisonVsSubjectDiscordanceMatrix2[, apply(comparisonVsSubjectDiscordanceMatrix2, 2, function(x) !any(is.na(x)))]
 
   discordancesText <- paste(
     "Median pairwise",
@@ -190,10 +192,10 @@ callComparisonPlots <- function(
 
   pdf(
     paste(plotFilestem, comparison, "Heatmap2.pdf", sep="."),
-    height=discordanceHeatmapHeight,
-    width=discordanceHeatmapWidth
+    height=discordanceHeatmapWidth, # yes, these are deliberately swapped!
+    width=discordanceHeatmapHeight
   )
-  heatmap.2(comparisonVsSubjectDiscordanceMatrix, margins=c(heatmapMargin, heatmapMargin))
+  heatmap.2(comparisonVsSubjectDiscordanceMatrix2, margins=c(heatmapMargin, heatmapMargin))
   dev.off()
   
   print(
