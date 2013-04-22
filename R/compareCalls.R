@@ -15,8 +15,12 @@ compareCalls <- function(
   distanceThresholds          = c(0, 22),
   discordanceThreshold        = 100,
   discordanceProportionThreshold = 0.15,
-  malariagenDiscordanceThreshold = 200,
-  malariagenDiscordanceProportionThreshold = 0.15,
+  subjSubjDiscordanceThreshold  = discordanceThreshold,
+  subjSubjProportionThreshold   = discordanceProportionThreshold,
+  compCompDiscordanceThreshold  = discordanceThreshold,
+  compCompProportionThreshold   = discordanceProportionThreshold,
+#  malariagenDiscordanceThreshold = 200,
+#  malariagenDiscordanceProportionThreshold = 0.15,
   sampleAnnotationFilename    = "/data/malariagen2/plasmodium/pf-crosses/meta/qcmeta_annotated.tsv",
   comparisonDSthreshold       = NULL, # This is used specifically for Uberchip calls
   plotFilestem                = paste(meta(exptData(subjectVcf)[["header"]])["DataSetName", "Value"], "comparison", sep="."),
@@ -186,6 +190,8 @@ compareCalls <- function(
     subjectMatchesGTs <- subjectGTs[subjectRowsWithMatchesInComparison, ]
     comparisonMatchesGTs[comparisonMatchesGTs==0] <- NA
     subjectMatchesGTs[subjectMatchesGTs==0] <- NA
+    subjectGTs[subjectGTs==0] <- NA
+    comparisonGTs[comparisonGTs==0] <- NA
   } else {
     stop("GTsToCompare must be either \"parentBased\" or \"asVcf\"")
   }

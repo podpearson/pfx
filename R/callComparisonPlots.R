@@ -49,8 +49,12 @@ callComparisonPlots <- function(
   names(subjectMatchesGTsDF) <- dimnames(subjectMatchesGTs)[[2]]
 #  comparisonVsSubjectDiscordanceMatrix <- outer(data.frame(comparisonMatchesGTs), data.frame(subjectMatchesGTs), vecDiscordance)
   comparisonVsSubjectDiscordanceMatrix <- outer(comparisonMatchesGTsDF, subjectMatchesGTsDF, vecDiscordance)
-  comparisonVsSubjectDiscordanceMatrix2 <- comparisonVsSubjectDiscordanceMatrix[apply(comparisonVsSubjectDiscordanceMatrix, 1, function(x) !any(is.na(x))), ]
+  comparisonVsSubjectDiscordanceMatrix2 <- comparisonVsSubjectDiscordanceMatrix[apply(comparisonVsSubjectDiscordanceMatrix, 1, function(x) !all(is.na(x))), ]
+  comparisonVsSubjectDiscordanceMatrix2 <- comparisonVsSubjectDiscordanceMatrix2[, apply(comparisonVsSubjectDiscordanceMatrix2, 2, function(x) !all(is.na(x)))]
+  comparisonVsSubjectDiscordanceMatrix2 <- comparisonVsSubjectDiscordanceMatrix2[apply(comparisonVsSubjectDiscordanceMatrix2, 1, function(x) !any(is.na(x))), ]
   comparisonVsSubjectDiscordanceMatrix2 <- comparisonVsSubjectDiscordanceMatrix2[, apply(comparisonVsSubjectDiscordanceMatrix2, 2, function(x) !any(is.na(x)))]
+#  comparisonVsSubjectDiscordanceMatrix2 <- comparisonVsSubjectDiscordanceMatrix[apply(comparisonVsSubjectDiscordanceMatrix, 1, function(x) !any(is.na(x))), ]
+#  comparisonVsSubjectDiscordanceMatrix2 <- comparisonVsSubjectDiscordanceMatrix2[, apply(comparisonVsSubjectDiscordanceMatrix2, 2, function(x) !any(is.na(x)))]
 
   discordancesText <- paste(
     "Median pairwise",
